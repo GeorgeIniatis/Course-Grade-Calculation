@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+
+{% load staticfiles %}
+<!--{load GameRate_template_tags %}-->
+
+<html lang="en">
+    <head>
+        <!-- Required meta tags-->
+        <meta charset="UTF-8">
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet"  type="text/css" href="{% static 'css/style.css' %}">
+        <title>
+            Chemapp -
+            {% block title_block %}
+                <!-- page title goes here -->
+            {% endblock %}
+        </title>
+    </head>
+
+    <header>
+      <div>
+          {% block header_block %}
+              <topbar>
+                <ul>
+                  <img src="{% static 'images/UoG_keyline.PNG' %}" alt="UofG logo" class="logo"/>
+                  <li><a href={% url 'chemapp:home' %}>Home </a> </li>
+                  {% if user.is_authenticated %}
+                  <li>Username: {{request.user.username}}</li>
+                  <li><a href="{% url 'chemapp:logout' %}">Logout</a></li>
+                  {% else %}
+                  <li><a href="{% url 'chemapp:register' %}">Register </a></li>
+                  <li><a href="{% url 'chemapp:login' %}">Login </a></li>
+                  {% endif %}
+                </ul>
+              </topbar>
+              <secondtop>
+                <strong>"here"</strong>
+              </secondtop>
+          {% endblock %}
+      </div>
+      <div>
+        <nav>
+          <ul>
+
+            {% if user.is_authenticated %}
+
+            {% endif %}
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <body>
+      <br>
+        <side>
+          <div>
+            {% block sidebar_block %}
+            {% endblock %}
+          </div>
+        </side>
+
+        <div>
+            {% block body_block %}
+                <!-- page content goes here -->
+            {% endblock %}
+        </div>
+    </body>
+
+    <footer>
+      <div>
+          {% block footer_block %}
+              <!-- footer goes here-->
+          {% endblock %}
+      </div>
+    </footer>
+
+</html>
