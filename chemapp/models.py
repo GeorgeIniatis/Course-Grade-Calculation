@@ -29,3 +29,19 @@ class Page(models.Model):
     views = models.IntegerField(default=0)
     def __str__(self):
         return self.title
+
+
+class Student(moels.Models):
+    firstName = models.CharField(max_length=128)
+    lastName = models.CharField(max_length=128)
+    #not quite sure why we need this?
+    myCampusName = models.CharField(max_length=128)
+    studentID = models.IntegerField(max_length=7,unique=True)
+    anonID = models.IntegerField(max_length=7,unique=True)
+    academicPlan = models.CharField(max_length=128)
+    #should we change this to restricted choice? integer field?
+    currentYear = models.CharField(max_length=128)
+    graduationDate = models.DateTimeField(null=True, blank=True)
+    comments = models.TextField(max_length=500)
+    #I don't really think gap year is necessary as they could start uni at any age.
+    courses = ###### need course model key
