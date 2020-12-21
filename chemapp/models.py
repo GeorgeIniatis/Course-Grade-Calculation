@@ -33,47 +33,56 @@ class Page(models.Model):
 
 
 
+class Course(models.Model):
+    #I dont know the format of course codes need to check, format, max length ect
+    courseCode = models.CharField(max_length=128)
+    #any paramets here max min?
+    credits = models.IntegerField()
 
-# class Student(moels.Models):
-#     firstName = models.CharField(max_length=128)
-#     lastName = models.CharField(max_length=128)
-#     #not quite sure why we need this?
-#     myCampusName = models.CharField(max_length=128)
-#     studentID = models.IntegerField(max_length=7,unique=True)
-#     anonID = models.IntegerField(max_length=7,unique=True)
-#     academicPlan = models.CharField(max_length=128)
-#     #should we change this to restricted choice? integer field?
-#     currentYear = models.CharField(max_length=128)
-#     graduationDate = models.DateTimeField(null=True, blank=True)
-#     comments = models.TextField(max_length=500)
-#     #I don't really think gap year is necessary as they could start uni at any age.
-#     courses = ###### need course model key
+    courseName = models.CharField(max_length=200)
+    courseShortHand = models.CharField(max_length=50)
+    #could be Integer? same problem as currentYear in Student model
+    courseYear = models.CharField(max_length=128)
+    semester = models.CharField(max_length=128)
+
+    #description could possible be an uploaded txt file so we dont have to manage length.
+    description = models.TextField(max_length = 2000)
+    comments = models.TextField(max_length=500)
+    #may have to change decimal places
+    minimumPassGrade = models.DecimalField(max_digits=5,decimal_places=2)
+
+    #assessments = ##### need assessments field
+
+    def __str__(self):
+        return self.courseCode
 
 
 
-# class Course(models.Models):
-#     #I dont know the format of course codes need to check, format, max length ect
-#     courseCode = models.CharField(max_length=128)
-#     #any paramets here max min?
-#     credits = models.IntegerField()
-#
-#     courseName = models.CharField(max_length=200)
-#     courseShortHand = models.CharField(max_length=50)
-#     #could be Integer? same problem as currentYear in Student model
-#     courseYear = models.CharField()
-#     semester = models.CharField()
-#
-#     #description could possible be an uploaded txt file so we dont have to manage length.
-#     description = models.TextField(max_length = 2000)
-#     comments = models.TextField(max_length=500)
-#     #may have to change decimal places
-#     minimumPassGrade = models.DecimlField(max_digits=5,decimal_places=2)
-#
-#     assessments = ##### need assessments field
-#
-#
-#
-#
+
+class Student(models.Model):
+    firstName = models.CharField(max_length=128)
+    lastName = models.CharField(max_length=128)
+    #not quite sure why we need this?
+    myCampusName = models.CharField(max_length=128)
+    studentID = models.CharField(max_length=7,unique=True)
+    anonID = models.CharField(max_length=7,unique=True)
+    academicPlan = models.CharField(max_length=128)
+    #should we change this to restricted choice? integer field?
+    currentYear = models.CharField(max_length=128)
+    graduationDate = models.DateTimeField(null=True, blank=True)
+    comments = models.TextField(max_length=500)
+    #I don't really think gap year is necessary as they could start uni at any age.
+    courses = models.ManyToManyField(Course)
+
+
+    def __str__(self):
+        return self.anonID
+
+
+
+
+
+
 # class CourseGrade(models.Model):
 #     grade = models.DecimalField(max_digits=5,decimal_places=2)
 #
