@@ -70,3 +70,17 @@ class Course(models.Models):
     minimumPassGrade = models.DecimlField(max_digits=5,decimal_places=2)
 
     assessments = ##### need assessments field
+
+
+
+
+class CourseGrade(models.Model):
+    grade = models.DecimalField(max_digits=5,decimal_places=2)
+
+
+
+class Assesment(models.Model):
+    weight = models.DecimlField(max_digits=5,decimal_places=2)
+    name = models.CharField(max_length=128)
+    dueDate = models.DateTimeField(null=True, blank=True)
+    assessmentComps = ######### need other model
