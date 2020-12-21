@@ -84,3 +84,39 @@ class Assesment(models.Model):
     name = models.CharField(max_length=128)
     dueDate = models.DateTimeField(null=True, blank=True)
     assessmentComps = ######### need other model
+
+
+
+
+
+class AssessmentGrade(models.Model):
+    #basic restricted choice options
+    LATE_STATUS = (
+        ('1', '1 Band'),
+        ('2', '2 Bands'),
+    )
+
+    GOOD_CAUSE_ACTION = (
+        ('resit', 'resit exam'),
+        ('ca', 'credit awarded'),
+    )
+
+    submissionDate = models.DateTimeField(null=True, blank=True)
+    lateStatus = models.CharField(choices = LATE_STATUS, blank = True)
+    noDetriment = models.BooleanField(default = False)
+    goodCause = models.BooleanField(default = False)
+    goodCauseAction = models.CharField(choices = GOOD_CAUSE_ACTION, blank = True)
+    markedGrade = models.DecimlField(max_digits=5,decimal_places=2)
+    # Is there any need for the penalty field?
+    #penalty = models.CharField()
+    finalGrade = models.DecimlField(max_digits=5,decimal_places=2)
+    #assessmentCompGrades = ############# no clue what this is
+
+
+class AssessmentComponents(models.Model):
+    required = models.BooleanField(default = False)
+    weight = models.DecimlField(max_digits=5,decimal_places=2)
+    description = models.CharField(max_length=100)
+
+class AssessmentComponentGrade(models.Model):
+    grade = models.DecimalField(max_digits=5,decimal_places=2)
