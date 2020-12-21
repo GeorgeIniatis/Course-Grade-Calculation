@@ -51,6 +51,9 @@ class Course(models.Model):
     #may have to change decimal places
     minimumPassGrade = models.DecimalField(max_digits=5,decimal_places=2)
 
+
+    #course = models.OneToOneField('CourseGrade', on_delete=models.CASCADE, primary_key=True)
+
     #assessments = ##### need assessments field
 
     def __str__(self):
@@ -74,6 +77,8 @@ class Student(models.Model):
     #I don't really think gap year is necessary as they could start uni at any age.
     courses = models.ManyToManyField(Course)
 
+    #courseGrades
+
 
     def __str__(self):
         return self.anonID
@@ -85,9 +90,9 @@ class Student(models.Model):
 
 # class CourseGrade(models.Model):
 #     grade = models.DecimalField(max_digits=5,decimal_places=2)
-#
-#
-#
+#     Student = models.ForeignKey(Student, on_delete=models.CASCADE)
+
+
 # class Assesment(models.Model):
 #     weight = models.DecimlField(max_digits=5,decimal_places=2)
 #     name = models.CharField(max_length=128)
