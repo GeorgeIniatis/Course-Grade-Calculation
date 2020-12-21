@@ -31,6 +31,9 @@ class Page(models.Model):
         return self.title
 
 
+
+
+
 class Student(moels.Models):
     firstName = models.CharField(max_length=128)
     lastName = models.CharField(max_length=128)
@@ -45,3 +48,25 @@ class Student(moels.Models):
     comments = models.TextField(max_length=500)
     #I don't really think gap year is necessary as they could start uni at any age.
     courses = ###### need course model key
+
+
+
+class Course(models.Models):
+    #I dont know the format of course codes need to check, format, max length ect
+    courseCode = models.CharField(max_length=128)
+    #any paramets here max min?
+    credits = models.IntegerField()
+
+    courseName = models.CharField(max_length=200)
+    courseShortHand = models.CharField(max_length=50)
+    #could be Integer? same problem as currentYear in Student model
+    courseYear = models.CharField()
+    semester = models.CharField()
+
+    #description could possible be an uploaded txt file so we dont have to manage length.
+    description = models.TextField(max_length = 2000)
+    comments = models.TextField(max_length=500)
+    #may have to change decimal places
+    minimumPassGrade = models.DecimlField(max_digits=5,decimal_places=2)
+
+    assessments = ##### need assessments field
