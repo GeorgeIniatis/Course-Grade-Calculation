@@ -64,11 +64,6 @@ class Course(models.Model):
     #eg 0.75
     minimumRequirementsForCredit = models.DecimalField(max_digits=3, decimal_places = 2)
 
-
-    #courseGrade = models.OneToOneField('CourseGrade', on_delete=models.CASCADE, primary_key=True)
-
-    #assessments = models.ManyToManyField(Assessment)
-
     def __str__(self):
         return self.courseCode
 
@@ -111,39 +106,47 @@ class CourseGrade(models.Model):
         return (str(self.course) + " - " + str(self.student))
 
 
-# class Assesment(models.Model):
-#     weight = models.DecimlField(max_digits=5,decimal_places=2)
-#     name = models.CharField(max_length=128)
-#     dueDate = models.DateTimeField(null=True, blank=True)
-#     assessmentComps = ######### need other model
-#
-#
-#
-#
-#
-# class AssessmentGrade(models.Model):
-#     #basic restricted choice options
-#     LATE_STATUS = (
-#         ('1', '1 Band'),
-#         ('2', '2 Bands'),
-#     )
-#
-#     GOOD_CAUSE_ACTION = (
-#         ('resit', 'resit exam'),
-#         ('ca', 'credit awarded'),
-#     )
-#
-#     submissionDate = models.DateTimeField(null=True, blank=True)
-#     lateStatus = models.CharField(choices = LATE_STATUS, blank = True)
-#     noDetriment = models.BooleanField(default = False)
-#     goodCause = models.BooleanField(default = False)
-#     goodCauseAction = models.CharField(choices = GOOD_CAUSE_ACTION, blank = True)
-#     markedGrade = models.DecimlField(max_digits=5,decimal_places=2)
-#     # Is there any need for the penalty field?
-#     #penalty = models.CharField()
-#     finalGrade = models.DecimlField(max_digits=5,decimal_places=2)
-#     #assessmentCompGrades = ############# no clue what this is
-#
+class Assessment(models.Model):
+     weight = models.DecimalField(max_digits=3,decimal_places=2)
+     name = models.CharField(max_length=128)
+     dueDate = models.DateTimeField(null=True, blank=True)
+     course = models.ForeignKey(Course, on_delete=models.CASCADE)
+
+     def __str__(self):
+        return (str(self.course) + " - " + str(self.name))
+     
+class AssessmentGrade(models.Model):
+     #basic restricted choice options
+     LATE_STATUS = (
+         ('1', '1 Band'),
+         ('2', '2 Bands'),
+     )
+
+     GOOD_CAUSE_ACTION = (
+         ('Resit', 'Resit Exam'),
+         ('CA', 'Credit Awarded'),
+     )
+
+     submissionDate = models.DateTimeField(null=True, blank=True)
+     lateStatus = models.CharField(max_length=1,choices = LATE_STATUS, blank = True)
+     noDetriment = models.BooleanField(default = False)
+     goodCause = models.BooleanField(default = False)
+     goodCauseAction = models.CharField(max_length=5,choices = GOOD_CAUSE_ACTION, blank = True)
+     markedGrade = models.DecimalField(max_digits=5,decimal_places=2)
+     # Is there any need for the penalty field?
+     #penalty = models.CharField()
+     finalGrade = models.DecimalField(max_digits=5,decimal_places=2)
+     #assessmentCompGrades = ############# no clue what this is
+
+     assessment = models.ForeignKey(Assessment, on_delete=models.CASCADE)
+     student = models.ForeignKey(Student, on_delete=models.CASCADE)
+
+     class Meta:
+         unique_together = ('assessment', 'student')
+
+     def __str__(self):
+        return (str(self.assessment) + " - " + str(self.student))
+     
 #
 # class AssessmentComponents(models.Model):
 #     required = models.BooleanField(default = False)

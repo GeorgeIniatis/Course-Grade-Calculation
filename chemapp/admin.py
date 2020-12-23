@@ -10,4 +10,7 @@ admin.site.register(Page)
 admin.site.register(Student)
 admin.site.register(Course)
 admin.site.register(CourseGrade)
+admin.site.register(Assessment)
+admin.site.register(AssessmentGrade)
+
 # Register your models here.
