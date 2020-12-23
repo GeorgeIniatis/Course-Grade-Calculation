@@ -79,14 +79,16 @@ class Student(models.Model):
     #This will be the name provided in the excel file as far as i know
     #Something like John,Smith with the comma included
     myCampusName = models.CharField(max_length=128)
-    studentID = models.CharField(max_length=7,unique=True)
-    anonID = models.CharField(max_length=7,unique=True)
+    
+    studentID = models.PositiveIntegerField(validators=[MaxValueValidator(9999999)],unique=True)
+    anonID = models.PositiveIntegerField(validators=[MaxValueValidator(9999999)],unique=True)
+    
     academicPlan = models.CharField(max_length=128)
 
     #should we change this to restricted choice? integer field?
     currentYear = models.IntegerField(validators=[MaxValueValidator(5), MinValueValidator(1)])
     
-    graduationDate = models.DateTimeField(null=True, blank=True)
+    graduationDate = models.DateField(null=True, blank=True)
     comments = models.TextField(max_length=500, blank=True)
     #I don't really think gap year is necessary as they could start uni at any age.
     #gapYear = models.BooleanField(default = False)
@@ -95,12 +97,15 @@ class Student(models.Model):
     #courseGrades
 
     def __str__(self):
-        return self.anonID
+        return str(self.anonID)
 
 class CourseGrade(models.Model):
      grade = models.DecimalField(max_digits=5,decimal_places=2)
-     course = models.OneToOneField(Course, on_delete=models.CASCADE)
+     course = models.ForeignKey(Course, on_delete=models.CASCADE)
      student = models.ForeignKey(Student, on_delete=models.CASCADE)
+
+     class Meta:
+         unique_together = ('course', 'student')
 
      def __str__(self):
         return (str(self.course) + " - " + str(self.student))
