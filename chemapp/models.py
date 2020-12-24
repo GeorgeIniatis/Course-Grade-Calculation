@@ -65,7 +65,8 @@ class Course(models.Model):
     minimumRequirementsForCredit = models.DecimalField(max_digits=3, decimal_places = 2)
 
     def __str__(self):
-        return self.courseCode
+        return self.courseShortHand
+    
 
 class Student(models.Model):
     firstName = models.CharField(max_length=128)
@@ -147,11 +148,28 @@ class AssessmentGrade(models.Model):
      def __str__(self):
         return (str(self.assessment) + " - " + str(self.student))
      
-#
-# class AssessmentComponents(models.Model):
-#     required = models.BooleanField(default = False)
-#     weight = models.DecimlField(max_digits=5,decimal_places=2)
-#     description = models.CharField(max_length=100)
-#
-# class AssessmentComponentGrade(models.Model):
-#     grade = models.DecimalField(max_digits=5,decimal_places=2)
+class AssessmentComponent(models.Model):
+     required = models.BooleanField(default = False)
+     weight = models.DecimalField(max_digits=3,decimal_places=2)
+     marks = models.PositiveIntegerField()
+     description = models.CharField(max_length=100)
+
+     assessment = models.ForeignKey(Assessment, on_delete=models.CASCADE)
+
+     def __str__(self):
+        return (str(self.assessment) + " - " + str(self.description))
+     
+class AssessmentComponentGrade(models.Model):
+    grade = models.DecimalField(max_digits=5,decimal_places=2)
+
+    assessmentComponent = models.ForeignKey(AssessmentComponent, on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('assessmentComponent', 'student')
+    
+    def __str__(self):
+        return (str(self.assessmentComponent) + " - " + str(self.student))
+     
+
+     

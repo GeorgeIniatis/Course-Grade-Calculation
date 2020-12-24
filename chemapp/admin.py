@@ -12,5 +12,7 @@ admin.site.register(Course)
 admin.site.register(CourseGrade)
 admin.site.register(Assessment)
 admin.site.register(AssessmentGrade)
+admin.site.register(AssessmentComponent)
+admin.site.register(AssessmentComponentGrade)
 
 # Register your models here.
