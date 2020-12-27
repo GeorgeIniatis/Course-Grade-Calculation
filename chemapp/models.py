@@ -3,34 +3,11 @@ from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 from django.core.validators import MaxValueValidator, MinValueValidator
 
-# Need to be modified or removed
-class Category(models.Model):
-    name = models.CharField(max_length=128, unique=True)
-    slug = models.SlugField(unique=True)
-    def save(self, *args, **kwargs):
-        self.slug = slugify(self.name)
-        super(Category, self).save(*args, **kwargs)
-    class Meta:
-        verbose_name_plural = 'Categories'
-    def __str__(self):
-        return self.name
-
-class Page(models.Model):
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    title = models.CharField(max_length=128)
-    url = models.URLField()
-    views = models.IntegerField(default=0)
-    def __str__(self):
-        return self.title
-
 #People that have access to the site
 #Lecturers etc
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-
-    #Not really needed
-    date_of_birth = models.DateField
-    profile_image = models.ImageField(upload_to='profile_images', blank=True)
+    title = models.CharField(max_length=128)
 
     class Meta:
         verbose_name_plural = 'Users'
@@ -67,7 +44,6 @@ class Course(models.Model):
     def __str__(self):
         return self.courseShortHand
     
-
 class Student(models.Model):
     firstName = models.CharField(max_length=128)
     lastName = models.CharField(max_length=128)
