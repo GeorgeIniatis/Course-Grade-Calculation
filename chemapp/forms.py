@@ -1,5 +1,5 @@
 from django import forms
-from chemapp.models import UserProfile, Category
+from chemapp.models import *
 from django.contrib.auth.models import User
 
 class UserForm(forms.ModelForm):
@@ -13,11 +13,5 @@ class UserProfileForm(forms.ModelForm):
 
     class Meta:
         model = UserProfile
-        fields = {'profile_image'}
+        fields = {'title'}
 
-class CategoryForm(forms.ModelForm):
-    name = forms.CharField(max_length=128,help_text="Please enter the category name.")
-    slug=forms.CharField(widget=forms.HiddenInput(), required=False)
-    class Meta:
-        model = Category
-        fields = ('name',)

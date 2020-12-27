@@ -4,37 +4,15 @@
     Home
 {% endblock %}
 
-{% block body_block %}
-    <!-- <div>
-      <game_display>
-      {% if games%}
-      <ul>
-        {% for game in games%}
-        <li><img src="{{ MEDIA_URL }}{{ game.cover_art}}" alt="{{ game.cover_art}}" /></li>
-        <li>
-          <a href="{% url 'gamerate:show_game' game.slug %}">{{ game.name}}</a>
-        </li>
-
-        {% endfor %}
-      </ul>
-      {% else %}
-      <strong> There are no games present.</strong>
-      {% endif %}
-      </game_display>
-    </div> -->
-{% endblock %}
-
 {% block sidebar_block %}
-<!-- {% if categories %}
-<ul>
-  {% for category in categories %}
-  <li>
-    <a href="{% url 'gamerate:show_category' category.slug %}">{{ category.name}}</a>
-  </li>
-  <br>
-  {% endfor %}
-</ul>
-{% else %}
-<strong> There are no categories present.</strong>
-{% endif %} -->
+
 {% endblock %}
+
+{% block body_block %}
+{% if boldmessage %}
+<p> <b> {{ boldmessage }} </b> </p>
+{% endif %}
+
+{% endblock %}
+
+
