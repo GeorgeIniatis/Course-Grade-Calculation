@@ -26,7 +26,9 @@
                   <li><a href={% url 'chemapp:home' %}>Home </a> </li>
                   {% if user.is_authenticated %}
                   <li>Username: {{request.user.username}}</li>
+                  <li><a href="{% url 'chemapp:courses' %}">Courses</a></li>
                   <li><a href="{% url 'chemapp:logout' %}">Logout</a></li>
+                  
                   {% else %}
                   <li><a href="{% url 'chemapp:login' %}">Login </a></li>
                   {% endif %}

@@ -14,6 +14,21 @@ def home(request):
 def about(request):
     return HttpResponse("This is the about page")
 
+def courses(request):
+    coursesDict = {}
+    courses = Course.objects.all()
+
+    for course in courses:
+        name = course.name
+        year = course.year
+        slug = course.slug
+
+        courseList = [year,slug]
+
+        coursesDict[name] = courseList
+
+    return render(request,'chemapp/courses.html', {'courses': coursesDict})
+
 def user_login(request):
     if request.method == 'POST':
         username = request.POST.get('username')

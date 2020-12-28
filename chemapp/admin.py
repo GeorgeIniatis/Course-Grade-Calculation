@@ -1,9 +1,12 @@
 from django.contrib import admin
 from chemapp.models import *
 
+class CourseAdmin(admin.ModelAdmin):
+    exclude = ('slug',)
+    
 admin.site.register(UserProfile)
 admin.site.register(Student)
-admin.site.register(Course)
+admin.site.register(Course, CourseAdmin)
 admin.site.register(CourseGrade)
 admin.site.register(Assessment)
 admin.site.register(AssessmentGrade)

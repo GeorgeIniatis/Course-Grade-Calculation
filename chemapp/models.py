@@ -17,32 +17,45 @@ class UserProfile(models.Model):
 
 class Course(models.Model):
     #I dont know the format of course codes need to check, format, max length ect
-    courseCode = models.CharField(max_length=128, unique=True)
+    code = models.CharField(max_length=128, unique=True)
+    
     #any paramets here max min?
     #Question to ask customer 
-    courseCredits = models.IntegerField(validators=[MaxValueValidator(20), MinValueValidator(5)])
+    creditsWorth = models.IntegerField(validators=[MaxValueValidator(20), MinValueValidator(5)])
 
-    courseName = models.CharField(max_length=200)
-    courseShortHand = models.CharField(max_length=50)
+    name = models.CharField(max_length=200)
+    shortHand = models.CharField(max_length=50)
+    
     #could be Integer? same problem as currentYear in Student model
     #Changed them both to integers
-    courseYear = models.IntegerField(validators=[MaxValueValidator(5), MinValueValidator(1)])
+    year = models.IntegerField(validators=[MaxValueValidator(5), MinValueValidator(1)])
+    
     #I think they want as well a field that would show the current year that the course is being taught
     #2019-2020 something like that
     academicYearTaught = models.CharField(max_length=50)
+    
     semester = models.IntegerField(validators=[MaxValueValidator(2), MinValueValidator(1)])
 
     #description could possible be an uploaded txt file so we dont have to manage length.
     description = models.TextField(max_length = 2000)
+    
     comments = models.TextField(max_length=500, blank=True)
+    
     #may have to change decimal places
     minimumPassGrade = models.CharField(max_length=2)
+    
     #Percentage of assessments that need to be submitted in order to get credits
     #eg 0.75
     minimumRequirementsForCredit = models.DecimalField(max_digits=3, decimal_places = 2)
 
+    slug = models.SlugField(unique=True)
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.shortHand)
+        super(Course, self).save(*args, **kwargs)
+    
     def __str__(self):
-        return self.courseShortHand
+        return self.shortHand
     
 class Student(models.Model):
     firstName = models.CharField(max_length=128)
