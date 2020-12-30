@@ -7,15 +7,56 @@
 {% block body_block %}
 <div>
     {% if courses %}
-        <p> Undergraduate Courses - Year 1 </p>
-        <ul>
-        {% for key,value in courses.items %}
-            {% if value.0 == 1 %}
-            
-                <li> <a href= {{ value.1 }} >{{ key }}</a> </li>
-            {% endif %}
-        {% endfor %}
-        </ul>
+        <div>
+            <h3> Undergraduate Courses - Year 1 </h3>
+            <ul>
+            {% for key,value in courses.items %}
+                {% if value.0 == 1 %}
+                    <li> <a href= {{ value.1 }} >{{ key }}</a> </li>
+                {% endif %}
+            {% endfor %}
+            </ul>
+        </div>
+        <div>
+            <h3> Undergraduate Courses - Year 2 </h3>
+            <ul>
+            {% for key,value in courses.items %}
+                {% if value.0 == 2 %}
+                    <li> <a href= {{ value.1 }} >{{ key }}</a> </li>
+                {% endif %}
+            {% endfor %}
+            </ul>
+        </div>
+        <div>
+            <h3> Undergraduate Courses - Year 3 </h3>
+            <ul>
+            {% for key,value in courses.items %}
+                {% if value.0 == 3 %}
+                    <li> <a href= {{ value.1 }} >{{ key }}</a> </li>
+                {% endif %}
+            {% endfor %}
+            </ul>
+        </div>
+        <div>
+            <h3> Undergraduate Courses - Year 4 </h3>
+            <ul>
+            {% for key,value in courses.items %}
+                {% if value.0 == 4 %}
+                    <li> <a href= {{ value.1 }} >{{ key }}</a> </li>
+                {% endif %}
+            {% endfor %}
+            </ul>
+        </div>
+        <div>
+            <h3> Postgraduate Courses - Year 5 </h3>
+            <ul>
+            {% for key,value in courses.items %}
+                {% if value.0 == 5 %}
+                    <li> <a href= {{ value.1 }} >{{ key }}</a> </li>
+                {% endif %}
+            {% endfor %}
+            </ul>
+        </div>
     {% endif %}
 </div>
 

@@ -21,7 +21,7 @@ class Course(models.Model):
     
     #any paramets here max min?
     #Question to ask customer 
-    creditsWorth = models.IntegerField(validators=[MaxValueValidator(20), MinValueValidator(5)])
+    creditsWorth = models.IntegerField(validators=[MaxValueValidator(20), MinValueValidator(5)],verbose_name="Credits Worth")
 
     name = models.CharField(max_length=200)
     shortHand = models.CharField(max_length=50)
@@ -32,7 +32,7 @@ class Course(models.Model):
     
     #I think they want as well a field that would show the current year that the course is being taught
     #2019-2020 something like that
-    academicYearTaught = models.CharField(max_length=50)
+    academicYearTaught = models.CharField(max_length=50, verbose_name="Academic Year Taught")
     
     semester = models.IntegerField(validators=[MaxValueValidator(2), MinValueValidator(1)])
 
@@ -42,11 +42,11 @@ class Course(models.Model):
     comments = models.TextField(max_length=500, blank=True)
     
     #may have to change decimal places
-    minimumPassGrade = models.CharField(max_length=2)
+    minimumPassGrade = models.CharField(max_length=2,verbose_name="Minimum Pass Grade")
     
     #Percentage of assessments that need to be submitted in order to get credits
     #eg 0.75
-    minimumRequirementsForCredit = models.DecimalField(max_digits=3, decimal_places = 2)
+    minimumRequirementsForCredit = models.DecimalField(max_digits=3, decimal_places = 2, verbose_name="Minimum Requirements For Credit")
 
     slug = models.SlugField(unique=True)
 
@@ -58,22 +58,22 @@ class Course(models.Model):
         return self.shortHand
     
 class Student(models.Model):
-    firstName = models.CharField(max_length=128)
-    lastName = models.CharField(max_length=128)
+    firstName = models.CharField(max_length=128,verbose_name="First Name")
+    lastName = models.CharField(max_length=128,verbose_name="Last Name")
     #not quite sure why we need this?
     #This will be the name provided in the excel file as far as i know
     #Something like John,Smith with the comma included
-    myCampusName = models.CharField(max_length=128)
+    myCampusName = models.CharField(max_length=128, verbose_name="myCampus Name")
     
-    studentID = models.PositiveIntegerField(validators=[MaxValueValidator(9999999)],unique=True)
-    anonID = models.PositiveIntegerField(validators=[MaxValueValidator(9999999)],unique=True)
+    studentID = models.PositiveIntegerField(validators=[MaxValueValidator(9999999)],unique=True, verbose_name="Student ID")
+    anonID = models.PositiveIntegerField(validators=[MaxValueValidator(9999999)],unique=True, verbose_name="Anonymous ID")
     
-    academicPlan = models.CharField(max_length=128)
+    academicPlan = models.CharField(max_length=128,verbose_name="Academic Plan")
 
     #should we change this to restricted choice? integer field?
-    currentYear = models.IntegerField(validators=[MaxValueValidator(5), MinValueValidator(1)])
+    currentYear = models.IntegerField(validators=[MaxValueValidator(5), MinValueValidator(1)], verbose_name="Current Year")
     
-    graduationDate = models.DateField(null=True, blank=True)
+    graduationDate = models.DateField(null=True, blank=True,verbose_name="Graduation Date")
     comments = models.TextField(max_length=500, blank=True)
     #I don't really think gap year is necessary as they could start uni at any age.
     #gapYear = models.BooleanField(default = False)
@@ -99,7 +99,7 @@ class CourseGrade(models.Model):
 class Assessment(models.Model):
      weight = models.DecimalField(max_digits=3,decimal_places=2)
      name = models.CharField(max_length=128)
-     dueDate = models.DateTimeField(null=True, blank=True)
+     dueDate = models.DateTimeField(null=True, blank=True, verbose_name="Due Date and Time")
      course = models.ForeignKey(Course, on_delete=models.CASCADE)
 
      def __str__(self):
@@ -117,15 +117,15 @@ class AssessmentGrade(models.Model):
          ('CA', 'Credit Awarded'),
      )
 
-     submissionDate = models.DateTimeField(null=True, blank=True)
-     lateStatus = models.CharField(max_length=1,choices = LATE_STATUS, blank = True)
-     noDetriment = models.BooleanField(default = False)
-     goodCause = models.BooleanField(default = False)
-     goodCauseAction = models.CharField(max_length=5,choices = GOOD_CAUSE_ACTION, blank = True)
-     markedGrade = models.DecimalField(max_digits=5,decimal_places=2)
+     submissionDate = models.DateTimeField(null=True, blank=True, verbose_name="Submission Date and Time")
+     lateStatus = models.CharField(max_length=1,choices = LATE_STATUS, blank = True,verbose_name="Late Status")
+     noDetriment = models.BooleanField(default = False,verbose_name="No Detriment Policy")
+     goodCause = models.BooleanField(default = False,verbose_name="Good Cause")
+     goodCauseAction = models.CharField(max_length=5,choices = GOOD_CAUSE_ACTION, blank = True,verbose_name="Good Cause Action")
+     markedGrade = models.DecimalField(max_digits=5,decimal_places=2,verbose_name="Marked Grade")
      # Is there any need for the penalty field?
      #penalty = models.CharField()
-     finalGrade = models.DecimalField(max_digits=5,decimal_places=2)
+     finalGrade = models.DecimalField(max_digits=5,decimal_places=2,verbose_name="Final Grade")
      #assessmentCompGrades = ############# no clue what this is
 
      assessment = models.ForeignKey(Assessment, on_delete=models.CASCADE)
@@ -151,7 +151,7 @@ class AssessmentComponent(models.Model):
 class AssessmentComponentGrade(models.Model):
     grade = models.DecimalField(max_digits=5,decimal_places=2)
 
-    assessmentComponent = models.ForeignKey(AssessmentComponent, on_delete=models.CASCADE)
+    assessmentComponent = models.ForeignKey(AssessmentComponent, on_delete=models.CASCADE,verbose_name="Assessment Component")
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
 
     class Meta:

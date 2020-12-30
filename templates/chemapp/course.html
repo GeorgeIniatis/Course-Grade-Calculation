@@ -1,0 +1,21 @@
+{% extends 'chemapp/base.html' %}
+
+{% block title_block %}
+    {{ course.name }}
+{% endblock %}
+
+{% block body_block %}
+<div>
+    <h2> {{ course.name }} </h2>
+    <p> Code: {{ course.code }} </p>
+    <p> Credits: {{ course.creditsWorth }} </p>
+    <p> Shorthand: {{ course.shortHand }} </p>
+    <p> Academic Year Taught: {{ course.academicYearTaught }} </p>
+    <p> Semester: {{ course.semester }} </p>
+    <p> Description: {{ course.description }} </p>
+    <p> Comments: {{ course.comments }} </p>
+    <p> Minimum Pass Grade: {{ course.minimumPassGrade }} </p>
+    <p> Minimum Requirements For Credit: {{ course.minimumRequirementsForCredit }} </p>
+</div>
+
+{% endblock %}

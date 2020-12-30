@@ -27,6 +27,7 @@
                   {% if user.is_authenticated %}
                   <li>Username: {{request.user.username}}</li>
                   <li><a href="{% url 'chemapp:courses' %}">Courses</a></li>
+                  <li><a href="{% url 'chemapp:about' %}">About</a></li>
                   <li><a href="{% url 'chemapp:logout' %}">Logout</a></li>
                   
                   {% else %}
@@ -55,6 +56,7 @@
       <br>
         <side>
           <div>
+            <br>
             <br>
             <br>
             {% block sidebar_block %}

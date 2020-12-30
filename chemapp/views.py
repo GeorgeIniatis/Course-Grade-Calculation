@@ -6,13 +6,15 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from chemapp.models import *
 from chemapp.forms import *
+from django.http import Http404
 
 def home(request):
     context_dict = {'boldmessage':'This is the home page'}
     return render(request,'chemapp/home.html', context=context_dict)
 
 def about(request):
-    return HttpResponse("This is the about page")
+    context_dict = {'boldmessage':'This is the about page'}
+    return render(request,'chemapp/home.html', context=context_dict)
 
 def courses(request):
     coursesDict = {}
@@ -29,6 +31,16 @@ def courses(request):
 
     return render(request,'chemapp/courses.html', {'courses': coursesDict})
 
+def course(request,course_name_slug):
+    courseDict = {}
+    try:
+        course = Course.objects.get(slug=course_name_slug)
+        courseDict = {'course':course}
+    except Course.DoesNotExist:
+        raise Http404("Course does not exist")
+
+    return render(request,'chemapp/course.html', context=courseDict)
+        
 def user_login(request):
     if request.method == 'POST':
         username = request.POST.get('username')
