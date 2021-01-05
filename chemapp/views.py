@@ -40,9 +40,7 @@ def course(request,course_name_slug):
         courseDict['assessments'] = assessments
     except Course.DoesNotExist:
         raise Http404("Course does not exist")
-    except Assessment.DoesNotExist:
-        courseDict['assessments'] = None
-
+    
     return render(request,'chemapp/course.html', context=courseDict)
         
 def user_login(request):
