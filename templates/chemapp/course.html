@@ -16,6 +16,15 @@
     <p> Comments: {{ course.comments }} </p>
     <p> Minimum Pass Grade: {{ course.minimumPassGrade }} </p>
     <p> Minimum Requirements For Credit: {{ course.minimumRequirementsForCredit }} </p>
-</div>
-
+    
+    <h2> Assessments </h2>
+        {% if not assessments %}
+           <p> No assessments have been yet set for this course </p>
+        {% else %}
+            {% for assessment in assessments %}
+            <h4> {{ assessment.name }} </h4>
+            <p> Weight: {{ assessment.weight }} </p>
+            <p> Due on: {{ assessment.dueDate }} </p>
+            {% endfor %}
+        {% endif %}
 {% endblock %}

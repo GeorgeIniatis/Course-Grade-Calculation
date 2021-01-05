@@ -35,9 +35,13 @@ def course(request,course_name_slug):
     courseDict = {}
     try:
         course = Course.objects.get(slug=course_name_slug)
-        courseDict = {'course':course}
+        assessments = Assessment.objects.filter(course=course)
+        courseDict['course'] = course
+        courseDict['assessments'] = assessments
     except Course.DoesNotExist:
         raise Http404("Course does not exist")
+    except Assessment.DoesNotExist:
+        courseDict['assessments'] = None
 
     return render(request,'chemapp/course.html', context=courseDict)
         
