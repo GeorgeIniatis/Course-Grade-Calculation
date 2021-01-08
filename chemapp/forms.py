@@ -15,3 +15,10 @@ class UserProfileForm(forms.ModelForm):
         model = UserProfile
         fields = {'title'}
 
+class CourseForm(forms.ModelForm):
+
+    class Meta:
+        model = Course
+        fields = ('code','creditsWorth','name','shortHand','year','academicYearTaught',
+                  'semester','description','comments','minimumPassGrade',
+                  'minimumRequirementsForCredit')

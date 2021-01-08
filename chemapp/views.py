@@ -16,6 +16,7 @@ def about(request):
     context_dict = {'boldmessage':'This is the about page'}
     return render(request,'chemapp/home.html', context=context_dict)
 
+@login_required
 def courses(request):
     coursesDict = {}
     courses = Course.objects.all()
@@ -31,6 +32,7 @@ def courses(request):
 
     return render(request,'chemapp/courses.html', {'courses': coursesDict})
 
+@login_required
 def course(request,course_name_slug):
     courseDict = {}
     try:
@@ -42,6 +44,26 @@ def course(request,course_name_slug):
         raise Http404("Course does not exist")
     
     return render(request,'chemapp/course.html', context=courseDict)
+
+@login_required
+def add_course(request):
+    addCourseDict = {}
+    addCourseDict['courseAdded'] = False
+    
+    if request.method == 'POST':
+        course_form = CourseForm(request.POST)
+
+        if course_form.is_valid():
+            course_form.save()
+            addCourseDict['courseAdded'] = True
+        else:
+            print(course_form.errors)
+    else:
+        course_form = CourseForm()
+        
+    addCourseDict['course_form'] = course_form
+    return render(request,'chemapp/add_course.html',context = addCourseDict)
+    
         
 def user_login(request):
     if request.method == 'POST':
