@@ -97,3 +97,8 @@ def user_login(request):
 def user_logout(request):
     logout(request)
     return redirect(reverse('chemapp:home'))
+
+@login_required
+def student(request):
+    student_dict = {'boldmessage':'This is the student page'}
+    return render(request,'chemapp/student.html', context=student_dict)
