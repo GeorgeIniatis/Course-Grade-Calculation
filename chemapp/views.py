@@ -102,3 +102,24 @@ def user_logout(request):
 def student(request):
     student_dict = {'boldmessage':'This is the student page'}
     return render(request,'chemapp/student.html', context=student_dict)
+    
+@login_required
+def add_student(request):
+	addStudentDict = {}
+	addStudentDict['studentAdded'] = False
+	
+	if request.method == 'POST':
+		student_form = StudentForm(request.POST)
+		
+		if student_form.is_valid():
+			student_form.save()
+			addStudentDict['studentAdded'] = True
+		else:
+			print(student_form.errors)
+	else:
+		student_form = StudentForm()
+		
+	addStudentDict['student_form'] = student_form
+	
+	return render(request,'chemapp/add_student.html',context=addStudentDict)
+

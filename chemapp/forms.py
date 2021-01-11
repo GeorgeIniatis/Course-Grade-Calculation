@@ -30,4 +30,9 @@ class AssessmentForm(forms.ModelForm):
         fields = ('weight','assessmentName','dueDate','course')
         exclude = ['course']
 
+class StudentForm(forms.ModelForm):
+	class Meta:
+		model = Student
+		fields = ('studentID','firstName','lastName','academicPlan','graduationDate','currentYear')
         
+	

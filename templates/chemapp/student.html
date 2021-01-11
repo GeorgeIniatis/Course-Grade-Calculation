@@ -6,7 +6,11 @@
 
 {% block body_block %}
 <div>
-    <h2>Student Page!!</h2>
+    <h2>Student Page!</h2>
+    
+    <div>
+    <a href="{% url 'chemapp:add_student' %}"><button>Add a student</button></a>
+	</div>
 </div>
 
 {% endblock %}

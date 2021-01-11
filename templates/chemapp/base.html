@@ -30,8 +30,9 @@
     <nav class="navbar navbar-expand-lg navbar-dark text-white bg-logo">
       <div class="container-fluid text-white">
         <a class="navbar-brand" href="#">
-          <img src="{% static 'images/just_logo.PNG' %}" alt="UofG logo" height="75" class="me-3" >
-
+        	<a href="{% url 'chemapp:home' %}">
+          		<img src="{% static 'images/just_logo.PNG' %}" alt="UofG logo" height="75" class="me-3" >
+          	</a>
           School of Chemistry
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,6 +49,9 @@
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'chemapp:about' %}">About</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'chemapp:student' %}">Student</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'chemapp:logout' %}">Logout</a>
