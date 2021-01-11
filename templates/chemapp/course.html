@@ -22,7 +22,7 @@
            <p> No assessments have been yet set for this course </p>
         {% else %}
             {% for assessment in assessments %}
-            <h4> {{ assessment.name }} </h4>
+            <h4> {{ assessment.assessmentName }} </h4>
             <p> Weight: {{ assessment.weight }} </p>
             <p> Due on: {{ assessment.dueDate }} </p>
             {% endfor %}

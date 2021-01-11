@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 from django.core.validators import MaxValueValidator, MinValueValidator
+from datetime import datetime 
 
 #People that have access to the site
 #Lecturers etc
@@ -118,13 +119,17 @@ class CourseGrade(models.Model):
 
 
 class Assessment(models.Model):
-     weight = models.DecimalField(max_digits=3,decimal_places=2)
-     name = models.CharField(max_length=128)
-     dueDate = models.DateTimeField(null=True, blank=True, verbose_name="Due Date and Time")
+     weight = models.DecimalField(max_digits=3,
+                                  decimal_places=2,
+                                  help_text='eg.0.50')
+     assessmentName = models.CharField(max_length=200,
+                             help_text='eg.Lab 1')
+     dueDate = models.DateTimeField(verbose_name="Due Date and Time",
+                                    help_text='eg.11/10/2021 at 0800')
      course = models.ForeignKey(Course, on_delete=models.CASCADE)
 
      def __str__(self):
-        return (str(self.course) + " - " + str(self.name))
+        return (str(self.course) + " - " + str(self.assessmentName))
      
 class AssessmentGrade(models.Model):
      #basic restricted choice options
@@ -138,7 +143,7 @@ class AssessmentGrade(models.Model):
          ('CA', 'Credit Awarded'),
      )
 
-     submissionDate = models.DateTimeField(null=True, blank=True, verbose_name="Submission Date and Time")
+     submissionDate = models.DateTimeField(verbose_name="Submission Date and Time")
      lateStatus = models.CharField(max_length=1,choices = LATE_STATUS, blank = True,verbose_name="Late Status")
      noDetriment = models.BooleanField(default = False,verbose_name="No Detriment Policy")
      goodCause = models.BooleanField(default = False,verbose_name="Good Cause")
@@ -147,8 +152,7 @@ class AssessmentGrade(models.Model):
      # Is there any need for the penalty field?
      #penalty = models.CharField()
      finalGrade = models.DecimalField(max_digits=5,decimal_places=2,verbose_name="Final Grade")
-     #assessmentCompGrades = ############# no clue what this is
-
+    
      assessment = models.ForeignKey(Assessment, on_delete=models.CASCADE)
      student = models.ForeignKey(Student, on_delete=models.CASCADE)
 

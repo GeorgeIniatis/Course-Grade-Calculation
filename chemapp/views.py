@@ -52,19 +52,29 @@ def add_course(request):
     
     if request.method == 'POST':
         course_form = CourseForm(request.POST)
+        assessment_form = AssessmentForm(request.POST)
 
-        if course_form.is_valid():
+        if course_form.is_valid() and assessment_form.is_valid():
             course_form.save()
+            courseName = (request.POST['shortHand']).upper()
+            course = Course.objects.get(shortHand=courseName)
+            
+            assessment = assessment_form.save(commit=False)
+            assessment.course = course
+            assessment.save()
+            
             addCourseDict['courseAdded'] = True
         else:
-            print(course_form.errors)
+            print(course_form.errors, assessment_form.errors)
     else:
         course_form = CourseForm()
+        assessment_form = AssessmentForm()
         
     addCourseDict['course_form'] = course_form
-    return render(request,'chemapp/add_course.html',context = addCourseDict)
+    addCourseDict['assessment_form'] = assessment_form
     
-        
+    return render(request,'chemapp/add_course.html',context = addCourseDict)
+       
 def user_login(request):
     if request.method == 'POST':
         username = request.POST.get('username')

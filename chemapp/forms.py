@@ -22,3 +22,12 @@ class CourseForm(forms.ModelForm):
         fields = ('code','creditsWorth','name','shortHand','year','academicYearTaught',
                   'semester','description','comments','minimumPassGrade',
                   'minimumRequirementsForCredit')
+
+class AssessmentForm(forms.ModelForm):
+    dueDate = forms.DateTimeField(input_formats=['%Y-%m-%dT%H:%M',])
+    class Meta:
+        model = Assessment
+        fields = ('weight','assessmentName','dueDate','course')
+        exclude = ['course']
+
+        

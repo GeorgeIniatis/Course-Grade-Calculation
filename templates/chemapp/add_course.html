@@ -1,4 +1,5 @@
 {% extends 'chemapp/base.html' %}
+{% load staticfiles %}
 
 {% block title_block %}
     Add a Course
@@ -14,7 +15,7 @@
         {% csrf_token %}
         <p>
             {{ course_form.code.errors }}
-            <input id="code" name="code" maxlength="30" type="text" placeholder="Code" value="{{course_form.code.value|default_if_none:""}}" style="width:300px" required>
+            <input id="code" name="code" maxlength="30" type="text" placeholder="Code" value="{{course_form.code.value|default_if_none:""}}" style="width:300px;text-transform:uppercase" required>
             Required. {{ course_form.code.help_text }}
         </p>
         <p>
@@ -29,7 +30,7 @@
         </p>
         <p>
             {{ course_form.shortHand.errors }}
-            <input id="shortHand" name="shortHand" maxlength="30" type="text" placeholder="Shorthand" value="{{course_form.shortHand.value|default_if_none:""}}" style="width:300px" required>
+            <input id="shortHand" name="shortHand" maxlength="30" type="text" placeholder="Shorthand" value="{{course_form.shortHand.value|default_if_none:""}}" style="width:300px;text-transform:uppercase" required>
             Required. {{ course_form.shortHand.help_text }}
         </p>
         <p>
@@ -59,7 +60,7 @@
         </p>
         <p>
             {{ course_form.minimumPassGrade.errors }}
-            <input id="minimumPassGrade" name="minimumPassGrade" maxlength="2" type="text" placeholder="Minimum Pass Grade" value="{{course_form.minimumPassGrade.value|default_if_none:""}}" style="width:300px" required>
+            <input id="minimumPassGrade" name="minimumPassGrade" maxlength="2" type="text" placeholder="Minimum Pass Grade" value="{{course_form.minimumPassGrade.value|default_if_none:""}}" style="width:300px;text-transform:uppercase" required>
             {{ course_form.minimumPassGrade.help_text }}
         </p>
         <p>
@@ -67,8 +68,28 @@
             <input id="minimumRequirementsForCredit" name="minimumRequirementsForCredit" min="0" max="1" step="0.05" type="number" placeholder="Minimum Requirements For Credit" value="{{course_form.minimumRequirementsForCredit.value|default_if_none:""}}" style="width:300px" required>
             {{ course_form.minimumRequirementsForCredit.help_text }}
         </p>
+        
+        <div>
+        <h3> Assessments </h2>
+        <p>
+            {{ assessment_form.assessmentName.errors }}
+            <input id="assessmentName" name="assessmentName" maxlength="200" type="text" placeholder="Name" value="{{assessment_form.assessmentName.value|default_if_none:""}}" style="width:300px" required>
+            Required. {{ assessment_form.assessmentName.help_text }}
+        </p>
+        <p>
+            {{ assessment_form.weight.errors }}
+            <input id="weight" name="weight" min="0" max="1" step="0.05" type="number" placeholder="Weight" value="{{assessment_form.weight.value|default_if_none:""}}" style="width:300px" required>
+            Required. {{ assessment_form.weight.help_text }}
+        </p>
+        <p>
+            {{ assessment_form.dueDate.errors }}
+            <input id="dueDate" name="dueDate" type="datetime-local" placeholder="Due Date" value="{{assessment_form.dueDate.value|default_if_none:""}}" style="width:300px" required>
+            Required. {{ assessment_form.dueDate.help_text }}
+        </p>
+     
         <button type="submit">Submit</button>
         </form>
+        </div>
     {% endif %}
 </div>
 {% endblock %}
