@@ -9,6 +9,8 @@ from chemapp.forms import *
 from django.http import Http404
 import csv, io
 
+
+
 def home(request):
     context_dict = {'boldmessage':'This is the home page'}
     return render(request,'chemapp/home.html', context=context_dict)
@@ -106,35 +108,52 @@ def student(request):
     
 
 @login_required
-def add_student(request):
+def add_student(request): 
+	addStudentDict = {} 
+	addStudentDict['studentAdded'] = False 
+	if request.method == 'POST': 
+		student_form = StudentForm(request.POST) 
+		if student_form.is_valid(): 
+			student_form.save() 	
+			addStudentDict['studentAdded'] = True 
+		else: 
+			print(student_form.errors) 
+	else: 
+			student_form = StudentForm() 
+	addStudentDict['student_form'] = student_form 
+	return render(request,'chemapp/add_student.html',context=addStudentDict) 
+	
+@login_required
+def upload_student_csv(request):
+    #student_dict = {'boldmessage':'Upload csv file to add students'}
+    #return render(request,'chemapp/upload_student_csv.html', context=student_dict)
+    template='chemapp/upload_student_csv.html'
+    data=Student.objects.all()
     
-    template = "add_student.html"
-    data = Students.objects.all()
-
-    prompt = {
-         'order': 'Order of the CSV should be first name, last name, campus name, studentID, academic plan, currentYR, graduationDate,comments', 
-         'Students': data }    
-    # GET request returns the value of the data with the specified key.
+    prompt={'Order':'studentID,firstName,lastName,academicPlan,anonID,currentYear', 'students':data}
     if request.method == "GET":
-        return render(request, template, prompt)
-    csv_file = request.FILES['file']
-    # let's check if it is a csv file
+    	return render(request, template, prompt)
+    
+    csv_file =request.FILES['file']
     if not csv_file.name.endswith('.csv'):
-        messages.error(request, 'THIS IS NOT A CSV FILE')
-    data_set = csv_file.read().decode('UTF-8')
-    # setup a stream which is when we loop through each line we are able to handle a data in a stream
+    	messages.error(request, 'THIS IS NOT A CSV FILE')
+    	
+    data_set =csv_file.read().decode('UTF-8')
     io_string = io.StringIO(data_set)
     next(io_string)
-    for column in csv.reader(io_string, delimiter=',', quotechar="|"):
-    	_, created = Profile.objects.update_or_create(
-    		firstName=column[0], 
-    		lastName=column[1], 
-    		campusName=column[2], 
-    		studentID=column[3], 
-    		academicPlan=column[4], 
-    		currentYear=column[5], 
-    		graduationDate=column[6], 
-    		comments=column[7] 
-    		)
-    context = {}
-    return render(request, template, context)
+    for column in csv.reader(io_string,delimiter=',',quotechar="|"):
+    	_, created = Student.objects.update_or_create(
+    		firstName= column[0],
+    		lastName= column[1],
+    		studentID= column[2],
+    		anonID=column[2],
+    		academicPlan=column[3],
+    		currentYear=column[4],
+    		#graduationDate=column[5],
+    	)
+    context={}
+    return render(request,template,context)
+    
+    
+    
+

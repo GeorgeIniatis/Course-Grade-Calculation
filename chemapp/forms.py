@@ -33,6 +33,6 @@ class AssessmentForm(forms.ModelForm):
 class StudentForm(forms.ModelForm):
 	class Meta:
 		model = Student
-		fields = ('studentID','firstName','lastName','academicPlan','graduationDate','currentYear')
+		fields = ('studentID','firstName','lastName','academicPlan','anonID','graduationDate','currentYear')
         
 	

@@ -9,30 +9,13 @@
     <h2>Student Page!</h2>
     
     <div>
-    <a href="{% url 'chemapp:add_student' %}"><button>Add a student</button></a>
+    <a href="{% url 'chemapp:add_student' %}"><button>Add a student manually</button></a>
 	</div>
-	<body>
-    {% if messages %}
-        {% for message in messages %}
-            <div>
-<!--                | means OR operator-->
-                <strong>{{message|safe}}</strong>
-            </div>
-        {% endfor %}
-    {% else %}
-    {{order}}
-    <form action="" method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        <label for="file1"> Upload a file</label>
-        <input type="file" id="file1" name="file">
-        <small>Only accepts CSV files</small>
-        <button type="submit">Upload</button>
-    </form>
-    {% endif %}
-    {% for profile in profiles %}
-    {{profile.name}}
-    {% endfor %}
-</body>
+	
+	<div>
+    <a href="{% url 'chemapp:upload_student_csv' %}"><button>Upload a csv file</button></a>
+	</div>
+
 </div>
 
 {% endblock %}

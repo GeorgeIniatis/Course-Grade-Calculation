@@ -18,6 +18,12 @@
             <input id="studentID" name="studentID" type="number" placeholder="Student ID" value="{{student_form.studentID.value|default_if_none:""}}" style="width:300px" required>
             * {{ student_form.studentID.help_text }}
         </p>
+        <p>
+        	<label> Enter the Anon ID </label>   
+            {{ student_form.anonID.errors }}
+            <input id="anonID" name="anonID" type="number" placeholder="Anon ID" value="{{student_form.anonID.value|default_if_none:""}}" style="width:300px" required>
+            * {{ student_form.anonID.help_text }}
+        </p>
      	<p>
      		<label>Enter the First Name</label>
             {{ student_form.firstName.errors }}
@@ -53,5 +59,6 @@
         </div>
     {% endif %}
 </div>
+
 
 {% endblock %}
