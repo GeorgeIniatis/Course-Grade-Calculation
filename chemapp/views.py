@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from chemapp.models import *
 from chemapp.forms import *
 from django.http import Http404
+import csv, io
 
 def home(request):
     context_dict = {'boldmessage':'This is the home page'}
@@ -103,23 +104,37 @@ def student(request):
     student_dict = {'boldmessage':'This is the student page'}
     return render(request,'chemapp/student.html', context=student_dict)
     
+
 @login_required
 def add_student(request):
-	addStudentDict = {}
-	addStudentDict['studentAdded'] = False
-	
-	if request.method == 'POST':
-		student_form = StudentForm(request.POST)
-		
-		if student_form.is_valid():
-			student_form.save()
-			addStudentDict['studentAdded'] = True
-		else:
-			print(student_form.errors)
-	else:
-		student_form = StudentForm()
-		
-	addStudentDict['student_form'] = student_form
-	
-	return render(request,'chemapp/add_student.html',context=addStudentDict)
+    
+    template = "add_student.html"
+    data = Students.objects.all()
 
+    prompt = {
+         'order': 'Order of the CSV should be first name, last name, campus name, studentID, academic plan, currentYR, graduationDate,comments', 
+         'Students': data }    
+    # GET request returns the value of the data with the specified key.
+    if request.method == "GET":
+        return render(request, template, prompt)
+    csv_file = request.FILES['file']
+    # let's check if it is a csv file
+    if not csv_file.name.endswith('.csv'):
+        messages.error(request, 'THIS IS NOT A CSV FILE')
+    data_set = csv_file.read().decode('UTF-8')
+    # setup a stream which is when we loop through each line we are able to handle a data in a stream
+    io_string = io.StringIO(data_set)
+    next(io_string)
+    for column in csv.reader(io_string, delimiter=',', quotechar="|"):
+    	_, created = Profile.objects.update_or_create(
+    		firstName=column[0], 
+    		lastName=column[1], 
+    		campusName=column[2], 
+    		studentID=column[3], 
+    		academicPlan=column[4], 
+    		currentYear=column[5], 
+    		graduationDate=column[6], 
+    		comments=column[7] 
+    		)
+    context = {}
+    return render(request, template, context)
