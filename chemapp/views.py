@@ -27,10 +27,11 @@ def courses(request):
 
     for course in courses:
         name = course.name
+        code = course.code
         year = course.year
         slug = course.slug
 
-        courseList = [year,slug]
+        courseList = [year,slug,code]
 
         coursesDict[name] = courseList
 
@@ -46,14 +47,14 @@ def course(request,course_name_slug):
         courseDict['assessments'] = assessments
     except Course.DoesNotExist:
         raise Http404("Course does not exist")
-    
+
     return render(request,'chemapp/course.html', context=courseDict)
 
 @login_required
 def add_course(request):
     addCourseDict = {}
     addCourseDict['courseAdded'] = False
-    
+
     if request.method == 'POST':
         course_form = CourseForm(request.POST)
         assessment_form = AssessmentForm(request.POST)
@@ -62,23 +63,23 @@ def add_course(request):
             course_form.save()
             courseName = (request.POST['shortHand']).upper()
             course = Course.objects.get(shortHand=courseName)
-            
+
             assessment = assessment_form.save(commit=False)
             assessment.course = course
             assessment.save()
-            
+
             addCourseDict['courseAdded'] = True
         else:
             print(course_form.errors, assessment_form.errors)
     else:
         course_form = CourseForm()
         assessment_form = AssessmentForm()
-        
+
     addCourseDict['course_form'] = course_form
     addCourseDict['assessment_form'] = assessment_form
-    
+
     return render(request,'chemapp/add_course.html',context = addCourseDict)
-       
+
 def user_login(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -104,45 +105,45 @@ def user_logout(request):
 
 @login_required
 def student(request):
-    context ={} 
-  
+    context ={}
+
     Students = Student.objects.all()
-          
+
     return render(request, 'chemapp/student.html',locals())
-   
-    
+
+
 
 @login_required
-def add_student(request): 
-	addStudentDict = {} 
-	addStudentDict['studentAdded'] = False 
-	if request.method == 'POST': 
-		student_form = StudentForm(request.POST) 
-		if student_form.is_valid(): 
-			student_form.save() 	
-			addStudentDict['studentAdded'] = True 
-		else: 
-			print(student_form.errors) 
-	else: 
-			student_form = StudentForm() 
-	addStudentDict['student_form'] = student_form 
-	return render(request,'chemapp/add_student.html',context=addStudentDict) 
-	
+def add_student(request):
+	addStudentDict = {}
+	addStudentDict['studentAdded'] = False
+	if request.method == 'POST':
+		student_form = StudentForm(request.POST)
+		if student_form.is_valid():
+			student_form.save()
+			addStudentDict['studentAdded'] = True
+		else:
+			print(student_form.errors)
+	else:
+			student_form = StudentForm()
+	addStudentDict['student_form'] = student_form
+	return render(request,'chemapp/add_student.html',context=addStudentDict)
+
 @login_required
 def upload_student_csv(request):
     #student_dict = {'boldmessage':'Upload csv file to add students'}
     #return render(request,'chemapp/upload_student_csv.html', context=student_dict)
     template='chemapp/upload_student_csv.html'
     data=Student.objects.all()
-    
+
     prompt={'Order':'studentID,firstName,lastName,academicPlan,anonID,currentYear', 'students':data}
     if request.method == "GET":
     	return render(request, template, prompt)
-    
+
     csv_file =request.FILES['file']
     if not csv_file.name.endswith('.csv'):
     	messages.error(request, 'THIS IS NOT A CSV FILE')
-    	
+
     data_set =csv_file.read().decode('UTF-8')
     io_string = io.StringIO(data_set)
     next(io_string)
@@ -158,4 +159,3 @@ def upload_student_csv(request):
     	)
     context={}
     return render(request,template,context)
-
