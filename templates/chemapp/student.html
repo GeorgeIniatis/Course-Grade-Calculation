@@ -5,9 +5,15 @@
 {% endblock %}
 
 {% block body_block %}
+
+{% load render_table from django_tables2 %}
+{% load static %}
+<html>
 <div>
     <h2>Student Page!</h2>
-    
+  	<body>
+        {% render_table Students %}
+    </body>
     <div>
     <a href="{% url 'chemapp:add_student' %}"><button>Add a student manually</button></a>
 	</div>
@@ -17,5 +23,5 @@
 	</div>
 
 </div>
-
+</html>
 {% endblock %}

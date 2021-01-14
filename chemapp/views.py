@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from chemapp.models import *
 from chemapp.forms import *
 from django.http import Http404
+from django.shortcuts import get_object_or_404
 import csv, io
 
 
@@ -103,8 +104,12 @@ def user_logout(request):
 
 @login_required
 def student(request):
-    student_dict = {'boldmessage':'This is the student page'}
-    return render(request,'chemapp/student.html', context=student_dict)
+    context ={} 
+  
+    Students = Student.objects.all()
+          
+    return render(request, 'chemapp/student.html',locals())
+   
     
 
 @login_required
@@ -153,7 +158,4 @@ def upload_student_csv(request):
     	)
     context={}
     return render(request,template,context)
-    
-    
-    
 

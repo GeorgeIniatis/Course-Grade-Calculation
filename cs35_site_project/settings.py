@@ -40,7 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'chemapp', 
+    'chemapp',
+    'tempus_dominus',
+    'django_tables2',
 ]
 
 MIDDLEWARE = [

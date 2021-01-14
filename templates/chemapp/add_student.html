@@ -5,60 +5,27 @@
 {% endblock %}
 
 {% block body_block %}
-<div>
+{{ student_form.media }}
+<html>
+	<head>
+    {# Include FontAwesome; required for icon display #}
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.css">
+	</head>
+	<div>
         {% if courseAdded %}
         <b> You have successfully added a student! </b>
-    {% else %}
-        <h2> Add a Student </h2>
-        <form id="add_student_form" method="post" action="{% url 'chemapp:add_student' %}" enctype="multipart/form-data">
-        {% csrf_token %}
-        <p>
-        	<label> Enter the Student ID </label>   
-            {{ student_form.studentID.errors }}
-            <input id="studentID" name="studentID" type="number" placeholder="Student ID" value="{{student_form.studentID.value|default_if_none:""}}" style="width:300px" required>
-            * {{ student_form.studentID.help_text }}
-        </p>
-        <p>
-        	<label> Enter the Anon ID </label>   
-            {{ student_form.anonID.errors }}
-            <input id="anonID" name="anonID" type="number" placeholder="Anon ID" value="{{student_form.anonID.value|default_if_none:""}}" style="width:300px" required>
-            * {{ student_form.anonID.help_text }}
-        </p>
-     	<p>
-     		<label>Enter the First Name</label>
-            {{ student_form.firstName.errors }}
-            <input id="firstName" name="firstName" type="text" placeholder="First Name" value="{{student_form.firstName.value|default_if_none:""}}" style="width:300px" required>
-            * {{ student_form.firstName.help_text }}
-        </p>
-        <p>
-        	<label>Enter the Last Name</label>
-            {{ student_form.lastName.errors }}
-            <input id="lastName" name="lastName" type="text" placeholder="Last Name" value="{{student_form.lastName.value|default_if_none:""}}" style="width:300px" required>
-            * {{ student_form.lastName.help_text }}
-        </p>
-        <p>
-        	<label>Enter the Academic Plan</label>
-            {{ student_form.academicPlan.errors }}
-            <input id="academicPlan" name="academicPlan" type="text" placeholder="Academic Plan " value="{{student_form.academicPlan.value|default_if_none:""}}" style="width:300px" required>
-            * {{ student_form.academicPlan.help_text }}
-        </p>
-        <p>
-        	<label>Enter the Current Year</label>
-            {{ student_form.currentYear.errors }}
-            <input id="currentYear" name="currentYear" min=1 max=5 type="number" placeholder="Current Year" value="{{student_form.currentYear.value|default_if_none:""}}" style="width:300px" required>
-            * {{ student_form.studentID.help_text }}
-        </p>
-        <p>
-        	<label>Enter the Graduation Date</label>
-            {{ student_form.graduationDate.errors }}
-            <input id="graduationDate" name="graduationDate" type="date" placeholder="Graduation Date " value="{{student_form.graduationDate.value|default_if_none:""}}" style="width:300px" required>
-            * {{ student_form.graduationDate.help_text }}
-        </p>
-        <button type="submit">Submit</button>
-        </form>
+    		{% else %}
+        	<h2> Add a Student </h2>
+       		<form method="POST" enctype="multipart/form-data"> 
+    		{% csrf_token %} 
+  
+    		{{ student_form.as_p }} 
+      
+   		 	<input type="submit" value="Submit"> 
+			</form>
         </div>
-    {% endif %}
-</div>
-
+    	{% endif %}
+	</div>
+</html>
 
 {% endblock %}

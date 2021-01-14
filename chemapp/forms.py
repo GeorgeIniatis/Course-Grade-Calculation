@@ -1,7 +1,7 @@
 from django import forms
 from chemapp.models import *
 from django.contrib.auth.models import User
-
+from tempus_dominus.widgets import DatePicker
 class UserForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput())
 
@@ -33,6 +33,17 @@ class AssessmentForm(forms.ModelForm):
 class StudentForm(forms.ModelForm):
 	class Meta:
 		model = Student
-		fields = ('studentID','firstName','lastName','academicPlan','anonID','graduationDate','currentYear')
-        
+		attrs = {'firstName': 'paleblue'}
+		fields = ('studentID','firstName','lastName','myCampusName','academicPlan','anonID','graduationDate','currentYear','comments')
+		widgets = {
+            'graduationDate': DatePicker(
+                options={
+                    'format': 'DD/MM/YYYY'
+                },
+                attrs={
+                    'prepend': 'fa fa-calendar',
+                },
+            )
+        }
+
 	
