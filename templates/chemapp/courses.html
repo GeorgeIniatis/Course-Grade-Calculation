@@ -13,29 +13,6 @@
   {% if courses %}
 
 
-
-  <!-- <p>
-    <a class="btn btn-primary" data-bs-toggle="collapse" href="#undergrad-year-1" role="button" aria-expanded="false" aria-controls="undergrad-year-1">
-      Year 1 Courses
-    </a>
-
-    <a class="btn btn-primary" data-bs-toggle="collapse" href="#undergrad-year-2" role="button" aria-expanded="false" aria-controls="undergrad-year-2">
-      Year 2 Courses
-    </a>
-
-    <a class="btn btn-primary" data-bs-toggle="collapse" href="#undergrad-year-3" role="button" aria-expanded="false" aria-controls="undergrad-year-3">
-      Year 3 Courses
-    </a>
-
-    <a class="btn btn-primary" data-bs-toggle="collapse" href="#undergrad-year-4" role="button" aria-expanded="false" aria-controls="undergrad-year-4">
-      Year 4 Courses
-    </a>
-
-    <a class="btn btn-primary" data-bs-toggle="collapse" href="#undergrad-year-5" role="button" aria-expanded="false" aria-controls="undergrad-year-5">
-      Year 5 Courses
-    </a>
-  </p> -->
-
   <div class="d-grid gap-2  mt-3 mx-auto">
     <a class="btn btn-block btn-primary " data-bs-toggle="collapse" href="#undergrad-year-1" role="button" aria-expanded="false" aria-controls="undergrad-year-1">
       Year 1 Courses
@@ -149,73 +126,21 @@
     </div>
   </div>
 
-  <div>
-      <a href="{% url 'chemapp:add_course' %}"><button>Add a course</button></a>
-  </div>
+
+  <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+  <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_course' %}">Add a course</a>
+</div>
 
 
 
+  {% else %}
+    <p>There are no courses!</p>
+    <div>
+        <a href="{% url 'chemapp:add_course' %}"><button>Add a course</button></a>
+    </div>
   {% endif %}
 </div>
 
-<!-- <div>
-    {% if courses %}
-        <div>
-            <h3> Undergraduate Courses - Year 1 </h3>
-            <ul>
-            {% for key,value in courses.items %}
-                {% if value.0 == 1 %}
-                    <li> <a href= {{ value.1 }} >{{ key }}</a> </li>
-                {% endif %}
-            {% endfor %}
-            </ul>
-        </div>
-        <div>
-            <h3> Undergraduate Courses - Year 2 </h3>
-            <ul>
-            {% for key,value in courses.items %}
-                {% if value.0 == 2 %}
-                    <li> <a href= {{ value.1 }} >{{ key }}</a> </li>
-                {% endif %}
-            {% endfor %}
-            </ul>
-        </div>
-        <div>
-            <h3> Undergraduate Courses - Year 3 </h3>
-            <ul>
-            {% for key,value in courses.items %}
-                {% if value.0 == 3 %}
-                    <li> <a href= {{ value.1 }} >{{ key }}</a> </li>
-                {% endif %}
-            {% endfor %}
-            </ul>
-        </div>
-        <div>
-            <h3> Undergraduate Courses - Year 4 </h3>
-            <ul>
-            {% for key,value in courses.items %}
-                {% if value.0 == 4 %}
-                    <li> <a href= {{ value.1 }} >{{ key }}</a> </li>
-                {% endif %}
-            {% endfor %}
-            </ul>
-        </div>
-        <div>
-            <h3> Postgraduate Courses - Year 5 </h3>
-            <ul>
-            {% for key,value in courses.items %}
-                {% if value.0 == 5 %}
-                    <li> <a href= {{ value.1 }} >{{ key }}</a> </li>
-                {% endif %}
-            {% endfor %}
-            </ul>
-        </div>
-    {% endif %}
-</div> -->
-
-<!-- <div>
-    <a href="{% url 'chemapp:add_course' %}"><button>Add a course</button></a>
-</div> -->
 
 
 
