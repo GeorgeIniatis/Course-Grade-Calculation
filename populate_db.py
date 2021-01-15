@@ -32,7 +32,7 @@ def create_user(username,password,permission):
 
 
 
-def create_course(code, credits, name, shorthand, year, year_taught, semester,description, min_pass_grade, min_req_credit):
+def create_course(code, credits, name, shorthand, year, year_taught, semester,description, min_pass_grade, min_req_credit, courseColor):
     print("Creating Course")
     print("code :"+ code)
     print("credits :" , credits)
@@ -44,6 +44,7 @@ def create_course(code, credits, name, shorthand, year, year_taught, semester,de
     print("description :" + description)
     print("min_pass_grade :" + min_pass_grade)
     print("min_req_credit :" + min_req_credit)
+    print("color :" + courseColor)
 
     Course.objects.create(
         code = code,
@@ -56,6 +57,7 @@ def create_course(code, credits, name, shorthand, year, year_taught, semester,de
         description = description,
         minimumPassGrade = min_pass_grade,
         minimumRequirementsForCredit = min_req_credit,
+        courseColor = courseColor
     )
 
     print_bar()
@@ -72,8 +74,9 @@ if __name__ == "__main__":
     create_user("staff1","staff1","")
     create_user("staff2","staff2","")
 
-    for i in range(5):
-        create_course(f'CHEM-{i+4000}',  random.randint(5,21), f'chemistry-{i+1}', f'chem-{i+1}', random.randint(1,6), "2019-2020", random.randint(1,3), "temp desc", "B", "0.0")
+    for i in range(20):
+        color = "#%06x" % random.randint(0, 0xFFFFFF)
+        create_course(f'CHEM-{i+4000}',  random.randint(5,21), f'chemistry-{i+1}', f'chem-{i+1}', random.randint(1,6), "2019-2020", random.randint(1,3), "temp desc", "B", "0.0", color)
 
 
     #create courses here

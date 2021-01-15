@@ -2,7 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 from django.core.validators import MaxValueValidator, MinValueValidator
-from datetime import datetime 
+from datetime import datetime
+from colorfield.fields import ColorField
 
 #People that have access to the site
 #Lecturers etc
@@ -12,7 +13,7 @@ class UserProfile(models.Model):
 
     class Meta:
         verbose_name_plural = 'Users'
-        
+
     def __str__(self):
         return self.user.username
 
@@ -21,45 +22,46 @@ class Course(models.Model):
     code = models.CharField(max_length=30,
                             unique=True,
                             help_text='eg. CHEM1005')
-    
+
     #any paramets here max min?
-    #Question to ask customer 
+    #Question to ask customer
     creditsWorth = models.IntegerField(validators=[MaxValueValidator(20), MinValueValidator(5)],
                                        verbose_name='Credits Worth',
                                        help_text='5-20 Credits')
-    
+
 
     name = models.CharField(max_length=200,
                             help_text='eg.Biological Chemistry 3')
-    
+
     shortHand = models.CharField(max_length=30,
                                  help_text='eg.BIOCHEM3')
-    
+
+
     #could be Integer? same problem as currentYear in Student model
     #Changed them both to integers
     year = models.IntegerField(validators=[MaxValueValidator(5), MinValueValidator(1)],
                                help_text='1-5')
-    
+
     #I think they want as well a field that would show the current year that the course is being taught
     #2019-2020 something like that
     academicYearTaught = models.CharField(max_length=9, verbose_name="Academic Year Taught",
                                           help_text='eg.2019-2020')
-    
+
     semester = models.IntegerField(validators=[MaxValueValidator(2), MinValueValidator(1)],
                                    help_text='1-2')
 
     #description could possible be an uploaded txt file so we dont have to manage length.
     description = models.TextField(max_length = 2000)
-    
+
     comments = models.TextField(max_length=2000,
                                 blank=True,
                                 help_text='Anything worth mentioning')
-    
+
     #may have to change decimal places
     minimumPassGrade = models.CharField(max_length=2,
                                         verbose_name="Minimum Pass Grade",
                                         help_text='eg.B3')
-    
+
     #Percentage of assessments that need to be submitted in order to get credits
     #eg 0.75
     minimumRequirementsForCredit = models.DecimalField(max_digits=3,
@@ -69,16 +71,24 @@ class Course(models.Model):
 
     slug = models.SlugField(unique=True)
 
+    COLOR_CHOICES = [
+        ("#FFFFFF", "white"),
+        ("#000000", "black")
+    ]
+
+    courseColor = ColorField(choices=COLOR_CHOICES)
+
+
     def save(self, *args, **kwargs):
         self.code = self.code.upper()
         self.shortHand = self.shortHand.upper()
         self.minimumPassGrade = self.minimumPassGrade.upper()
         self.slug = slugify(self.shortHand)
         super(Course, self).save(*args, **kwargs)
-    
+
     def __str__(self):
         return self.shortHand
-    
+
 class Student(models.Model):
     firstName = models.CharField(max_length=128,verbose_name="First Name")
     lastName = models.CharField(max_length=128,verbose_name="Last Name")
@@ -86,15 +96,15 @@ class Student(models.Model):
     #This will be the name provided in the excel file as far as i know
     #Something like John,Smith with the comma included
     myCampusName = models.CharField(max_length=128, verbose_name="myCampus Name")
-    
+
     studentID = models.PositiveIntegerField(validators=[MaxValueValidator(9999999)],unique=True, verbose_name="Student ID")
     anonID = models.PositiveIntegerField(validators=[MaxValueValidator(9999999)],unique=True, verbose_name="Anonymous ID")
-    
+
     academicPlan = models.CharField(max_length=128,verbose_name="Academic Plan")
 
     #should we change this to restricted choice? integer field?
     currentYear = models.IntegerField(validators=[MaxValueValidator(5), MinValueValidator(1)], verbose_name="Current Year")
-    
+
     graduationDate = models.DateField(null=True, blank=True,verbose_name="Graduation Date")
     comments = models.TextField(max_length=500, blank=True)
     #I don't really think gap year is necessary as they could start uni at any age.
@@ -130,7 +140,7 @@ class Assessment(models.Model):
 
      def __str__(self):
         return (str(self.course) + " - " + str(self.assessmentName))
-     
+
 class AssessmentGrade(models.Model):
      #basic restricted choice options
      LATE_STATUS = (
@@ -152,7 +162,7 @@ class AssessmentGrade(models.Model):
      # Is there any need for the penalty field?
      #penalty = models.CharField()
      finalGrade = models.DecimalField(max_digits=5,decimal_places=2,verbose_name="Final Grade")
-    
+
      assessment = models.ForeignKey(Assessment, on_delete=models.CASCADE)
      student = models.ForeignKey(Student, on_delete=models.CASCADE)
 
@@ -161,7 +171,7 @@ class AssessmentGrade(models.Model):
 
      def __str__(self):
         return (str(self.assessment) + " - " + str(self.student))
-     
+
 class AssessmentComponent(models.Model):
      required = models.BooleanField(default = False)
      weight = models.DecimalField(max_digits=3,decimal_places=2)
@@ -172,7 +182,7 @@ class AssessmentComponent(models.Model):
 
      def __str__(self):
         return (str(self.assessment) + " - " + str(self.description))
-     
+
 class AssessmentComponentGrade(models.Model):
     grade = models.DecimalField(max_digits=5,decimal_places=2)
 
@@ -181,9 +191,6 @@ class AssessmentComponentGrade(models.Model):
 
     class Meta:
         unique_together = ('assessmentComponent', 'student')
-    
+
     def __str__(self):
         return (str(self.assessmentComponent) + " - " + str(self.student))
-     
-
-     

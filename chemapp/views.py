@@ -28,10 +28,11 @@ def courses(request):
     for course in courses:
         name = course.name
         code = course.code
+        color = course.courseColor
         year = course.year
         slug = course.slug
 
-        courseList = [year,slug,code]
+        courseList = [year,slug,code,color]
 
         coursesDict[name] = courseList
 
