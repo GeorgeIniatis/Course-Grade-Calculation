@@ -1,31 +1,32 @@
 {% extends 'chemapp/base.html' %}
 
+
+{% block links %}
+  <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.css">
+{% endblock %}
+
 {% block title_block %}
-    Add a student 
+    Add student
 {% endblock %}
 
 {% block body_block %}
 {{ student_form.media }}
-<html>
-	<head>
-    {# Include FontAwesome; required for icon display #}
-    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.css">
-	</head>
+<div class="container mt-5 ">
 	<div>
         {% if courseAdded %}
         <b> You have successfully added a student! </b>
     		{% else %}
         	<h2> Add a Student </h2>
-       		<form method="POST" enctype="multipart/form-data"> 
-    		{% csrf_token %} 
-  
-    		{{ student_form.as_p }} 
-      
-   		 	<input type="submit" value="Submit"> 
+       		<form method="POST" enctype="multipart/form-data">
+    		{% csrf_token %}
+
+    		{{ student_form.as_p }}
+
+   		 	<input type="submit" value="Submit">
 			</form>
-        </div>
+    </div>
+  </div>
     	{% endif %}
-	</div>
-</html>
+
 
 {% endblock %}

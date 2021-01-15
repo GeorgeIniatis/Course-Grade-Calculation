@@ -1,12 +1,14 @@
 {% extends 'chemapp/base.html' %}
 
 {% block title_block %}
-    Add a student 
+    Student Upload
 {% endblock %}
 
 {% block body_block %}
+
+<div class="container mt-5 ">
 <h2> Upload csv files to add students</h2>
-<body>
+<div>
     {% if messages %}
         {% for message in messages %}
             <div>
@@ -27,6 +29,7 @@
     {% for student in students %}
     {{student.name}}
     {% endfor %}
-</body>
+</div>
+</div>
 
 {% endblock %}

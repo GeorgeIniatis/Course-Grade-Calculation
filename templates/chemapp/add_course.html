@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block body_block %}
+<div class="container mt-5 mb-5 ">
 <div>
     {% if courseAdded %}
         <b> You have successfully added a new course! </b>
@@ -68,7 +69,7 @@
             <input id="minimumRequirementsForCredit" name="minimumRequirementsForCredit" min="0" max="1" step="0.05" type="number" placeholder="Minimum Requirements For Credit" value="{{course_form.minimumRequirementsForCredit.value|default_if_none:""}}" style="width:300px" required>
             {{ course_form.minimumRequirementsForCredit.help_text }}
         </p>
-        
+
         <div>
         <h3> Assessments </h2>
         <p>
@@ -86,7 +87,7 @@
             <input id="dueDate" name="dueDate" type="datetime-local" placeholder="Due Date" value="{{assessment_form.dueDate.value|default_if_none:""}}" style="width:300px" required>
             Required. {{ assessment_form.dueDate.help_text }}
         </p>
-     
+
         <button type="submit">Submit</button>
         </form>
         </div>

@@ -1,14 +1,14 @@
 {% extends 'chemapp/base.html' %}
 
 {% block title_block %}
-    Student 
+    Student
 {% endblock %}
 
 {% block body_block %}
 
 {% load render_table from django_tables2 %}
 {% load static %}
-<html>
+<div class="container mt-5 ">
 <div>
     <h2>Student Page!</h2>
   	<body>
@@ -17,11 +17,11 @@
     <div>
     <a href="{% url 'chemapp:add_student' %}"><button>Add a student manually</button></a>
 	</div>
-	
+
 	<div>
     <a href="{% url 'chemapp:upload_student_csv' %}"><button>Upload a csv file</button></a>
 	</div>
 
 </div>
-</html>
+</div>
 {% endblock %}

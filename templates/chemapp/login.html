@@ -1,10 +1,12 @@
 {% extends 'chemapp/base.html' %}
 
 {% block title_block %}
-    Login 
+    Login
 {% endblock %}
 
 {% block body_block %}
+
+<div class="container mt-5 ">
 <div>
     <h2>Login</h2>
     <form id="login_form" method="post" action="{% url 'chemapp:login' %}">
@@ -14,7 +16,7 @@
         <input type="password" name="password" id="id_password" placeholder="Password" required>
         <button type="submit" value="Submit">Sign in</button>
     </form>
-   
+
     {% if messages %}
         {% for message in messages %}
             {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
@@ -25,6 +27,7 @@
             {% endif %}
         {% endfor %}
     {% endif %}
+</div>
 </div>
 
 {% endblock %}

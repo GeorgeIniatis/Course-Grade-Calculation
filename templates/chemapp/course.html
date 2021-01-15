@@ -5,6 +5,7 @@
 {% endblock %}
 
 {% block body_block %}
+<div class="container mt-5 ">
 <div>
     <h2> {{ course.name }} </h2>
     <p> Code: {{ course.code }} </p>
@@ -16,7 +17,7 @@
     <p> Comments: {{ course.comments }} </p>
     <p> Minimum Pass Grade: {{ course.minimumPassGrade }} </p>
     <p> Minimum Requirements For Credit: {{ course.minimumRequirementsForCredit }} </p>
-    
+
     <h2> Assessments </h2>
         {% if not assessments %}
            <p> No assessments have been yet set for this course </p>
@@ -27,5 +28,6 @@
             <p> Due on: {{ assessment.dueDate }} </p>
             {% endfor %}
         {% endif %}
+</div>
 </div>
 {% endblock %}

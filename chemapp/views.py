@@ -18,7 +18,7 @@ def home(request):
 
 def about(request):
     context_dict = {'boldmessage':'This is the about page'}
-    return render(request,'chemapp/home.html', context=context_dict)
+    return render(request,'chemapp/about.html', context=context_dict)
 
 @login_required
 def courses(request):
