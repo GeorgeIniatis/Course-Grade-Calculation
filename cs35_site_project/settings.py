@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'chemapp',
     'tempus_dominus',
     'django_tables2',
+    'colorfield',
 ]
 
 MIDDLEWARE = [
