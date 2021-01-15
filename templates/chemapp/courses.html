@@ -36,7 +36,7 @@
     </a>
   </p> -->
 
-  <div class="d-grid gap-2 col-6 mt-3 mx-auto">
+  <div class="d-grid gap-2  mt-3 mx-auto">
     <a class="btn btn-block btn-primary " data-bs-toggle="collapse" href="#undergrad-year-1" role="button" aria-expanded="false" aria-controls="undergrad-year-1">
       Year 1 Courses
     </a>
@@ -48,8 +48,8 @@
       {% for key,value in courses.items %}
         {% if value.0 == 1 %}
 
-            <div class="col-3 d-grid gap-2"  >
-              <a class="btn btn-success text-start  pb-5" href="{{ value.1 }}" role="button">
+            <div class="col-3 d-grid gap-2 mt-3"  >
+              <a class="btn text-start  pb-5" style="background-color:{{value.3}}" href="{{ value.1 }}" role="button">
                 <h2>{{ value.2 }}</h2>
                 {{ key }}
               </a>
@@ -60,80 +60,92 @@
   </div>
 
 
-  <div class="d-grid gap-2 mt-3 col-6 mx-auto">
+  <div class="d-grid gap-2 mt-3  mx-auto">
     <a class="btn btn-primary " data-bs-toggle="collapse" href="#undergrad-year-2" role="button" aria-expanded="false" aria-controls="undergrad-year-2">
       Year 2 Courses
     </a>
   </div>
   <!-- Sectionfor year 2 courses -->
   <div class="collapse " id="undergrad-year-2">
-    <div class="card card-body">
-      <h3> Undergraduate Courses - Year 2 </h3>
-      <ul>
+    <div class="row align-items-start pt-3">
       {% for key,value in courses.items %}
-          {% if value.0 == 2 %}
-              <li> <a href= {{ value.1 }} >{{ key }}</a> </li>
-          {% endif %}
+        {% if value.0 == 2 %}
+
+            <div class="col-3 d-grid gap-2 mt-3"  >
+              <a class="btn text-start  pb-5" style="background-color:{{value.3}}" href="{{ value.1 }}" role="button">
+                <h2>{{ value.2 }}</h2>
+                {{ key }}
+              </a>
+            </div>
+        {% endif %}
       {% endfor %}
-      </ul>
     </div>
   </div>
 
 
-  <div class="d-grid gap-2 mt-3 col-6 mx-auto">
+  <div class="d-grid gap-2 mt-3  mx-auto">
     <a class="btn btn-primary " data-bs-toggle="collapse" href="#undergrad-year-3" role="button" aria-expanded="false" aria-controls="undergrad-year-3">
       Year 3 Courses
     </a>
   </div>
   <!-- Sectionfor year 3 courses -->
   <div class="collapse " id="undergrad-year-3">
-    <div class="card card-body">
-      <h3> Undergraduate Courses - Year 3 </h3>
-      <ul>
+    <div class="row align-items-start pt-3">
       {% for key,value in courses.items %}
-          {% if value.0 == 3 %}
-              <li> <a href= {{ value.1 }} >{{ key }}</a> </li>
-          {% endif %}
+        {% if value.0 == 3 %}
+
+            <div class="col-3 d-grid gap-2 mt-3"  >
+              <a class="btn text-start  pb-5" style="background-color:{{value.3}}" href="{{ value.1 }}" role="button">
+                <h2>{{ value.2 }}</h2>
+                {{ key }}
+              </a>
+            </div>
+        {% endif %}
       {% endfor %}
-      </ul>
     </div>
   </div>
 
-  <div class="d-grid gap-2 mt-3 col-6 mx-auto">
+  <div class="d-grid gap-2 mt-3  mx-auto">
     <a class="btn btn-primary " data-bs-toggle="collapse" href="#undergrad-year-4" role="button" aria-expanded="false" aria-controls="undergrad-year-4">
       Year 4 Courses
     </a>
   </div>
   <!-- Sectionfor year 4 courses -->
   <div class="collapse " id="undergrad-year-4">
-    <div class="card card-body">
-      <h3> Undergraduate Courses - Year 4 </h3>
-      <ul>
+    <div class="row align-items-start pt-3">
       {% for key,value in courses.items %}
-          {% if value.0 == 4 %}
-              <li> <a href= {{ value.1 }} >{{ key }}</a> </li>
-          {% endif %}
+        {% if value.0 == 4 %}
+
+            <div class="col-3 d-grid gap-2 mt-3"  >
+              <a class="btn text-start  pb-5" style="background-color:{{value.3}}" href="{{ value.1 }}" role="button">
+                <h2>{{ value.2 }}</h2>
+                {{ key }}
+              </a>
+            </div>
+        {% endif %}
       {% endfor %}
-      </ul>
     </div>
   </div>
 
-  <div class="d-grid gap-2 mt-3 col-6 mx-auto">
+  <div class="d-grid gap-2 mt-3  mx-auto">
     <a class="btn btn-primary " data-bs-toggle="collapse" href="#undergrad-year-5" role="button" aria-expanded="false" aria-controls="undergrad-year-5">
       Year 5 Courses
     </a>
   </div>
   <!-- Sectionfor year 5 courses -->
   <div class="collapse " id="undergrad-year-5">
-    <div class="card card-body">
-      <h3> Postgraduate Courses - Year 5 </h3>
-      <ul>
+    <div class="row align-items-start pt-3">
       {% for key,value in courses.items %}
-          {% if value.0 == 5 %}
-              <li> <a href= {{ value.1 }} >{{ key }}</a> </li>
-          {% endif %}
+        {% if value.0 == 5 %}
+
+            <div class="col-3 d-grid gap-2 mt-3"  >
+              <a class="btn text-start  pb-5" style="background-color:{{value.3}}" href="{{ value.1 }}" role="button">
+                <h2>{{ value.2 }}</h2>
+                {{ key }}
+              </a>
+            </div>
+        {% endif %}
       {% endfor %}
-      </ul>
     </div>
   </div>
 
