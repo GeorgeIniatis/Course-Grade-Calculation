@@ -1,6 +1,11 @@
 {% extends 'chemapp/base.html' %}
 {% load staticfiles %}
 
+{% block js_block %}
+    <script src="{% static 'js/jquery.formset.js' %}"></script>
+    <script src="{% static 'js/chemapp-addRemoveAssessmentForm.js' %}"></script>
+{% endblock %}
+
 {% block title_block %}
     Add a Course
 {% endblock %}
@@ -12,6 +17,19 @@
         <b> You have successfully added a new course! </b>
     {% else %}
         <h2> Add a Course </h2>
+        
+        {% if messages %}
+        {% for message in messages %}
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                <b>{{ message }}</b>
+            {% endif %}
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                <b>{{ message }}</b>
+                <br>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    
         <form id="add_course_form" method="post" action="{% url 'chemapp:add_course' %}" enctype="multipart/form-data">
         {% csrf_token %}
         <p>
@@ -71,23 +89,14 @@
         </p>
 
         <div>
-        <h3> Assessments </h2>
-        <p>
-            {{ assessment_form.assessmentName.errors }}
-            <input id="assessmentName" name="assessmentName" maxlength="200" type="text" placeholder="Name" value="{{assessment_form.assessmentName.value|default_if_none:""}}" style="width:300px" required>
-            Required. {{ assessment_form.assessmentName.help_text }}
-        </p>
-        <p>
-            {{ assessment_form.weight.errors }}
-            <input id="weight" name="weight" min="0" max="1" step="0.05" type="number" placeholder="Weight" value="{{assessment_form.weight.value|default_if_none:""}}" style="width:300px" required>
-            Required. {{ assessment_form.weight.help_text }}
-        </p>
-        <p>
-            {{ assessment_form.dueDate.errors }}
-            <input id="dueDate" name="dueDate" type="datetime-local" placeholder="Due Date" value="{{assessment_form.dueDate.value|default_if_none:""}}" style="width:300px" required>
-            Required. {{ assessment_form.dueDate.help_text }}
-        </p>
-
+        <h3> Assessments </h3>
+        {{ assessment_formset.management_form }}
+        {% for assessment_form in assessment_formset %}
+            <div class="assessment-formset">
+                {{ assessment_form.as_p }}
+            </div>
+        {% endfor %}
+        <br>
         <button type="submit">Submit</button>
         </form>
         </div>

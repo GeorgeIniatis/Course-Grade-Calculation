@@ -2,6 +2,7 @@ from django import forms
 from chemapp.models import *
 from django.contrib.auth.models import User
 from tempus_dominus.widgets import DatePicker
+
 class UserForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput())
 
@@ -19,17 +20,47 @@ class CourseForm(forms.ModelForm):
 
     class Meta:
         model = Course
-        fields = ('code','creditsWorth','name','shortHand','year','academicYearTaught',
+        fields = {'code','creditsWorth','name','shortHand','year','academicYearTaught',
                   'semester','description','comments','minimumPassGrade',
-                  'minimumRequirementsForCredit')
+                  'minimumRequirementsForCredit'}
 
 class AssessmentForm(forms.ModelForm):
-    dueDate = forms.DateTimeField(input_formats=['%Y-%m-%dT%H:%M',])
+    assessmentName = forms.CharField(label='',
+                                     widget = forms.TextInput(
+                                         attrs={
+                                             'maxlength':'200',
+                                             'type':'text',
+                                             'placeholder':'Name',
+                                             'style':'width:300px',
+                                            }
+                                         ))
+    
+    weight = forms.DecimalField(label='',
+                                widget = forms.NumberInput(
+                                    attrs={
+                                        'min':'0',
+                                        'max':'1',
+                                        'step':'0.05',
+                                        'type':'number',
+                                        'placeholder':'Weight',
+                                        'style': 'width:300px',
+                                        }
+                                    ))
+    dueDate = forms.DateTimeField(input_formats=['%Y-%m-%dT%H:%M',],
+                                  label='',
+                                  widget = forms.DateTimeInput(
+                                      attrs={
+                                          'type':'datetime-local',
+                                          'style':'width:300px',
+                                          },
+                                      format='%Y-%m-%dT%H:%M'))
+    
+    field_order = ['assessmentName', 'weight', 'dueDate']
+
     class Meta:
         model = Assessment
-        fields = ('weight','assessmentName','dueDate','course')
-        exclude = ['course']
-
+        fields = {'assessmentName','weight','dueDate'}
+                            
 class StudentForm(forms.ModelForm):
 	class Meta:
 		model = Student
@@ -46,4 +77,5 @@ class StudentForm(forms.ModelForm):
             )
         }
 
+    
 	

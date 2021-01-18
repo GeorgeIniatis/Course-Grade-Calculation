@@ -9,8 +9,7 @@ from chemapp.forms import *
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 import csv, io
-
-
+from django.forms.formsets import formset_factory
 
 def home(request):
     context_dict = {'boldmessage':'This is the home page'}
@@ -56,28 +55,43 @@ def add_course(request):
     addCourseDict = {}
     addCourseDict['courseAdded'] = False
 
+    AssessmentFormSet = formset_factory(AssessmentForm,extra=1)
+
     if request.method == 'POST':
         course_form = CourseForm(request.POST)
-        assessment_form = AssessmentForm(request.POST)
+        assessment_formset = AssessmentFormSet(request.POST)
+        
+        if course_form.is_valid() and assessment_formset.is_valid():
+            course = course_form.save()
+            
+            newAssessments = []
+            weightSum = 0
+            for form in assessment_formset:
+                weight = form.cleaned_data.get('weight')
+                weightSum += weight
+                name = form.cleaned_data.get('assessmentName')
+                dueDate = form.cleaned_data.get('dueDate')
 
-        if course_form.is_valid() and assessment_form.is_valid():
-            course_form.save()
-            courseName = (request.POST['shortHand']).upper()
-            course = Course.objects.get(shortHand=courseName)
+                newAssessments.append(Assessment(weight=weight,
+                                                     assessmentName=name,
+                                                     dueDate=dueDate,
+                                                     course=course))
 
-            assessment = assessment_form.save(commit=False)
-            assessment.course = course
-            assessment.save()
-
-            addCourseDict['courseAdded'] = True
+            if weightSum > 1:
+                course.delete()
+                messages.error(request, 'The sum of the Assessment Weights must be less than 1')
+                return redirect(reverse('chemapp:add_course'))
+            else:
+                Assessment.objects.bulk_create(newAssessments)
+                addCourseDict['courseAdded'] = True
         else:
-            print(course_form.errors, assessment_form.errors)
+            print(course_form.errors,assessment_formset.errors)
     else:
         course_form = CourseForm()
-        assessment_form = AssessmentForm()
+        assessment_formset = AssessmentFormSet()
 
     addCourseDict['course_form'] = course_form
-    addCourseDict['assessment_form'] = assessment_form
+    addCourseDict['assessment_formset'] = assessment_formset
 
     return render(request,'chemapp/add_course.html',context = addCourseDict)
 
