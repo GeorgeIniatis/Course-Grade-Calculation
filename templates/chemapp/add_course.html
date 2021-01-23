@@ -38,6 +38,11 @@
             Required. {{ course_form.code.help_text }}
         </p>
         <p>
+            {{ course_form.degree.errors }}
+            {{ course_form.degree }}
+            Required. {{ course_form.code.help_text }}
+        </p>
+        <p>
             {{ course_form.creditsWorth.errors }}
             <input id="creditsWorth" name="creditsWorth" min="5" max="20" type="number" placeholder="Credits Worth" value="{{course_form.creditsWorth.value|default_if_none:""}}" style="width:300px" required>
             Required. {{ course_form.creditsWorth.help_text }}

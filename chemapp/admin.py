@@ -6,6 +6,7 @@ class CourseAdmin(admin.ModelAdmin):
     
 admin.site.register(UserProfile)
 admin.site.register(Student)
+admin.site.register(Degree)
 admin.site.register(Course, CourseAdmin)
 admin.site.register(CourseGrade)
 admin.site.register(Assessment)

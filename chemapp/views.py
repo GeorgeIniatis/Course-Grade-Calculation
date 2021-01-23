@@ -25,15 +25,14 @@ def courses(request):
     courses = Course.objects.all()
 
     for course in courses:
-        name = course.name
-        code = course.code
-        color = course.courseColor
         year = course.year
         slug = course.slug
+        name = course.name
+        color = course.courseColor
+    
+        courseList = [year,slug,name,color]
 
-        courseList = [year,slug,code,color]
-
-        coursesDict[name] = courseList
+        coursesDict[course] = courseList
 
     return render(request,'chemapp/courses.html', {'courses': coursesDict})
 
@@ -70,12 +69,14 @@ def add_course(request):
                 weight = form.cleaned_data.get('weight')
                 weightSum += weight
                 name = form.cleaned_data.get('assessmentName')
+                marks = form.cleaned_data.get('totalMarks')
                 dueDate = form.cleaned_data.get('dueDate')
 
                 newAssessments.append(Assessment(weight=weight,
-                                                     assessmentName=name,
-                                                     dueDate=dueDate,
-                                                     course=course))
+                                                 assessmentName=name,
+                                                 totalMarks=marks,
+                                                 dueDate=dueDate,
+                                                 course=course))
 
             if weightSum > 1:
                 course.delete()
@@ -125,8 +126,6 @@ def student(request):
     Students = Student.objects.all()
 
     return render(request, 'chemapp/student.html',locals())
-
-
 
 @login_required
 def add_student(request):

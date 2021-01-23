@@ -25,6 +25,7 @@
             {% for assessment in assessments %}
             <h4> {{ assessment.assessmentName }} </h4>
             <p> Weight: {{ assessment.weight }} </p>
+            <p> Total Marks Available: {{ assessment.totalMarks }} </p>
             <p> Due on: {{ assessment.dueDate }} </p>
             {% endfor %}
         {% endif %}

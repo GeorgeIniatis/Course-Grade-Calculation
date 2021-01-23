@@ -17,11 +17,19 @@ class UserProfile(models.Model):
     def __str__(self):
         return self.user.username
 
+class Degree(models.Model):
+    degreeCode = models.CharField(max_length=30,
+                           unique=True,
+                           help_text='eg.4H-CMC')
+    def __str__(self):
+        return self.degreeCode
+
 class Course(models.Model):
     #I dont know the format of course codes need to check, format, max length ect
     code = models.CharField(max_length=30,
-                            unique=True,
                             help_text='eg. CHEM1005')
+
+    degree = models.ForeignKey(Degree, on_delete=models.CASCADE)
 
     #any paramets here max min?
     #Question to ask customer
@@ -78,17 +86,19 @@ class Course(models.Model):
 
     courseColor = ColorField(choices=COLOR_CHOICES)
 
+    class Meta:
+         unique_together = ('code', 'degree')
 
     def save(self, *args, **kwargs):
         self.code = self.code.upper()
         self.shortHand = self.shortHand.upper()
         self.minimumPassGrade = self.minimumPassGrade.upper()
-        self.slug = slugify(self.shortHand)
+        self.slug = slugify(str(self.code)+"-"+str(self.degree))
         super(Course, self).save(*args, **kwargs)
 
     def __str__(self):
-        return self.shortHand
-
+        return (str(self.shortHand) + " - " + str(self.degree))
+    
 class Student(models.Model):
     firstName = models.CharField(max_length=128,verbose_name="First Name")
     lastName = models.CharField(max_length=128,verbose_name="Last Name")
@@ -132,6 +142,8 @@ class Assessment(models.Model):
      weight = models.DecimalField(max_digits=3,
                                   decimal_places=2,
                                   help_text='eg.0.50')
+     totalMarks = models.PositiveIntegerField(verbose_name= "Total Marks Available",
+                                              help_text= "eg.50")
      assessmentName = models.CharField(max_length=200,
                              help_text='eg.Lab 1')
      dueDate = models.DateTimeField(verbose_name="Due Date and Time",
@@ -174,7 +186,6 @@ class AssessmentGrade(models.Model):
 
 class AssessmentComponent(models.Model):
      required = models.BooleanField(default = False)
-     weight = models.DecimalField(max_digits=3,decimal_places=2)
      marks = models.PositiveIntegerField()
      description = models.CharField(max_length=100)
 

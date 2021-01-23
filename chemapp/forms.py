@@ -18,9 +18,17 @@ class UserProfileForm(forms.ModelForm):
 
 class CourseForm(forms.ModelForm):
 
+    degree = forms.ModelChoiceField(label='',
+                                    empty_label="Degree",
+                                    queryset=Degree.objects.all(),
+                                    widget=forms.Select(
+                                        attrs={
+                                            'style':'width:300px',
+                                            }
+                                        ))               
     class Meta:
         model = Course
-        fields = {'code','creditsWorth','name','shortHand','year','academicYearTaught',
+        fields = {'code','degree','creditsWorth','name','shortHand','year','academicYearTaught',
                   'semester','description','comments','minimumPassGrade',
                   'minimumRequirementsForCredit'}
 
@@ -54,12 +62,22 @@ class AssessmentForm(forms.ModelForm):
                                           'style':'width:300px',
                                           },
                                       format='%Y-%m-%dT%H:%M'))
-    
-    field_order = ['assessmentName', 'weight', 'dueDate']
+
+    totalMarks = forms.IntegerField(label='',
+                                    widget =  forms.NumberInput(
+                                        attrs={
+                                            'min':'0',
+                                            'type':'number',
+                                            'placeholder':'Total Marks',
+                                            'style': 'width:300px',
+                                            }
+                                        ))
+                                    
+    field_order = ['assessmentName', 'weight','totalMarks', 'dueDate']
 
     class Meta:
         model = Assessment
-        fields = {'assessmentName','weight','dueDate'}
+        fields = {'assessmentName','weight','totalMarks','dueDate'}
                             
 class StudentForm(forms.ModelForm):
 	class Meta:
