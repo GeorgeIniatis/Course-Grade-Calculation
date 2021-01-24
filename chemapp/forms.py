@@ -78,6 +78,45 @@ class AssessmentForm(forms.ModelForm):
     class Meta:
         model = Assessment
         fields = {'assessmentName','weight','totalMarks','dueDate'}
+
+class AssessmentComponentForm(forms.ModelForm):
+    required = forms.BooleanField(label='Required',
+                                  required = False,
+                                  widget = forms.CheckboxInput(
+                                      attrs={
+                                          'placeholder':'Required',
+                                          }
+                                      ))
+
+    marks = forms.IntegerField(label='',
+                               widget = forms.NumberInput(
+                                   attrs={
+                                        'min':'0',
+                                        'type':'number',
+                                        'placeholder':'Marks',
+                                        'style': 'width:300px',
+                                        }
+                                    ))
+    description = forms.CharField(label='',
+                                  widget = forms.TextInput(
+                                      attrs={
+                                          'maxlength':'100',
+                                          'type':'text',
+                                          'placeholder':'Description',
+                                          'style':'width:300px',
+                                          }
+                                      ))
+    assessment = forms.ModelChoiceField(label='Assessment',
+                                        widget = forms.Select(),
+                                        queryset = Assessment.objects.all()
+                                       )
+   
+
+    field_order = ['required', 'description', 'marks','assessment']
+
+    class Meta:
+        model = AssessmentComponent
+        fields = {'required','marks','description','assessment'}
                             
 class StudentForm(forms.ModelForm):
 	class Meta:
@@ -94,6 +133,3 @@ class StudentForm(forms.ModelForm):
                 },
             )
         }
-
-    
-	

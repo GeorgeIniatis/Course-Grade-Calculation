@@ -52,18 +52,39 @@ def course(request,course_name_slug):
 @login_required
 def add_course(request):
     addCourseDict = {}
-    addCourseDict['courseAdded'] = False
+
+    components = []
+
+    if (request.method == 'POST'):
+        course_form = CourseForm(request.POST)
+        
+        if course_form.is_valid():
+            course = course_form.save()
+            course_slug = course.slug
+            return redirect(reverse('chemapp:add_assessments',kwargs={'course_name_slug':course_slug}))
+        
+        else:
+            print(course_form.errors)
+    else:
+        course_form = CourseForm()
+        
+    addCourseDict['course_form'] = CourseForm()
+    
+    return render(request,'chemapp/add_course.html',context = addCourseDict)
+
+@login_required
+def add_assessments(request,course_name_slug):
+    addAssessmentsDict = {}
+    addAssessmentsDict['course_name_slug'] = course_name_slug
 
     AssessmentFormSet = formset_factory(AssessmentForm,extra=1)
-
-    if request.method == 'POST':
-        course_form = CourseForm(request.POST)
+    course = Course.objects.get(slug = course_name_slug)
+    
+    if (request.method == 'POST'):
         assessment_formset = AssessmentFormSet(request.POST)
         
-        if course_form.is_valid() and assessment_formset.is_valid():
-            course = course_form.save()
-            
-            newAssessments = []
+        if assessment_formset.is_valid():
+            assessments = []
             weightSum = 0
             for form in assessment_formset:
                 weight = form.cleaned_data.get('weight')
@@ -72,29 +93,72 @@ def add_course(request):
                 marks = form.cleaned_data.get('totalMarks')
                 dueDate = form.cleaned_data.get('dueDate')
 
-                newAssessments.append(Assessment(weight=weight,
-                                                 assessmentName=name,
-                                                 totalMarks=marks,
-                                                 dueDate=dueDate,
-                                                 course=course))
-
-            if weightSum > 1:
-                course.delete()
-                messages.error(request, 'The sum of the Assessment Weights must be less than 1')
-                return redirect(reverse('chemapp:add_course'))
+                assessments.append(Assessment(weight=weight,
+                                              assessmentName=name,
+                                              totalMarks=marks,
+                                              dueDate=dueDate,
+                                              course=course))
+                
+            if weightSum != 1:
+                #Check this if needed
+                assessments = Assessment.objects.filter(course=course)
+                for assessment in assessments:
+                    assessment.delete()
+                messages.error(request, 'The sum of the Assessment Weights must be equal to 1')
+                return redirect(reverse('chemapp:add_assessments',kwargs={'course_name_slug':course_name_slug}))
             else:
-                Assessment.objects.bulk_create(newAssessments)
-                addCourseDict['courseAdded'] = True
+                Assessment.objects.bulk_create(assessments)
+                return redirect(reverse('chemapp:add_assessmentComponents',kwargs={'course_name_slug':course_name_slug}))
         else:
-            print(course_form.errors,assessment_formset.errors)
+            print(assessment_formset.errors)
     else:
-        course_form = CourseForm()
         assessment_formset = AssessmentFormSet()
+        
+    addAssessmentsDict['assessment_formset'] = assessment_formset
+    
+    return render(request,'chemapp/add_assessments.html',context = addAssessmentsDict)
 
-    addCourseDict['course_form'] = course_form
-    addCourseDict['assessment_formset'] = assessment_formset
+@login_required
+def add_assessmentComponents(request,course_name_slug):
+    AssessmentComponentFormSet = formset_factory(AssessmentComponentForm,extra=1)
+    course = Course.objects.get(slug = course_name_slug)
+    assessments = Assessment.objects.filter(course=course)
 
-    return render(request,'chemapp/add_course.html',context = addCourseDict)
+    addAssessmentComponentsDict = {}
+    addAssessmentComponentsDict['course_name_slug'] = course_name_slug
+    addAssessmentComponentsDict['componentsAdded'] = False
+    
+    if (request.method == 'POST'):
+        assessmentComponent_formset = AssessmentComponentFormSet(request.POST)
+        
+        if assessmentComponent_formset.is_valid():
+            assessmentComponents = []
+            markDictionary = {}
+            for form in assessmentComponent_formset:
+                required = form.cleaned_data.get('required')
+                marks = form.cleaned_data.get('marks')
+                description = form.cleaned_data.get('description')
+                assessment = form.cleaned_data.get('assessment')
+ 
+                assessmentComponents.append(AssessmentComponent(required=required,
+                                              marks=marks,
+                                              description=description,
+                                              assessment=assessment))
+                
+            AssessmentComponent.objects.bulk_create(assessmentComponents)
+            addAssessmentComponentsDict['componentsAdded'] = True
+            #return redirect(reverse('chemapp:add_assessmentComponents',kwargs={'course_name_slug':course_name_slug}))
+
+        else:
+            print(assessmentComponent_formset.errors)
+    else:
+        assessmentComponent_formset = AssessmentComponentFormSet()
+        for form in assessmentComponent_formset:
+            form.fields['assessment'].queryset = Assessment.objects.filter(course = course)
+        
+    addAssessmentComponentsDict['assessmentComponent_formset'] = assessmentComponent_formset
+    
+    return render(request,'chemapp/add_assessmentComponents.html',context = addAssessmentComponentsDict)
 
 def user_login(request):
     if request.method == 'POST':

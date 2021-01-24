@@ -1,110 +1,78 @@
 {% extends 'chemapp/base.html' %}
 {% load staticfiles %}
 
-{% block js_block %}
-    <script src="{% static 'js/jquery.formset.js' %}"></script>
-    <script src="{% static 'js/chemapp-addRemoveAssessmentForm.js' %}"></script>
-{% endblock %}
-
 {% block title_block %}
     Add a Course
 {% endblock %}
 
 {% block body_block %}
 <div class="container mt-5 mb-5 ">
-<div>
-    {% if courseAdded %}
-        <b> You have successfully added a new course! </b>
-    {% else %}
-        <h2> Add a Course </h2>
+    <h2> Add a Course </h2>
         
-        {% if messages %}
-        {% for message in messages %}
-            {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
-                <b>{{ message }}</b>
-            {% endif %}
-            {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
-                <b>{{ message }}</b>
-                <br>
-            {% endif %}
-        {% endfor %}
-    {% endif %}
-    
-        <form id="add_course_form" method="post" action="{% url 'chemapp:add_course' %}" enctype="multipart/form-data">
-        {% csrf_token %}
-        <p>
-            {{ course_form.code.errors }}
-            <input id="code" name="code" maxlength="30" type="text" placeholder="Code" value="{{course_form.code.value|default_if_none:""}}" style="width:300px;text-transform:uppercase" required>
-            Required. {{ course_form.code.help_text }}
-        </p>
-        <p>
-            {{ course_form.degree.errors }}
-            {{ course_form.degree }}
-            Required. {{ course_form.code.help_text }}
-        </p>
-        <p>
-            {{ course_form.creditsWorth.errors }}
-            <input id="creditsWorth" name="creditsWorth" min="5" max="20" type="number" placeholder="Credits Worth" value="{{course_form.creditsWorth.value|default_if_none:""}}" style="width:300px" required>
-            Required. {{ course_form.creditsWorth.help_text }}
-        </p>
-        <p>
-            {{ course_form.name.errors }}
-            <input id="name" name="name" maxlength="200" type="text" placeholder="Name" value="{{course_form.name.value|default_if_none:""}}" style="width:300px" required>
-            Required. {{ course_form.name.help_text }}
-        </p>
-        <p>
-            {{ course_form.shortHand.errors }}
-            <input id="shortHand" name="shortHand" maxlength="30" type="text" placeholder="Shorthand" value="{{course_form.shortHand.value|default_if_none:""}}" style="width:300px;text-transform:uppercase" required>
-            Required. {{ course_form.shortHand.help_text }}
-        </p>
-        <p>
-            {{ course_form.year.errors }}
-            <input id="year" name="year" min="1" max="5" type="number" placeholder="Year" value="{{course_form.year.value|default_if_none:""}}" style="width:300px" required>
-            Required. {{ course_form.year.help_text }}
-        </p>
-        <p>
-            {{ course_form.academicYearTaught.errors }}
-            <input id="academicYearTaught" name="academicYearTaught" maxlength="9" type="text" placeholder="Academic Year Taught" value="{{course_form.academicYearTaught.value|default_if_none:""}}" style="width:300px" required>
-            Required. {{ course_form.academicYearTaught.help_text }}
-        </p>
-        <p>
-            {{ course_form.semester.errors }}
-            <input id="semester" name="semester" min="1" max="2" type="number" placeholder="Semester" value="{{course_form.semester.value|default_if_none:""}}" style="width:300px" required>
-            Required. {{ course_form.semester.help_text }}
-        </p>
-        <p>
-            {{ course_form.description.errors }}
-            <input id="description" name="description" maxlength="2000" type="text" placeholder="Description" value="{{course_form.description.value|default_if_none:""}}" style="width:400px;height:50px" required>
-            Required. {{ course_form.description.help_text }}
-        </p>
-        <p>
-            {{ course_form.comments.errors }}
-            <input id="comments" name="comments" maxlength="2000" type="text" placeholder="Comments" value="{{course_form.comments.value|default_if_none:""}}" style="width:400px;height:50px">
-            {{ course_form.comments.help_text }}
-        </p>
-        <p>
-            {{ course_form.minimumPassGrade.errors }}
-            <input id="minimumPassGrade" name="minimumPassGrade" maxlength="2" type="text" placeholder="Minimum Pass Grade" value="{{course_form.minimumPassGrade.value|default_if_none:""}}" style="width:300px;text-transform:uppercase" required>
-            {{ course_form.minimumPassGrade.help_text }}
-        </p>
-        <p>
-            {{ course_form.minimumRequirementsForCredit.errors }}
-            <input id="minimumRequirementsForCredit" name="minimumRequirementsForCredit" min="0" max="1" step="0.05" type="number" placeholder="Minimum Requirements For Credit" value="{{course_form.minimumRequirementsForCredit.value|default_if_none:""}}" style="width:300px" required>
-            {{ course_form.minimumRequirementsForCredit.help_text }}
-        </p>
-
-        <div>
-        <h3> Assessments </h3>
-        {{ assessment_formset.management_form }}
-        {% for assessment_form in assessment_formset %}
-            <div class="assessment-formset">
-                {{ assessment_form.as_p }}
-            </div>
-        {% endfor %}
-        <br>
-        <button type="submit">Submit</button>
-        </form>
-        </div>
-    {% endif %}
-</div>
+    <form id="add_course_form" method="post" action="{% url 'chemapp:add_course' %}" enctype="multipart/form-data">
+    {% csrf_token %}
+    <p>
+        {{ course_form.code.errors }}
+        <input id="code" name="code" maxlength="30" type="text" placeholder="Code" value="{{course_form.code.value|default_if_none:""}}" style="width:300px;text-transform:uppercase" required>
+        Required. {{ course_form.code.help_text }}
+    </p>
+    <p>
+        {{ course_form.degree.errors }}
+        {{ course_form.degree }}
+        Required. {{ course_form.code.help_text }}
+    </p>
+    <p>
+        {{ course_form.creditsWorth.errors }}
+        <input id="creditsWorth" name="creditsWorth" min="5" max="20" type="number" placeholder="Credits Worth" value="{{course_form.creditsWorth.value|default_if_none:""}}" style="width:300px" required>
+        Required. {{ course_form.creditsWorth.help_text }}
+    </p>
+    <p>
+        {{ course_form.name.errors }}
+        <input id="name" name="name" maxlength="200" type="text" placeholder="Name" value="{{course_form.name.value|default_if_none:""}}" style="width:300px" required>
+        Required. {{ course_form.name.help_text }}
+    </p>
+    <p>
+        {{ course_form.shortHand.errors }}
+        <input id="shortHand" name="shortHand" maxlength="30" type="text" placeholder="Shorthand" value="{{course_form.shortHand.value|default_if_none:""}}" style="width:300px;text-transform:uppercase" required>
+        Required. {{ course_form.shortHand.help_text }}
+    </p>
+    <p>
+        {{ course_form.year.errors }}
+        <input id="year" name="year" min="1" max="5" type="number" placeholder="Year" value="{{course_form.year.value|default_if_none:""}}" style="width:300px" required>
+        Required. {{ course_form.year.help_text }}
+    </p>
+    <p>
+        {{ course_form.academicYearTaught.errors }}
+        <input id="academicYearTaught" name="academicYearTaught" maxlength="9" type="text" placeholder="Academic Year Taught" value="{{course_form.academicYearTaught.value|default_if_none:""}}" style="width:300px" required>
+        Required. {{ course_form.academicYearTaught.help_text }}
+    </p>
+    <p>
+        {{ course_form.semester.errors }}
+        <input id="semester" name="semester" min="1" max="2" type="number" placeholder="Semester" value="{{course_form.semester.value|default_if_none:""}}" style="width:300px" required>
+        Required. {{ course_form.semester.help_text }}
+    </p>
+    <p>
+        {{ course_form.description.errors }}
+        <input id="description" name="description" maxlength="2000" type="text" placeholder="Description" value="{{course_form.description.value|default_if_none:""}}" style="width:400px;height:50px" required>
+        Required. {{ course_form.description.help_text }}
+    </p>
+    <p>
+        {{ course_form.comments.errors }}
+        <input id="comments" name="comments" maxlength="2000" type="text" placeholder="Comments" value="{{course_form.comments.value|default_if_none:""}}" style="width:400px;height:50px">
+        {{ course_form.comments.help_text }}
+    </p>
+    <p>
+        {{ course_form.minimumPassGrade.errors }}
+        <input id="minimumPassGrade" name="minimumPassGrade" maxlength="2" type="text" placeholder="Minimum Pass Grade" value="{{course_form.minimumPassGrade.value|default_if_none:""}}" style="width:300px;text-transform:uppercase" required>
+        {{ course_form.minimumPassGrade.help_text }}
+    </p>
+    <p>
+        {{ course_form.minimumRequirementsForCredit.errors }}
+        <input id="minimumRequirementsForCredit" name="minimumRequirementsForCredit" min="0" max="1" step="0.05" type="number" placeholder="Minimum Requirements For Credit" value="{{course_form.minimumRequirementsForCredit.value|default_if_none:""}}" style="width:300px" required>
+        {{ course_form.minimumRequirementsForCredit.help_text }}
+    </p>
+        
+    <button type="submit">Save</button>
+    </form>
+        
 {% endblock %}

@@ -1,6 +1,6 @@
 $(document).ready(function(){
 	$.ajaxSetup({ cache: false });
-    $('.assessment-formset').formset({
+    $('.assessmentComponent-formset').formset({
         addText: 'Add',
         deleteText: 'Remove'
     });

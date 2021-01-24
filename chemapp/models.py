@@ -150,6 +150,9 @@ class Assessment(models.Model):
                                     help_text='eg.11/10/2021 at 0800')
      course = models.ForeignKey(Course, on_delete=models.CASCADE)
 
+     class Meta:
+         unique_together = ('assessmentName', 'course')
+
      def __str__(self):
         return (str(self.course) + " - " + str(self.assessmentName))
 
@@ -188,8 +191,10 @@ class AssessmentComponent(models.Model):
      required = models.BooleanField(default = False)
      marks = models.PositiveIntegerField()
      description = models.CharField(max_length=100)
-
      assessment = models.ForeignKey(Assessment, on_delete=models.CASCADE)
+
+     class Meta:
+         unique_together = ('description','assessment')
 
      def __str__(self):
         return (str(self.assessment) + " - " + str(self.description))
