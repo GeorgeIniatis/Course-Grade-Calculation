@@ -40,6 +40,7 @@ class AssessmentForm(forms.ModelForm):
                                              'type':'text',
                                              'placeholder':'Name',
                                              'style':'width:300px',
+                                             'required':True,
                                             }
                                          ))
     
@@ -52,6 +53,7 @@ class AssessmentForm(forms.ModelForm):
                                         'type':'number',
                                         'placeholder':'Weight',
                                         'style': 'width:300px',
+                                        'required':True,
                                         }
                                     ))
     dueDate = forms.DateTimeField(input_formats=['%Y-%m-%dT%H:%M',],
@@ -60,6 +62,7 @@ class AssessmentForm(forms.ModelForm):
                                       attrs={
                                           'type':'datetime-local',
                                           'style':'width:300px',
+                                          'required':True,
                                           },
                                       format='%Y-%m-%dT%H:%M'))
 
@@ -70,6 +73,7 @@ class AssessmentForm(forms.ModelForm):
                                             'type':'number',
                                             'placeholder':'Total Marks',
                                             'style': 'width:300px',
+                                            'required':True,
                                             }
                                         ))
                                     
@@ -95,6 +99,7 @@ class AssessmentComponentForm(forms.ModelForm):
                                         'type':'number',
                                         'placeholder':'Marks',
                                         'style': 'width:300px',
+                                        'required':True,
                                         }
                                     ))
     description = forms.CharField(label='',
@@ -104,19 +109,15 @@ class AssessmentComponentForm(forms.ModelForm):
                                           'type':'text',
                                           'placeholder':'Description',
                                           'style':'width:300px',
+                                          'required':True,
                                           }
                                       ))
-    assessment = forms.ModelChoiceField(label='Assessment',
-                                        widget = forms.Select(),
-                                        queryset = Assessment.objects.all()
-                                       )
-   
-
-    field_order = ['required', 'description', 'marks','assessment']
+    
+    field_order = ['required', 'description', 'marks']
 
     class Meta:
         model = AssessmentComponent
-        fields = {'required','marks','description','assessment'}
+        fields = {'required','marks','description'}
                             
 class StudentForm(forms.ModelForm):
 	class Meta:

@@ -150,8 +150,15 @@ class Assessment(models.Model):
                                     help_text='eg.11/10/2021 at 0800')
      course = models.ForeignKey(Course, on_delete=models.CASCADE)
 
+     slug = models.SlugField()
+     componentsAdded = models.BooleanField(default = False)
+     
      class Meta:
          unique_together = ('assessmentName', 'course')
+
+     def save(self, *args, **kwargs):
+        self.slug = slugify(self.assessmentName)
+        super(Assessment, self).save(*args, **kwargs)
 
      def __str__(self):
         return (str(self.course) + " - " + str(self.assessmentName))

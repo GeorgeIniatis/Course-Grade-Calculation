@@ -12,11 +12,11 @@
 
 {% block body_block %}
 <div class="container mt-5 mb-5 ">
-    {% if componentsAdded %}
+    {% if allComponentsAdded %}
         <h4> You have successfully added a course along with its corresponding assessments and components! </h4>
     {% else %}
-        <h2> Add Assessment Components </h2>
-        
+        <h2> Add Assessment Components</h2>
+        <h2> {{ assessment }} </h2>
         {% if messages %}
             {% for message in messages %}
                 {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
@@ -29,7 +29,7 @@
             {% endfor %}
         {% endif %}
     
-        <form id="add_assessmentComponent_form" method="post" action="{% url 'chemapp:add_assessmentComponents' course_name_slug=course_name_slug %}" enctype="multipart/form-data">
+        <form id="add_assessmentComponent_form" method="post" action="{% url 'chemapp:add_assessmentComponents' course_name_slug=course_name_slug assessment_name_slug=assessment_name_slug  %}" enctype="multipart/form-data">
         {% csrf_token %}
        
         {{ assessmentComponent_formset.management_form }}

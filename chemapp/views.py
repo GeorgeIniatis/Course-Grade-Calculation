@@ -10,6 +10,7 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404
 import csv, io
 from django.forms.formsets import formset_factory
+from django.template.defaultfilters import slugify
 
 def home(request):
     context_dict = {'boldmessage':'This is the home page'}
@@ -92,23 +93,24 @@ def add_assessments(request,course_name_slug):
                 name = form.cleaned_data.get('assessmentName')
                 marks = form.cleaned_data.get('totalMarks')
                 dueDate = form.cleaned_data.get('dueDate')
+                slug = slugify(name)
 
                 assessments.append(Assessment(weight=weight,
                                               assessmentName=name,
                                               totalMarks=marks,
                                               dueDate=dueDate,
-                                              course=course))
+                                              course=course,
+                                              slug=slug))
                 
             if weightSum != 1:
-                #Check this if needed
-                assessments = Assessment.objects.filter(course=course)
-                for assessment in assessments:
-                    assessment.delete()
                 messages.error(request, 'The sum of the Assessment Weights must be equal to 1')
                 return redirect(reverse('chemapp:add_assessments',kwargs={'course_name_slug':course_name_slug}))
             else:
                 Assessment.objects.bulk_create(assessments)
-                return redirect(reverse('chemapp:add_assessmentComponents',kwargs={'course_name_slug':course_name_slug}))
+                assessmentsCreated = Assessment.objects.filter(course=course)
+                
+                assessment_name_slug = assessmentsCreated.first().slug
+                return redirect(reverse('chemapp:add_assessmentComponents',kwargs={'course_name_slug':course_name_slug,'assessment_name_slug':assessment_name_slug}))
         else:
             print(assessment_formset.errors)
     else:
@@ -119,26 +121,29 @@ def add_assessments(request,course_name_slug):
     return render(request,'chemapp/add_assessments.html',context = addAssessmentsDict)
 
 @login_required
-def add_assessmentComponents(request,course_name_slug):
-    AssessmentComponentFormSet = formset_factory(AssessmentComponentForm,extra=1)
-    course = Course.objects.get(slug = course_name_slug)
-    assessments = Assessment.objects.filter(course=course)
-
+def add_assessmentComponents(request,course_name_slug,assessment_name_slug):
     addAssessmentComponentsDict = {}
     addAssessmentComponentsDict['course_name_slug'] = course_name_slug
-    addAssessmentComponentsDict['componentsAdded'] = False
+    addAssessmentComponentsDict['assessment_name_slug'] = assessment_name_slug
+    addAssessmentComponentsDict['allComponentsAdded'] = False
     
+    AssessmentComponentFormSet = formset_factory(AssessmentComponentForm,extra=1)
+    course = Course.objects.get(slug = course_name_slug)
+    allAssessments = Assessment.objects.filter(course=course)
+    assessment = Assessment.objects.get(course=course,slug=assessment_name_slug)
+    
+    addAssessmentComponentsDict['assessment'] = assessment.assessmentName
+
     if (request.method == 'POST'):
         assessmentComponent_formset = AssessmentComponentFormSet(request.POST)
         
         if assessmentComponent_formset.is_valid():
             assessmentComponents = []
-            markDictionary = {}
+            
             for form in assessmentComponent_formset:
                 required = form.cleaned_data.get('required')
                 marks = form.cleaned_data.get('marks')
                 description = form.cleaned_data.get('description')
-                assessment = form.cleaned_data.get('assessment')
  
                 assessmentComponents.append(AssessmentComponent(required=required,
                                               marks=marks,
@@ -146,15 +151,20 @@ def add_assessmentComponents(request,course_name_slug):
                                               assessment=assessment))
                 
             AssessmentComponent.objects.bulk_create(assessmentComponents)
-            addAssessmentComponentsDict['componentsAdded'] = True
-            #return redirect(reverse('chemapp:add_assessmentComponents',kwargs={'course_name_slug':course_name_slug}))
+            assessment.componentsAdded = True
+            assessment.save()
 
+            for assessment in allAssessments:
+                if assessment.componentsAdded == False:
+                    assessment_name_slug = assessment.slug
+                    return redirect(reverse('chemapp:add_assessmentComponents',kwargs={'course_name_slug':course_name_slug,'assessment_name_slug':assessment_name_slug}))
+
+            addAssessmentComponentsDict['allComponentsAdded'] = True
+            
         else:
             print(assessmentComponent_formset.errors)
     else:
         assessmentComponent_formset = AssessmentComponentFormSet()
-        for form in assessmentComponent_formset:
-            form.fields['assessment'].queryset = Assessment.objects.filter(course = course)
         
     addAssessmentComponentsDict['assessmentComponent_formset'] = assessmentComponent_formset
     
