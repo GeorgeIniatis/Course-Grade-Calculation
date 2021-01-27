@@ -19,6 +19,7 @@ class UserProfileForm(forms.ModelForm):
 class CourseForm(forms.ModelForm):
 
     degree = forms.ModelChoiceField(label='',
+                                    required = True,
                                     empty_label="Degree",
                                     queryset=Degree.objects.all(),
                                     widget=forms.Select(
@@ -34,17 +35,19 @@ class CourseForm(forms.ModelForm):
 
 class AssessmentForm(forms.ModelForm):
     assessmentName = forms.CharField(label='',
+                                     required = True,
                                      widget = forms.TextInput(
                                          attrs={
                                              'maxlength':'200',
                                              'type':'text',
                                              'placeholder':'Name',
                                              'style':'width:300px',
-                                             'required':True,
+                                             'autofocus':True,
                                             }
                                          ))
     
     weight = forms.DecimalField(label='',
+                                required = True,
                                 widget = forms.NumberInput(
                                     attrs={
                                         'min':'0',
@@ -53,27 +56,28 @@ class AssessmentForm(forms.ModelForm):
                                         'type':'number',
                                         'placeholder':'Weight',
                                         'style': 'width:300px',
-                                        'required':True,
                                         }
                                     ))
     dueDate = forms.DateTimeField(input_formats=['%Y-%m-%dT%H:%M',],
                                   label='',
+                                  required = True,
                                   widget = forms.DateTimeInput(
                                       attrs={
-                                          'type':'datetime-local',
                                           'style':'width:300px',
-                                          'required':True,
+                                          'placeholder':'Due Date',
+                                          'onfocus':"(this.type='datetime-local')",
+                                          'onblur':"(this.type='text')",
                                           },
                                       format='%Y-%m-%dT%H:%M'))
 
     totalMarks = forms.IntegerField(label='',
+                                    required = True,
                                     widget =  forms.NumberInput(
                                         attrs={
                                             'min':'0',
                                             'type':'number',
                                             'placeholder':'Total Marks',
                                             'style': 'width:300px',
-                                            'required':True,
                                             }
                                         ))
                                     
@@ -93,23 +97,24 @@ class AssessmentComponentForm(forms.ModelForm):
                                       ))
 
     marks = forms.IntegerField(label='',
+                               required = True,
                                widget = forms.NumberInput(
                                    attrs={
                                         'min':'0',
                                         'type':'number',
                                         'placeholder':'Marks',
                                         'style': 'width:300px',
-                                        'required':True,
                                         }
                                     ))
     description = forms.CharField(label='',
+                                  required = True,
                                   widget = forms.TextInput(
                                       attrs={
                                           'maxlength':'100',
                                           'type':'text',
                                           'placeholder':'Description',
                                           'style':'width:300px',
-                                          'required':True,
+                                          'autofocus':True,
                                           }
                                       ))
     
@@ -120,17 +125,89 @@ class AssessmentComponentForm(forms.ModelForm):
         fields = {'required','marks','description'}
                             
 class StudentForm(forms.ModelForm):
-	class Meta:
-		model = Student
-		attrs = {'firstName': 'paleblue'}
-		fields = ('studentID','firstName','lastName','myCampusName','academicPlan','anonID','graduationDate','currentYear','comments')
-		widgets = {
-            'graduationDate': DatePicker(
-                options={
-                    'format': 'DD/MM/YYYY'
-                },
-                attrs={
-                    'prepend': 'fa fa-calendar',
-                },
-            )
-        }
+    studentID = forms.IntegerField(label='',
+                                   required = True,
+                                   widget = forms.NumberInput(
+                                   attrs={
+                                       'min':'0',
+                                       'max':'9999999',
+                                       'type':'number',
+                                       'placeholder':'Student ID',
+                                       'style': 'width:300px',
+                                       'autofocus':True,
+                                       }
+                                   ))
+    
+    firstName = forms.CharField(label='',
+                                required = True,
+                                widget = forms.TextInput(
+                                    attrs={
+                                        'maxlength':'128',
+                                        'type':'text',
+                                        'placeholder':'First Name',
+                                        'style':'width:300px',
+                                        }
+                                    ))
+    
+    lastName = forms.CharField(label='',
+                               required = True,
+                               widget = forms.TextInput(
+                                   attrs={
+                                       'maxlength':'128',
+                                       'type':'text',
+                                       'placeholder':'Last Name',
+                                       'style':'width:300px',
+                                       }
+                                   ))
+
+    academicPlan = forms.ModelChoiceField(label='',
+                                          required = True,
+                                          empty_label="Academic Plan/Degree",
+                                          queryset=Degree.objects.all(),
+                                          widget=forms.Select(
+                                              attrs={
+                                                  'style':'width:300px',
+                                                  }
+                                              ))
+
+    currentYear = forms.IntegerField(label='',
+                                     required = True,
+                                     widget = forms.NumberInput(
+                                         attrs={
+                                             'min':'1',
+                                             'max':'5',
+                                             'type':'number',
+                                             'placeholder':'Current Year',
+                                             'style': 'width:300px',
+                                             }
+                                         ))
+
+    graduationDate = forms.DateField(input_formats=['%Y-%m-%d'],
+                                     label='',
+                                     required = True,
+                                     widget = forms.DateInput(
+                                         attrs={
+                                             'placeholder':'Graduation Date',
+                                             'onfocus':"(this.type='date')",
+                                             'onblur':"(this.type='text')",
+                                             'style':'width:300px',
+                                             },
+                                         format='%Y-%m-%d'))
+
+    comments = forms.CharField(label='',
+                               required = False,
+                               widget = forms.TextInput(
+                                   attrs={
+                                       'maxlength':'2000',
+                                       'type':'text',
+                                       'placeholder':'Comments',
+                                       'style':'width:400px;height:50px',
+                                       }
+                                   ))
+
+    field_order = ['studentID', 'firstName', 'lastName','academicPlan','currentYear','graduationDate','comments']
+    
+    class Meta:
+        model = Student
+        fields = ('studentID','firstName','lastName','academicPlan','graduationDate','currentYear','comments')
+		

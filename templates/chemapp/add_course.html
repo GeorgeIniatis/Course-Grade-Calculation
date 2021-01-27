@@ -13,7 +13,7 @@
     {% csrf_token %}
     <p>
         {{ course_form.code.errors }}
-        <input id="code" name="code" maxlength="30" type="text" placeholder="Code" value="{{course_form.code.value|default_if_none:""}}" style="width:300px;text-transform:uppercase" required>
+        <input id="code" name="code" maxlength="30" type="text" placeholder="Code" value="{{course_form.code.value|default_if_none:""}}" style="width:300px;text-transform:uppercase" required autofocus>
         Required. {{ course_form.code.help_text }}
     </p>
     <p>

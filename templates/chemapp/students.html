@@ -10,16 +10,17 @@
 {% load static %}
 <div class="container mt-5 ">
 <div>
-    <h2>Student Page!</h2>
+    <h2>Students Page!</h2>
   	<body>
         {% render_table Students %}
     </body>
+    <br>
     <div>
-    <a href="{% url 'chemapp:add_student' %}"><button>Add a student manually</button></a>
+        <a href="{% url 'chemapp:add_student' %}"><button>Add a student manually</button></a>
 	</div>
-
+    <br>
 	<div>
-    <a href="{% url 'chemapp:upload_student_csv' %}"><button>Upload a csv file</button></a>
+        <a href="{% url 'chemapp:upload_student_csv' %}"><button>Upload a csv file</button></a>
 	</div>
 
 </div>

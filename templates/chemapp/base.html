@@ -42,10 +42,10 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="{% url 'chemapp:home' %}">Home</a>
-            </li>
             {% if user.is_authenticated %}
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="{% url 'chemapp:home' %}">Home</a>
+              </li>
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'chemapp:courses' %}">Courses</a>
               </li>
@@ -53,7 +53,7 @@
                 <a class="nav-link" href="{% url 'chemapp:about' %}">About</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'chemapp:student' %}">Student</a>
+                <a class="nav-link" href="{% url 'chemapp:students' %}">Students</a>
               </li>
               <li class="nav-item">
                 <a type="button" class="nav-link" data-bs-toggle="modal" data-bs-target="#logoutModal">Logout</a>

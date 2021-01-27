@@ -12,10 +12,12 @@ import csv, io
 from django.forms.formsets import formset_factory
 from django.template.defaultfilters import slugify
 
+@login_required
 def home(request):
     context_dict = {'boldmessage':'This is the home page'}
     return render(request,'chemapp/home.html', context=context_dict)
 
+@login_required
 def about(request):
     context_dict = {'boldmessage':'This is the about page'}
     return render(request,'chemapp/about.html', context=context_dict)
@@ -194,28 +196,38 @@ def user_logout(request):
     return redirect(reverse('chemapp:home'))
 
 @login_required
-def student(request):
+def students(request):
     context ={}
 
     Students = Student.objects.all()
 
-    return render(request, 'chemapp/student.html',locals())
+    return render(request, 'chemapp/students.html',locals())
 
 @login_required
 def add_student(request):
-	addStudentDict = {}
-	addStudentDict['studentAdded'] = False
-	if request.method == 'POST':
-		student_form = StudentForm(request.POST)
-		if student_form.is_valid():
-			student_form.save()
-			addStudentDict['studentAdded'] = True
-		else:
-			print(student_form.errors)
-	else:
-			student_form = StudentForm()
-	addStudentDict['student_form'] = student_form
-	return render(request,'chemapp/add_student.html',context=addStudentDict)
+    addStudentDict = {}
+    addStudentDict['studentAdded'] = False
+
+    if request.method == 'POST':
+        student_form = StudentForm(request.POST)
+        if student_form.is_valid():
+            student = student_form.save(commit=False)
+            #Just to test until we have correct equation
+            student.anonID = 0000000
+            student.save()
+            
+            degree = Degree.objects.get(degreeCode=student.academicPlan)
+            student.courses.set(Course.objects.filter(degree=degree,year=student.currentYear))
+            student.save()
+            
+            addStudentDict['studentAdded'] = True
+        else:
+            print(student_form.errors)
+    else:
+        student_form = StudentForm()
+
+    addStudentDict['student_form'] = student_form
+    return render(request,'chemapp/add_student.html',context=addStudentDict)
 
 @login_required
 def upload_student_csv(request):

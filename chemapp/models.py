@@ -18,14 +18,20 @@ class UserProfile(models.Model):
         return self.user.username
 
 class Degree(models.Model):
+    #Input mask?
     degreeCode = models.CharField(max_length=30,
                            unique=True,
                            help_text='eg.4H-CMC')
+    
+    numberOfCourses = models.PositiveIntegerField(default=0,verbose_name="Number of Courses")
+    numberOfStudent = models.PositiveIntegerField(default=0,verbose_name="Number of Students")
+    
     def __str__(self):
         return self.degreeCode
 
 class Course(models.Model):
     #I dont know the format of course codes need to check, format, max length ect
+    #Input mask?
     code = models.CharField(max_length=30,
                             help_text='eg. CHEM1005')
 
@@ -52,6 +58,7 @@ class Course(models.Model):
 
     #I think they want as well a field that would show the current year that the course is being taught
     #2019-2020 something like that
+    #Input mask?
     academicYearTaught = models.CharField(max_length=9, verbose_name="Academic Year Taught",
                                           help_text='eg.2019-2020')
 
@@ -97,7 +104,7 @@ class Course(models.Model):
         super(Course, self).save(*args, **kwargs)
 
     def __str__(self):
-        return (str(self.shortHand) + " - " + str(self.degree))
+        return (str(self.shortHand) + " " + str(self.degree))
     
 class Student(models.Model):
     firstName = models.CharField(max_length=128,verbose_name="First Name")
@@ -105,26 +112,25 @@ class Student(models.Model):
     #not quite sure why we need this?
     #This will be the name provided in the excel file as far as i know
     #Something like John,Smith with the comma included
-    myCampusName = models.CharField(max_length=128, verbose_name="myCampus Name")
+    #myCampusName = models.CharField(max_length=128, verbose_name="myCampus Name")
 
     studentID = models.PositiveIntegerField(validators=[MaxValueValidator(9999999)],unique=True, verbose_name="Student ID")
     anonID = models.PositiveIntegerField(validators=[MaxValueValidator(9999999)],unique=True, verbose_name="Anonymous ID")
 
-    academicPlan = models.CharField(max_length=128,verbose_name="Academic Plan")
-
+    #Degree
+    academicPlan = models.ForeignKey(Degree, on_delete=models.CASCADE, verbose_name="Academic Plan/Degree")
+    
     #should we change this to restricted choice? integer field?
     currentYear = models.IntegerField(validators=[MaxValueValidator(5), MinValueValidator(1)], verbose_name="Current Year")
 
-    graduationDate = models.DateField(null=True, blank=True,verbose_name="Graduation Date")
-    comments = models.TextField(max_length=500, blank=True)
+    graduationDate = models.DateField(blank=True,verbose_name="Graduation Date")
+    comments = models.TextField(max_length=2000, blank=True)
     #I don't really think gap year is necessary as they could start uni at any age.
-    #gapYear = models.BooleanField(default = False)
-    courses = models.ManyToManyField(Course)
-
-    #courseGrades
+    gapYear = models.BooleanField(default = False)
+    courses = models.ManyToManyField(Course,blank=True)
 
     def __str__(self):
-        return str(self.anonID)
+        return (str(self.firstName) + " " + str(self.lastName) + " " + str(self.studentID))
 
 class CourseGrade(models.Model):
      grade = models.DecimalField(max_digits=5,decimal_places=2)
@@ -135,19 +141,24 @@ class CourseGrade(models.Model):
          unique_together = ('course', 'student')
 
      def __str__(self):
-        return (str(self.course) + " - " + str(self.student))
+        return (str(self.course) + " " + str(self.student))
 
 
 class Assessment(models.Model):
      weight = models.DecimalField(max_digits=3,
                                   decimal_places=2,
                                   help_text='eg.0.50')
-     totalMarks = models.PositiveIntegerField(verbose_name= "Total Marks Available",
+     
+     totalMarks = models.PositiveIntegerField(verbose_name= "Total Marks",
                                               help_text= "eg.50")
+     
      assessmentName = models.CharField(max_length=200,
-                             help_text='eg.Lab 1')
+                                       help_text='eg.Lab 1',
+                                       verbose_name='Assessment Name')
+     
      dueDate = models.DateTimeField(verbose_name="Due Date and Time",
                                     help_text='eg.11/10/2021 at 0800')
+     
      course = models.ForeignKey(Course, on_delete=models.CASCADE)
 
      slug = models.SlugField()
@@ -161,7 +172,7 @@ class Assessment(models.Model):
         super(Assessment, self).save(*args, **kwargs)
 
      def __str__(self):
-        return (str(self.course) + " - " + str(self.assessmentName))
+        return (str(self.course) + " " + str(self.assessmentName))
 
 class AssessmentGrade(models.Model):
      #basic restricted choice options
@@ -192,7 +203,7 @@ class AssessmentGrade(models.Model):
          unique_together = ('assessment', 'student')
 
      def __str__(self):
-        return (str(self.assessment) + " - " + str(self.student))
+        return (str(self.assessment) + " " + str(self.student))
 
 class AssessmentComponent(models.Model):
      required = models.BooleanField(default = False)
@@ -204,7 +215,7 @@ class AssessmentComponent(models.Model):
          unique_together = ('description','assessment')
 
      def __str__(self):
-        return (str(self.assessment) + " - " + str(self.description))
+        return (str(self.assessment) + " " + str(self.description))
 
 class AssessmentComponentGrade(models.Model):
     grade = models.DecimalField(max_digits=5,decimal_places=2)
@@ -216,4 +227,4 @@ class AssessmentComponentGrade(models.Model):
         unique_together = ('assessmentComponent', 'student')
 
     def __str__(self):
-        return (str(self.assessmentComponent) + " - " + str(self.student))
+        return (str(self.assessmentComponent) + " " + str(self.student))
