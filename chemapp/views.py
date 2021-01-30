@@ -223,7 +223,7 @@ def add_student(request):
             student.save()
             
             degree = student.academicPlan
-            student.courses.set(Course.objects.filter(degree=degree,year=student.currentYear))
+            student.courses.set(Course.objects.filter(degree=degree,level=student.level))
             student.save()
 
             #Increment degree student count

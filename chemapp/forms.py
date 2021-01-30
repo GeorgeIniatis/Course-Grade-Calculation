@@ -3,6 +3,24 @@ from chemapp.models import *
 from django.contrib.auth.models import User
 from tempus_dominus.widgets import DatePicker
 
+LEVEL_CHOICES = [
+    ('', 'Level'),
+    ('1', 'Level 1'),
+    ('2', 'Level 2'),
+    ('3', 'Level 3'),
+    ('3-M', 'Level 3 MSci'),
+    ('3-CS', 'Level 3 Chemical Studies'),
+    ('4-M', 'Level 4 MSci'),
+    ('4-H-CHEM', 'Level 4 Variation 1'),
+    ('4-H-CMC', 'Level 4 Variation 2'),
+    ('4-H-C&M', 'Level 4 Variation 3'),
+    ('5-M', 'Level 5 Variation 1'),
+    ('5-M-CHEM', 'Level 5 Variation 2'),
+    ('5-M-CMC', 'Level 5 Variation 3'),
+    ('5-M-C&M', 'Level 5 Variation 4'),
+    ('5-M-CP', 'Level 5 Variation 5'),
+    ]
+
 class UserForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput())
 
@@ -17,7 +35,6 @@ class UserProfileForm(forms.ModelForm):
         fields = {'title'}
 
 class CourseForm(forms.ModelForm):
-
     degree = forms.ModelChoiceField(label='',
                                     required = True,
                                     empty_label="Degree",
@@ -26,10 +43,20 @@ class CourseForm(forms.ModelForm):
                                         attrs={
                                             'style':'width:300px',
                                             }
-                                        ))               
+                                        ))
+
+    level = forms.ChoiceField(label='',
+                              required = True,
+                              choices=LEVEL_CHOICES,
+                              widget=forms.Select(
+                                  attrs={
+                                      'style':'width:300px',
+                                      }
+                                  ))
+    
     class Meta:
         model = Course
-        fields = {'code','degree','creditsWorth','name','shortHand','year','academicYearTaught',
+        fields = {'code','degree','creditsWorth','name','shortHand','level','academicYearTaught',
                   'semester','description','comments','minimumPassGrade',
                   'minimumRequirementsForCredit'}
 
@@ -170,17 +197,14 @@ class StudentForm(forms.ModelForm):
                                                   }
                                               ))
 
-    currentYear = forms.IntegerField(label='',
-                                     required = True,
-                                     widget = forms.NumberInput(
-                                         attrs={
-                                             'min':'1',
-                                             'max':'5',
-                                             'type':'number',
-                                             'placeholder':'Current Year',
-                                             'style': 'width:300px',
-                                             }
-                                         ))
+    level = forms.ChoiceField(label='',
+                              required = True,
+                              choices=LEVEL_CHOICES,
+                              widget=forms.Select(
+                                  attrs={
+                                      'style':'width:300px',
+                                      }
+                                  ))
 
     graduationDate = forms.DateField(input_formats=['%Y-%m-%d'],
                                      label='',
@@ -205,9 +229,9 @@ class StudentForm(forms.ModelForm):
                                        }
                                    ))
 
-    field_order = ['studentID', 'firstName', 'lastName','academicPlan','currentYear','graduationDate','comments']
+    field_order = ['studentID', 'firstName', 'lastName','academicPlan','level','graduationDate','comments']
     
     class Meta:
         model = Student
-        fields = ('studentID','firstName','lastName','academicPlan','graduationDate','currentYear','comments')
+        fields = ('studentID','firstName','lastName','academicPlan','level','graduationDate','comments')
 		

@@ -5,6 +5,23 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from datetime import datetime
 from colorfield.fields import ColorField
 
+LEVEL_CHOICES = [
+    ('1', 'Level 1'),
+    ('2', 'Level 2'),
+    ('3', 'Level 3'),
+    ('3-M', 'Level 3 MSci'),
+    ('3-CS', 'Level 3 Chemical Studies'),
+    ('4-M', 'Level 4 MSci'),
+    ('4-H-CHEM', 'Level 4 Variation 1'),
+    ('4-H-CMC', 'Level 4 Variation 2'),
+    ('4-H-C&M', 'Level 4 Variation 3'),
+    ('5-M', 'Level 5 Variation 1'),
+    ('5-M-CHEM', 'Level 5 Variation 2'),
+    ('5-M-CMC', 'Level 5 Variation 3'),
+    ('5-M-C&M', 'Level 5 Variation 4'),
+    ('5-M-CP', 'Level 5 Variation 5'),
+    ]
+
 #People that have access to the site
 #Lecturers etc
 class UserProfile(models.Model):
@@ -49,18 +66,17 @@ class Course(models.Model):
 
     shortHand = models.CharField(max_length=30,
                                  help_text='eg.BIOCHEM3')
+ 
+    level = models.CharField(max_length = 20,
+                             choices=LEVEL_CHOICES)
 
-
-    #could be Integer? same problem as currentYear in Student model
-    #Changed them both to integers
-    year = models.IntegerField(validators=[MaxValueValidator(5), MinValueValidator(1)],
-                               help_text='1-5')
-
+    year = models.PositiveIntegerField()
+    
     #I think they want as well a field that would show the current year that the course is being taught
     #2019-2020 something like that
     #Input mask?
-    academicYearTaught = models.CharField(max_length=9, verbose_name="Academic Year Taught",
-                                          help_text='eg.2019-2020')
+    academicYearTaught = models.CharField(max_length=5, verbose_name="Academic Year Taught",
+                                          help_text='eg.19-20')
 
     semester = models.IntegerField(validators=[MaxValueValidator(2), MinValueValidator(1)],
                                    help_text='1-2')
@@ -100,6 +116,7 @@ class Course(models.Model):
         self.code = self.code.upper()
         self.shortHand = self.shortHand.upper()
         self.minimumPassGrade = self.minimumPassGrade.upper()
+        self.year = int(self.level[0])
         self.slug = slugify(str(self.code)+"-"+str(self.degree))
         super(Course, self).save(*args, **kwargs)
 
@@ -120,8 +137,8 @@ class Student(models.Model):
     #Degree
     academicPlan = models.ForeignKey(Degree, on_delete=models.CASCADE, verbose_name="Academic Plan/Degree")
     
-    #should we change this to restricted choice? integer field?
-    currentYear = models.IntegerField(validators=[MaxValueValidator(5), MinValueValidator(1)], verbose_name="Current Year")
+    level = models.CharField(max_length = 20,
+                             choices=LEVEL_CHOICES)
 
     graduationDate = models.DateField(blank=True,verbose_name="Graduation Date")
     comments = models.TextField(max_length=2000, blank=True)
