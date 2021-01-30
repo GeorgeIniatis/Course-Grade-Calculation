@@ -64,6 +64,12 @@ def add_course(request):
         if course_form.is_valid():
             course = course_form.save()
             course_slug = course.slug
+
+            #Increment degree course count
+            degree = course.degree
+            degree.numberOfCourses = degree.numberOfCourses + 1
+            degree.save()
+            
             return redirect(reverse('chemapp:add_assessments',kwargs={'course_name_slug':course_slug}))
         
         else:
@@ -216,9 +222,13 @@ def add_student(request):
             student.anonID = 0000000
             student.save()
             
-            degree = Degree.objects.get(degreeCode=student.academicPlan)
+            degree = student.academicPlan
             student.courses.set(Course.objects.filter(degree=degree,year=student.currentYear))
             student.save()
+
+            #Increment degree student count
+            degree.numberOfStudent = degree.numberOfStudent + 1
+            degree.save()
             
             addStudentDict['studentAdded'] = True
         else:
