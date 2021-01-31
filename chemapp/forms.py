@@ -34,6 +34,23 @@ class UserProfileForm(forms.ModelForm):
         model = UserProfile
         fields = {'title'}
 
+class DegreeForm(forms.ModelForm):
+    degreeCode = forms.CharField(label='',
+                                 required = True,
+                                 widget = forms.TextInput(
+                                     attrs={
+                                         'maxlength':'30',
+                                         'type':'text',
+                                         'placeholder':'Degree Code',
+                                         'style':'width:300px',
+                                         'autofocus':True,
+                                         }
+                                     ))
+
+    class Meta:
+        model = Degree
+        fields = {'degreeCode'}
+
 class CourseForm(forms.ModelForm):
     degree = forms.ModelChoiceField(label='',
                                     required = True,

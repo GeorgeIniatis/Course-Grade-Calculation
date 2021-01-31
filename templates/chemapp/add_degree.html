@@ -1,0 +1,34 @@
+{% extends 'chemapp/base.html' %}
+{% load staticfiles %}
+
+{% block js_block %}
+    <script src="{% static 'js/jquery.formset.js' %}"></script>
+    <script src="{% static 'js/chemapp-addDegreeForm.js' %}"></script>
+{% endblock %}
+
+{% block title_block %}
+    Add Degree
+{% endblock %}
+
+{% block body_block %}
+<div class="container mt-5 mb-5 ">
+    {% if degreesAdded %}
+        <h4> Degrees added successfully! </h4>
+    {% else %}
+        <h2> Add Degrees </h2>
+        
+        <form id="add_degree_form" method="post" action="{% url 'chemapp:add_degree' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+       
+        {{ degree_formset.management_form }}
+        {% for degree_form in degree_formset %}
+            <div class="degree-formset">
+                {{ degree_form.as_p }}
+            </div>
+        {% endfor %}
+        <br><br>
+        <button type="submit">Save</button>
+        </form>
+    {% endif %}
+    
+{% endblock %}

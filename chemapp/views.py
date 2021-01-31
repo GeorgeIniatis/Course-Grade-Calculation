@@ -23,6 +23,45 @@ def about(request):
     return render(request,'chemapp/about.html', context=context_dict)
 
 @login_required
+def degrees(request):
+    degreesDict = {}
+
+    degrees = Degree.objects.all()
+    degreesDict['degrees'] = degrees
+
+    return render(request, 'chemapp/degrees.html',context=degreesDict)
+
+@login_required
+def add_degree(request):
+    addDegreeDict = {}
+    addDegreeDict['degreesAdded'] = False
+    
+    DegreeFormSet = formset_factory(DegreeForm,extra=1)
+
+    if (request.method == 'POST'):
+        degree_formset = DegreeFormSet(request.POST)
+        
+        if degree_formset.is_valid():
+            degrees = []
+            for form in degree_formset:
+                degreeCode = form.cleaned_data.get('degreeCode')
+                
+                degrees.append(Degree(degreeCode=degreeCode,
+                                      numberOfCourses=0,
+                                      numberOfStudents=0))
+            
+            Degree.objects.bulk_create(degrees)
+            addDegreeDict['degreesAdded'] = True             
+        else:
+            print(degree_formset.errors)
+    else:
+        degree_formset = DegreeFormSet()
+        
+    addDegreeDict['degree_formset'] = degree_formset
+    
+    return render(request,'chemapp/add_degree.html',context = addDegreeDict)
+    
+@login_required
 def courses(request):
     coursesDict = {}
     courses = Course.objects.all()
@@ -46,7 +85,15 @@ def course(request,course_name_slug):
         course = Course.objects.get(slug=course_name_slug)
         assessments = Assessment.objects.filter(course=course)
         courseDict['course'] = course
-        courseDict['assessments'] = assessments
+        courseDict['assessments'] = {}
+
+        for assessment in assessments:
+                courseDict['assessments'][assessment] = []
+                components = AssessmentComponent.objects.filter(assessment=assessment)
+                
+                for component in components:
+                    courseDict['assessments'][assessment].append(component)
+        
     except Course.DoesNotExist:
         raise Http404("Course does not exist")
 
@@ -55,8 +102,6 @@ def course(request,course_name_slug):
 @login_required
 def add_course(request):
     addCourseDict = {}
-
-    components = []
 
     if (request.method == 'POST'):
         course_form = CourseForm(request.POST)
@@ -264,7 +309,7 @@ def add_student(request):
             student.save()
 
             #Increment degree student count
-            degree.numberOfStudent = degree.numberOfStudent + 1
+            degree.numberOfStudents = degree.numberOfStudents + 1
             degree.save()
             
             addStudentDict['studentAdded'] = True

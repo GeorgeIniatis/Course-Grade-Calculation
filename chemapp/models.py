@@ -41,7 +41,7 @@ class Degree(models.Model):
                            help_text='eg.4H-CMC')
     
     numberOfCourses = models.PositiveIntegerField(default=0,verbose_name="Number of Courses")
-    numberOfStudent = models.PositiveIntegerField(default=0,verbose_name="Number of Students")
+    numberOfStudents = models.PositiveIntegerField(default=0,verbose_name="Number of Students")
     
     def __str__(self):
         return self.degreeCode

@@ -47,13 +47,16 @@
                 <a class="nav-link active" aria-current="page" href="{% url 'chemapp:home' %}">Home</a>
               </li>
               <li class="nav-item">
+                <a class="nav-link" href="{% url 'chemapp:degrees' %}">Degrees</a>
+              </li>
+              <li class="nav-item">
                 <a class="nav-link" href="{% url 'chemapp:courses' %}">Courses</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'chemapp:about' %}">About</a>
+                <a class="nav-link" href="{% url 'chemapp:students' %}">Students</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'chemapp:students' %}">Students</a>
+                <a class="nav-link" href="{% url 'chemapp:about' %}">About</a>
               </li>
               <li class="nav-item">
                 <a type="button" class="nav-link" data-bs-toggle="modal" data-bs-target="#logoutModal">Logout</a>
