@@ -203,12 +203,49 @@ def user_logout(request):
 
 @login_required
 def students(request):
-    context ={}
+    studentsDict = {}
 
-    Students = Student.objects.all()
+    students = Student.objects.all()
+    studentsDict['students'] = students
 
-    return render(request, 'chemapp/students.html',locals())
+    return render(request, 'chemapp/students.html',context=studentsDict)
 
+
+# Dictionary structure
+# studentDict = {'student':studentObject,
+#                'courses':{courseObject1:[{assessmentObject1:[componentObject1,componentObject2]},
+#                                          {assessmentObject2:[compoentnObject3,componentObject3]},
+#                                         ],
+#                           courseObject2:[{assessmentObject3:[componentObject4,componentObject5]},
+#                                         ],
+#               }
+@login_required
+def student(request,student_id):
+    studentDict = {}
+    try:
+        student = Student.objects.get(studentID=student_id)
+        studentDict['student'] = student
+        studentDict['courses'] = {}
+        
+        for course in student.courses.all():
+            studentDict['courses'][course] = []
+            assessments = Assessment.objects.filter(course=course)
+            
+            for assessment in assessments:
+                assessmentDict = {}
+                assessmentDict[assessment] = []
+                components = AssessmentComponent.objects.filter(assessment=assessment)
+                
+                for component in components:
+                    assessmentDict[assessment].append(component)
+                    
+                studentDict['courses'][course].append(assessmentDict)
+
+    except Student.DoesNotExist:
+        raise Http404("Student does not exist")
+
+    return render(request,'chemapp/student.html', context=studentDict)
+    
 @login_required
 def add_student(request):
     addStudentDict = {}
