@@ -20,6 +20,8 @@ urlpatterns = [
     path('students/add_student/', views.add_student, name='add_student'),
     path('students/upload_student_csv/', views.upload_student_csv, name='upload_student_csv'),
     path('students/<student_id>/', views.student, name='student'),
+    path('students/<student_id>/<slug:course_name_slug>/<slug:assessment_name_slug>/add_grades/', views.add_grades, name='add_grades'),
+    
 
     
 ]

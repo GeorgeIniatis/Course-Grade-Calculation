@@ -102,6 +102,7 @@ class AssessmentForm(forms.ModelForm):
                                         'style': 'width:300px',
                                         }
                                     ))
+    
     dueDate = forms.DateTimeField(input_formats=['%Y-%m-%dT%H:%M',],
                                   label='',
                                   required = True,
@@ -250,5 +251,41 @@ class StudentForm(forms.ModelForm):
     
     class Meta:
         model = Student
-        fields = ('studentID','firstName','lastName','academicPlan','level','graduationDate','comments')
+        fields = {'studentID','firstName','lastName','academicPlan','level','graduationDate','comments'}
+
+class AssessmentComponentGradeForm(forms.ModelForm):
+    description =  forms.CharField(label='',
+                                   widget = forms.TextInput(
+                                       attrs={
+                                           'type':'text',
+                                           'style':'width:300px',
+                                           }
+                                       ))
+
+    assessmentComponent = forms.ModelChoiceField(label='',
+                                                 queryset=AssessmentComponent.objects.all(),
+                                                 widget=forms.TextInput(
+                                                     attrs={
+                                                         'type':'hidden',
+                                                         'style':'width:300px',
+                                                         }
+                                                ))
+
+    grade = forms.DecimalField(label='',
+                               required = True,
+                               widget = forms.NumberInput(
+                                   attrs={
+                                        'min':'0',
+                                        'step':'0.01',
+                                        'type':'number',
+                                        'placeholder':'Grade',
+                                        'style': 'width:300px',
+                                        }
+                                ))
+
+    field_order = ['description','assessmentComponent', 'grade']
+    
+    class Meta:
+        model = AssessmentComponentGrade
+        fields= {'description','assessmentComponent','grade'}
 		

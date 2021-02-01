@@ -78,6 +78,11 @@ def courses(request):
 
     return render(request,'chemapp/courses.html', {'courses': coursesDict})
 
+# Dictionary structure
+# courseDict = {'course':courseObject,
+#               'assessments':{assessmentObject1:[componentObject1,componentObject2],
+#                              assessmentObject2:[compoentnObject3,componentObject4]},
+#              }
 @login_required
 def course(request,course_name_slug):
     courseDict = {}
@@ -262,7 +267,7 @@ def students(request):
 #                                          {assessmentObject2:[compoentnObject3,componentObject3]},
 #                                         ],
 #                           courseObject2:[{assessmentObject3:[componentObject4,componentObject5]},
-#                                         ],
+#                                         ]},
 #               }
 @login_required
 def student(request,student_id):
@@ -271,6 +276,7 @@ def student(request,student_id):
         student = Student.objects.get(studentID=student_id)
         studentDict['student'] = student
         studentDict['courses'] = {}
+        studentDict['student_id'] = student_id
         
         for course in student.courses.all():
             studentDict['courses'][course] = []
@@ -320,6 +326,50 @@ def add_student(request):
 
     addStudentDict['student_form'] = student_form
     return render(request,'chemapp/add_student.html',context=addStudentDict)
+
+@login_required
+def add_grades(request,student_id,course_name_slug,assessment_name_slug):
+    
+    student = Student.objects.get(studentID = student_id)
+    course = Course.objects.get(slug = course_name_slug)
+    assessment = Assessment.objects.get(course=course,slug=assessment_name_slug)
+    components = AssessmentComponent.objects.filter(assessment = assessment)
+
+    addGradeDict = {}
+    addGradeDict['gradesAdded'] = False
+    addGradeDict['assessment'] = assessment
+    addGradeDict['components'] = components
+    addGradeDict['student_id'] = student_id
+    addGradeDict['course_name_slug'] = course_name_slug
+    addGradeDict['assessment_name_slug'] = assessment_name_slug
+    
+    GradeFormSet = formset_factory(AssessmentComponentGradeForm,extra=0)
+
+    if (request.method == 'POST'):
+        grade_formset = GradeFormSet(request.POST)
+        
+        if grade_formset.is_valid():
+            grades = []
+            for form in grade_formset:
+                grade = form.cleaned_data.get('grade')
+                assessmentComponent = form.cleaned_data.get('assessmentComponent')
+                
+                grades.append(AssessmentComponentGrade(grade=grade,
+                                                       assessmentComponent=assessmentComponent,
+                                                       student=student))
+            
+            AssessmentComponentGrade.objects.bulk_create(grades)
+            addGradeDict['gradesAdded'] = True           
+        else:
+            print(grade_formset.errors)
+    else:
+        grade_formset = GradeFormSet(initial=[{'assessmentComponent': component,
+                                               'description': component.description} for component in components])
+        
+    addGradeDict['grade_formset'] = grade_formset
+    
+    return render(request,'chemapp/add_grades.html',context = addGradeDict)
+    
 
 @login_required
 def upload_student_csv(request):
