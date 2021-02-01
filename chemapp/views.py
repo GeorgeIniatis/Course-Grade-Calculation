@@ -180,16 +180,16 @@ def add_assessments(request,course_name_slug):
 
 @login_required
 def add_assessmentComponents(request,course_name_slug,assessment_name_slug):
-    addAssessmentComponentsDict = {}
-    addAssessmentComponentsDict['course_name_slug'] = course_name_slug
-    addAssessmentComponentsDict['assessment_name_slug'] = assessment_name_slug
-    addAssessmentComponentsDict['allComponentsAdded'] = False
     
     AssessmentComponentFormSet = formset_factory(AssessmentComponentForm,extra=1)
     course = Course.objects.get(slug = course_name_slug)
     allAssessments = Assessment.objects.filter(course=course)
     assessment = Assessment.objects.get(course=course,slug=assessment_name_slug)
     
+    addAssessmentComponentsDict = {}
+    addAssessmentComponentsDict['course_name_slug'] = course_name_slug
+    addAssessmentComponentsDict['assessment_name_slug'] = assessment_name_slug
+    addAssessmentComponentsDict['allComponentsAdded'] = False
     addAssessmentComponentsDict['assessment'] = assessment.assessmentName
 
     if (request.method == 'POST'):
@@ -370,7 +370,6 @@ def add_grades(request,student_id,course_name_slug,assessment_name_slug):
     
     return render(request,'chemapp/add_grades.html',context = addGradeDict)
     
-
 @login_required
 def upload_student_csv(request):
     #student_dict = {'boldmessage':'Upload csv file to add students'}

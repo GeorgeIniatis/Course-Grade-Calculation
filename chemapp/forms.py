@@ -269,7 +269,7 @@ class AssessmentComponentGradeForm(forms.ModelForm):
                                                          'type':'hidden',
                                                          'style':'width:300px',
                                                          }
-                                                ))
+                                                     ))
 
     grade = forms.DecimalField(label='',
                                required = True,
@@ -281,7 +281,7 @@ class AssessmentComponentGradeForm(forms.ModelForm):
                                         'placeholder':'Grade',
                                         'style': 'width:300px',
                                         }
-                                ))
+                                   ))
 
     field_order = ['description','assessmentComponent', 'grade']
     

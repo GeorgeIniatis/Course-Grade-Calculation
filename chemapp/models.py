@@ -22,10 +22,17 @@ LEVEL_CHOICES = [
     ('5-M-CP', 'Level 5 Variation 5'),
     ]
 
+COLOR_CHOICES = [
+    ("#FFFFFF", "white"),
+    ("#000000", "black"),
+    ]
+
 #People that have access to the site
 #Lecturers etc
 class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User,
+                                on_delete=models.CASCADE)
+    
     title = models.CharField(max_length=128)
 
     class Meta:
@@ -37,11 +44,14 @@ class UserProfile(models.Model):
 class Degree(models.Model):
     #Input mask?
     degreeCode = models.CharField(max_length=30,
-                           unique=True,
-                           help_text='eg.4H-CMC')
+                                  unique=True,
+                                  help_text='eg.4H-CMC')
+
+    numberOfCourses = models.PositiveIntegerField(default=0,
+                                                  verbose_name="Number of Courses")
     
-    numberOfCourses = models.PositiveIntegerField(default=0,verbose_name="Number of Courses")
-    numberOfStudents = models.PositiveIntegerField(default=0,verbose_name="Number of Students")
+    numberOfStudents = models.PositiveIntegerField(default=0,
+                                                   verbose_name="Number of Students")
     
     def __str__(self):
         return self.degreeCode
@@ -52,14 +62,14 @@ class Course(models.Model):
     code = models.CharField(max_length=30,
                             help_text='eg. CHEM1005')
 
-    degree = models.ForeignKey(Degree, on_delete=models.CASCADE)
+    degree = models.ForeignKey(Degree,
+                               on_delete=models.CASCADE)
 
     #any paramets here max min?
     #Question to ask customer
     creditsWorth = models.IntegerField(validators=[MaxValueValidator(20), MinValueValidator(5)],
                                        verbose_name='Credits Worth',
                                        help_text='5-20 Credits')
-
 
     name = models.CharField(max_length=200,
                             help_text='eg.Biological Chemistry 3')
@@ -75,14 +85,15 @@ class Course(models.Model):
     #I think they want as well a field that would show the current year that the course is being taught
     #2019-2020 something like that
     #Input mask?
-    academicYearTaught = models.CharField(max_length=5, verbose_name="Academic Year Taught",
+    academicYearTaught = models.CharField(max_length=5,
+                                          verbose_name="Academic Year Taught",
                                           help_text='eg.19-20')
 
     semester = models.IntegerField(validators=[MaxValueValidator(2), MinValueValidator(1)],
                                    help_text='1-2')
 
     #description could possible be an uploaded txt file so we dont have to manage length.
-    description = models.TextField(max_length = 2000)
+    description = models.TextField(max_length=2000)
 
     comments = models.TextField(max_length=2000,
                                 blank=True,
@@ -102,11 +113,6 @@ class Course(models.Model):
 
     slug = models.SlugField(unique=True)
 
-    COLOR_CHOICES = [
-        ("#FFFFFF", "white"),
-        ("#000000", "black")
-    ]
-
     courseColor = ColorField(choices=COLOR_CHOICES)
 
     class Meta:
@@ -124,35 +130,56 @@ class Course(models.Model):
         return (str(self.shortHand) + " " + str(self.degree))
     
 class Student(models.Model):
-    firstName = models.CharField(max_length=128,verbose_name="First Name")
-    lastName = models.CharField(max_length=128,verbose_name="Last Name")
+    studentID = models.PositiveIntegerField(validators=[MaxValueValidator(9999999)],
+                                            unique=True,
+                                            verbose_name="Student ID")
+    
+    anonID = models.PositiveIntegerField(validators=[MaxValueValidator(9999999)],
+                                         unique=True,
+                                         verbose_name="Anonymous ID")
+    
+    firstName = models.CharField(max_length=128,
+                                 verbose_name="First Name")
+    
+    lastName = models.CharField(max_length=128,
+                                verbose_name="Last Name")
+    
     #not quite sure why we need this?
     #This will be the name provided in the excel file as far as i know
     #Something like John,Smith with the comma included
     #myCampusName = models.CharField(max_length=128, verbose_name="myCampus Name")
 
-    studentID = models.PositiveIntegerField(validators=[MaxValueValidator(9999999)],unique=True, verbose_name="Student ID")
-    anonID = models.PositiveIntegerField(validators=[MaxValueValidator(9999999)],unique=True, verbose_name="Anonymous ID")
-
     #Degree
-    academicPlan = models.ForeignKey(Degree, on_delete=models.CASCADE, verbose_name="Academic Plan/Degree")
+    academicPlan = models.ForeignKey(Degree,
+                                     on_delete=models.CASCADE,
+                                     verbose_name="Academic Plan/Degree")
     
     level = models.CharField(max_length = 20,
                              choices=LEVEL_CHOICES)
 
-    graduationDate = models.DateField(blank=True,verbose_name="Graduation Date")
-    comments = models.TextField(max_length=2000, blank=True)
+    graduationDate = models.DateField(blank=True,
+                                      verbose_name="Graduation Date")
+    
+    comments = models.TextField(max_length=2000,
+                                blank=True)
+    
     #I don't really think gap year is necessary as they could start uni at any age.
     gapYear = models.BooleanField(default = False)
+    
     courses = models.ManyToManyField(Course,blank=True)
 
     def __str__(self):
         return (str(self.firstName) + " " + str(self.lastName) + " " + str(self.studentID))
 
 class CourseGrade(models.Model):
-     grade = models.DecimalField(max_digits=5,decimal_places=2)
-     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-     student = models.ForeignKey(Student, on_delete=models.CASCADE)
+     grade = models.DecimalField(max_digits=5,
+                                 decimal_places=2)
+     
+     course = models.ForeignKey(Course,
+                                on_delete=models.CASCADE)
+     
+     student = models.ForeignKey(Student,
+                                 on_delete=models.CASCADE)
 
      class Meta:
          unique_together = ('course', 'student')
@@ -176,9 +203,11 @@ class Assessment(models.Model):
      dueDate = models.DateTimeField(verbose_name="Due Date and Time",
                                     help_text='eg.11/10/2021 at 0800')
      
-     course = models.ForeignKey(Course, on_delete=models.CASCADE)
+     course = models.ForeignKey(Course,
+                                on_delete=models.CASCADE)
 
      slug = models.SlugField()
+     
      componentsAdded = models.BooleanField(default = False)
      
      class Meta:
@@ -204,17 +233,37 @@ class AssessmentGrade(models.Model):
      )
 
      submissionDate = models.DateTimeField(verbose_name="Submission Date and Time")
-     lateStatus = models.CharField(max_length=1,choices = LATE_STATUS, blank = True,verbose_name="Late Status")
-     noDetriment = models.BooleanField(default = False,verbose_name="No Detriment Policy")
-     goodCause = models.BooleanField(default = False,verbose_name="Good Cause")
-     goodCauseAction = models.CharField(max_length=5,choices = GOOD_CAUSE_ACTION, blank = True,verbose_name="Good Cause Action")
-     markedGrade = models.DecimalField(max_digits=5,decimal_places=2,verbose_name="Marked Grade")
+     
+     lateStatus = models.CharField(max_length=1,choices = LATE_STATUS,
+                                   blank = True,
+                                   verbose_name="Late Status")
+     
+     noDetriment = models.BooleanField(default = False,
+                                       verbose_name="No Detriment Policy")
+     
+     goodCause = models.BooleanField(default = False,
+                                     verbose_name="Good Cause")
+     
+     goodCauseAction = models.CharField(max_length=5,choices = GOOD_CAUSE_ACTION,
+                                        blank = True,
+                                        verbose_name="Good Cause Action")
+     
+     markedGrade = models.DecimalField(max_digits=5,
+                                       decimal_places=2,
+                                       verbose_name="Marked Grade")
+     
      # Is there any need for the penalty field?
      #penalty = models.CharField()
-     finalGrade = models.DecimalField(max_digits=5,decimal_places=2,verbose_name="Final Grade")
+     
+     finalGrade = models.DecimalField(max_digits=5,
+                                      decimal_places=2,
+                                      verbose_name="Final Grade")
 
-     assessment = models.ForeignKey(Assessment, on_delete=models.CASCADE)
-     student = models.ForeignKey(Student, on_delete=models.CASCADE)
+     assessment = models.ForeignKey(Assessment,
+                                    on_delete=models.CASCADE)
+     
+     student = models.ForeignKey(Student,
+                                 on_delete=models.CASCADE)
 
      class Meta:
          unique_together = ('assessment', 'student')
@@ -224,9 +273,13 @@ class AssessmentGrade(models.Model):
 
 class AssessmentComponent(models.Model):
      required = models.BooleanField(default = False)
+     
      marks = models.PositiveIntegerField()
+     
      description = models.CharField(max_length=100)
-     assessment = models.ForeignKey(Assessment, on_delete=models.CASCADE)
+     
+     assessment = models.ForeignKey(Assessment,
+                                    on_delete=models.CASCADE)
 
      class Meta:
          unique_together = ('description','assessment')
@@ -235,10 +288,15 @@ class AssessmentComponent(models.Model):
         return (str(self.assessment) + " " + str(self.description))
 
 class AssessmentComponentGrade(models.Model):
-    grade = models.DecimalField(max_digits=5,decimal_places=2)
+    grade = models.DecimalField(max_digits=5,
+                                decimal_places=2)
 
-    assessmentComponent = models.ForeignKey(AssessmentComponent, on_delete=models.CASCADE,verbose_name="Assessment Component")
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    assessmentComponent = models.ForeignKey(AssessmentComponent,
+                                            on_delete=models.CASCADE,
+                                            verbose_name="Assessment Component")
+    
+    student = models.ForeignKey(Student,
+                                on_delete=models.CASCADE)
 
     class Meta:
         unique_together = ('assessmentComponent', 'student')
