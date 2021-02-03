@@ -1,3 +1,17 @@
 .bg-logo{
   background-color: #003865;
 }
+
+html{
+  min-height:100%;
+}
+
+body{
+  min-height:100vh;
+}
+
+.uni-blue-btn{
+  color: #fff !important;
+  background-color: #003865 !important;
+  border-color: #003865 !important;
+}
