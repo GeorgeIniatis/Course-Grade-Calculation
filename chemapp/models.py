@@ -122,7 +122,12 @@ class Course(models.Model):
 
     slug = models.SlugField(unique=True)
 
-    courseColor = ColorField(choices=COLOR_CHOICES)
+    COLOR_CHOICES = [
+        ("#FFFFFF", "white"),
+        ("#000000", "black")
+    ]
+
+    courseColor = ColorField(default='#FF0000')
 
     class Meta:
          unique_together = ('code', 'degree')
@@ -137,7 +142,7 @@ class Course(models.Model):
 
     def __str__(self):
         return (str(self.shortHand) + " " + str(self.degree))
-    
+
 class Student(models.Model):
     studentID = models.PositiveIntegerField(validators=[MaxValueValidator(9999999)],
                                             unique=True,
