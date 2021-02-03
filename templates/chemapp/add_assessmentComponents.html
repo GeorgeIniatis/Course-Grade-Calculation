@@ -1,0 +1,46 @@
+{% extends 'chemapp/base.html' %}
+{% load static %}
+
+{% block js_block %}
+    <script src="{% static 'js/jquery.formset.js' %}"></script>
+    <script src="{% static 'js/chemapp-addRemoveAssessmentComponentForm.js' %}"></script>
+{% endblock %}
+
+{% block title_block %}
+    Add Assessment Components
+{% endblock %}
+
+{% block body_block %}
+<div class="container mt-5 mb-5 ">
+    {% if allComponentsAdded %}
+        <h4> You have successfully added a course along with its corresponding assessments and components! </h4>
+    {% else %}
+        <h2> Add Assessment Components</h2>
+        <h2> {{ assessment }} </h2>
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                    <b>{{ message }}</b>
+                {% endif %}
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                    <b>{{ message }}</b>
+                    <br><br>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    
+        <form id="add_assessmentComponent_form" method="post" action="{% url 'chemapp:add_assessmentComponents' course_name_slug=course_name_slug assessment_name_slug=assessment_name_slug  %}" enctype="multipart/form-data">
+        {% csrf_token %}
+       
+        {{ assessmentComponent_formset.management_form }}
+        {% for assessmentComponent_form in assessmentComponent_formset %}
+            <div class="assessmentComponent-formset">
+                {{ assessmentComponent_form.as_p }}
+            </div>
+        {% endfor %}
+        <br>
+        <button type="submit">Save</button>
+        </form>
+    {% endif %}
+    
+{% endblock %}

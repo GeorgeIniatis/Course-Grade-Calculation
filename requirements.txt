@@ -1,3 +1,8 @@
-Django==2.1.5
+asgiref==3.3.1
+Django==3.1.6
+django-colorfield==0.4.0
+django-tables2==2.3.4
+django-tempus-dominus==5.1.2.13
 Pillow==8.0.1
 pytz==2020.4
+sqlparse==0.4.1

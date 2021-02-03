@@ -1,0 +1,136 @@
+{% extends 'chemapp/base.html' %}
+
+{% block title_block %}
+    Courses
+{% endblock %}
+
+{% block body_block %}
+
+<div class="container mt-5 ">
+  {% if courses %}
+
+  <div class="d-grid gap-2  mt-3 mx-auto">
+    <a class="btn btn-block btn-primary " data-bs-toggle="collapse" href="#undergrad-year-1" role="button" aria-expanded="false" aria-controls="undergrad-year-1">
+      Year 1 Courses
+    </a>
+  </div>
+
+  <!-- Sectionfor year 1 courses -->
+  <div class="collapse " id="undergrad-year-1">
+    <div class="row align-items-start pt-3">
+      {% for key,value in courses.items %}
+        {% if value.0 == 1 %}
+
+            <div class="col-3 d-grid gap-2 mt-3"  >
+              <a class="btn text-start  pb-5" style="background-color:{{value.3}}" href="{{ value.1 }}" role="button">
+                <h2>{{ key }}</h2>
+                {{ value.2 }}
+              </a>
+            </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+
+
+  <div class="d-grid gap-2 mt-3  mx-auto">
+    <a class="btn btn-primary " data-bs-toggle="collapse" href="#undergrad-year-2" role="button" aria-expanded="false" aria-controls="undergrad-year-2">
+      Year 2 Courses
+    </a>
+  </div>
+  <!-- Sectionfor year 2 courses -->
+  <div class="collapse " id="undergrad-year-2">
+    <div class="row align-items-start pt-3">
+      {% for key,value in courses.items %}
+        {% if value.0 == 2 %}
+
+            <div class="col-3 d-grid gap-2 mt-3"  >
+              <a class="btn text-start  pb-5" style="background-color:{{value.3}}" href="{{ value.1 }}" role="button">
+                <h2>{{ key }}</h2>
+                {{ value.2 }}
+              </a>
+            </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+
+
+  <div class="d-grid gap-2 mt-3  mx-auto">
+    <a class="btn btn-primary " data-bs-toggle="collapse" href="#undergrad-year-3" role="button" aria-expanded="false" aria-controls="undergrad-year-3">
+      Year 3 Courses
+    </a>
+  </div>
+  <!-- Sectionfor year 3 courses -->
+  <div class="collapse " id="undergrad-year-3">
+    <div class="row align-items-start pt-3">
+      {% for key,value in courses.items %}
+        {% if value.0 == 3 %}
+
+            <div class="col-3 d-grid gap-2 mt-3"  >
+              <a class="btn text-start  pb-5" style="background-color:{{value.3}}" href="{{ value.1 }}" role="button">
+                <h2>{{ key }}</h2>
+                {{ value.2 }}
+              </a>
+            </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="d-grid gap-2 mt-3  mx-auto">
+    <a class="btn btn-primary " data-bs-toggle="collapse" href="#undergrad-year-4" role="button" aria-expanded="false" aria-controls="undergrad-year-4">
+      Year 4 Courses
+    </a>
+  </div>
+  <!-- Sectionfor year 4 courses -->
+  <div class="collapse " id="undergrad-year-4">
+    <div class="row align-items-start pt-3">
+      {% for key,value in courses.items %}
+        {% if value.0 == 4 %}
+
+            <div class="col-3 d-grid gap-2 mt-3"  >
+              <a class="btn text-start  pb-5" style="background-color:{{value.3}}" href="{{ value.1 }}" role="button">
+                <h2>{{ key }}</h2>
+                {{ value.2 }}
+              </a>
+            </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="d-grid gap-2 mt-3  mx-auto">
+    <a class="btn btn-primary " data-bs-toggle="collapse" href="#undergrad-year-5" role="button" aria-expanded="false" aria-controls="undergrad-year-5">
+      Year 5 Courses
+    </a>
+  </div>
+  <!-- Sectionfor year 5 courses -->
+  <div class="collapse " id="undergrad-year-5">
+    <div class="row align-items-start pt-3">
+      {% for key,value in courses.items %}
+        {% if value.0 == 5 %}
+
+            <div class="col-3 d-grid gap-2 mt-3"  >
+              <a class="btn text-start  pb-5" style="background-color:{{value.3}}" href="{{ value.1 }}" role="button">
+                <h2>{{ key }}</h2>
+                {{ value.2 }}
+              </a>
+            </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+  <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_course' %}">Add a course</a>
+</div>
+
+  {% else %}
+    <h4>There are no courses!</h4>
+    <div>
+        <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_course' %}">Add a course</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

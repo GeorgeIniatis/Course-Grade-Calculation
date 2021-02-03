@@ -41,6 +41,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'chemapp',
+    'tempus_dominus',
+    'django_tables2',
+    'colorfield',
 ]
 
 MIDDLEWARE = [

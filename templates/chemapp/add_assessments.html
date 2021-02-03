@@ -1,0 +1,42 @@
+{% extends 'chemapp/base.html' %}
+{% load static %}
+
+{% block js_block %}
+    <script src="{% static 'js/jquery.formset.js' %}"></script>
+    <script src="{% static 'js/chemapp-addRemoveAssessmentForm.js' %}"></script>
+{% endblock %}
+
+{% block title_block %}
+    Add Assessments
+{% endblock %}
+
+{% block body_block %}
+<div class="container mt-5 mb-5 ">
+    <h2> Add Assessments </h2>
+        
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                <b>{{ message }}</b>
+            {% endif %}
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                <b>{{ message }}</b>
+                <br><br>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    
+    <form id="add_assessment_form" method="post" action="{% url 'chemapp:add_assessments' course_name_slug=course_name_slug %}" enctype="multipart/form-data">
+    {% csrf_token %}
+       
+    {{ assessment_formset.management_form }}
+    {% for assessment_form in assessment_formset %}
+        <div class="assessment-formset">
+            {{ assessment_form.as_p }}
+        </div>
+    {% endfor %}
+    <br>
+    <button type="submit">Save</button>
+    </form>
+    
+{% endblock %}

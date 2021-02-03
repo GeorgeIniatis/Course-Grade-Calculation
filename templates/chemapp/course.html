@@ -1,0 +1,40 @@
+{% extends 'chemapp/base.html' %}
+
+{% block title_block %}
+    {{ course.name }}
+{% endblock %}
+
+{% block body_block %}
+<div class="container mt-5 ">
+<div>
+    <h2> {{ course.name }} </h2>
+    <p> Code: {{ course.code }} </p>
+    <p> Credits: {{ course.creditsWorth }} </p>
+    <p> Shorthand: {{ course.shortHand }} </p>
+    <p> Academic Year Taught: {{ course.academicYearTaught }} </p>
+    <p> Semester: {{ course.semester }} </p>
+    <p> Description: {{ course.description }} </p>
+    <p> Comments: {{ course.comments }} </p>
+    <p> Minimum Pass Grade: {{ course.minimumPassGrade }} </p>
+    <p> Minimum Requirements For Credit: {{ course.minimumRequirementsForCredit }} </p>
+
+    <h2> Assessments and Components</h2>
+        {% if not assessments %}
+           <p> No assessments have been yet set for this course </p>
+        {% else %}
+            {% for assessment,components in assessments.items %}
+                <h4> {{ assessment.assessmentName }} </h4>
+                <p> Weight: {{ assessment.weight }} </p>
+                <p> Total Marks: {{ assessment.totalMarks }} </p>
+                <p> Due Date and Time: {{ assessment.dueDate }} </p>
+                {% for component in components %}
+                    <h4> Component: {{ component.description }} </h4>
+                    <p> Required: {{ component.required }} </p>
+                    <p> Marks: {{ component.marks }} </p>
+                {% endfor %}
+                <br>
+            {% endfor %}
+        {% endif %}
+</div>
+</div>
+{% endblock %}

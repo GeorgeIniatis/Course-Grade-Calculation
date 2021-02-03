@@ -1,0 +1,26 @@
+{% extends 'chemapp/base.html' %}
+
+{% block title_block %}
+    Degrees
+{% endblock %}
+
+{% block body_block %}
+
+<div class="container mt-5 ">
+    {% if degrees %}
+        <h2> Degrees </h2>
+        {% for degree in degrees %}
+            <p> {{ degree }} </p>
+        {% endfor %}
+        
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_degree' %}">Add a degree</a>
+        </div>
+    {% else %}
+        <h4>There are no degrees!</h4>
+        <div>
+            <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_degree' %}">Add a degree</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

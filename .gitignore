@@ -6,3 +6,5 @@
 *.ps
 __pycache__/
 db.sqlite3
+
+chemapp/migrations/
