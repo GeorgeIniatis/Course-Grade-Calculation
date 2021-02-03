@@ -263,10 +263,10 @@ def students(request):
 
 # Dictionary structure
 # studentDict = {'student':studentObject,
-#                'courses':{courseObject1:[{assessmentObject1:[componentObject1,componentObject2]},
-#                                          {assessmentObject2:[compoentnObject3,componentObject3]},
+#                'courses':{courseObject1:[{assessmentObject1:[{componentObject1:grade},{componentObject2:grade}]},
+#                                          {assessmentObject2:[{compoentnObject3:grade},{componentObject3:grade}]},
 #                                         ],
-#                           courseObject2:[{assessmentObject3:[componentObject4,componentObject5]},
+#                           courseObject2:[{assessmentObject3:[{componentObject4:grade},{componentObject5:grade}]},
 #                                         ]},
 #               }
 @login_required
@@ -288,7 +288,15 @@ def student(request,student_id):
                 components = AssessmentComponent.objects.filter(assessment=assessment)
                 
                 for component in components:
-                    assessmentDict[assessment].append(component)
+                    componentDict = {}
+                    try:
+                        assessmentComponentGrade = AssessmentComponentGrade.objects.get(assessmentComponent=component,student=student)
+                        grade = assessmentComponentGrade.grade
+                    except AssessmentComponentGrade.DoesNotExist:
+                        grade = None
+                            
+                    componentDict[component] = grade
+                    assessmentDict[assessment].append(componentDict)
                     
                 studentDict['courses'][course].append(assessmentDict)
 
