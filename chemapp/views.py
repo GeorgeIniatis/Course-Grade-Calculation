@@ -151,12 +151,14 @@ def add_assessments(request,course_name_slug):
                 name = form.cleaned_data.get('assessmentName')
                 marks = form.cleaned_data.get('totalMarks')
                 dueDate = form.cleaned_data.get('dueDate')
+                componentNumberNeeded = form.cleaned_data.get('componentNumberNeeded')
                 slug = slugify(name)
 
                 assessments.append(Assessment(weight=weight,
                                               assessmentName=name,
                                               totalMarks=marks,
                                               dueDate=dueDate,
+                                              componentNumberNeeded=componentNumberNeeded,
                                               course=course,
                                               slug=slug))
                 
@@ -357,14 +359,15 @@ def add_grades(request,student_id,course_name_slug,assessment_name_slug):
     addGradeDict['course_name_slug'] = course_name_slug
     addGradeDict['assessment_name_slug'] = assessment_name_slug
     
-    GradeFormSet = formset_factory(AssessmentComponentGradeForm,extra=0)
+    ComponentGradeFormSet = formset_factory(AssessmentComponentGradeForm,extra=0)
 
     if (request.method == 'POST'):
-        grade_formset = GradeFormSet(request.POST)
+        component_grade_formset = ComponentGradeFormSet(request.POST)
+        assessment_grade_form = AssessmentGradeForm(request.POST)
         
-        if grade_formset.is_valid():
+        if assessment_grade_form.is_valid() and component_grade_formset.is_valid():
             grades = []
-            for form in grade_formset:
+            for form in component_grade_formset:
                 grade = form.cleaned_data.get('grade')
                 assessmentComponent = form.cleaned_data.get('assessmentComponent')
                 
@@ -402,15 +405,39 @@ def add_grades(request,student_id,course_name_slug,assessment_name_slug):
                     pass
                 
             AssessmentComponentGrade.objects.bulk_create(grades)
+
+            # Creating assessmentGrade object
+            # Calculating marked grade
+            # Needs error logic
+            grade = 0
+            for component in components:
+                assessmentComponentGrade = AssessmentComponentGrade.objects.get(assessmentComponent=component)
+                if assessmentComponentGrade.grade is not None:
+                    grade = grade + assessmentComponentGrade.grade
+
+            submissionDate = assessment_grade_form.cleaned_data.get('submissionDate')
+            noDetriment = assessment_grade_form.cleaned_data.get('noDetriment')
+            goodCause = assessment_grade_form.cleaned_data.get('goodCause')
+            
+            AssessmentGrade.objects.create(submissionDate=submissionDate,
+                                           noDetriment=noDetriment,
+                                           goodCause=goodCause,
+                                           markedGrade=grade,
+                                           finalGrade=None,
+                                           assessment=assessment,
+                                           student=student)
+                                           
             addGradeDict['gradesAdded'] = True           
         else:
-            print(grade_formset.errors)
+            print(assessment_grade_form,component_grade_formset.errors)
     else:
-        grade_formset = GradeFormSet(initial=[{'assessmentComponent': component,
+        component_grade_formset = ComponentGradeFormSet(initial=[{'assessmentComponent': component,
                                                'description': str(component.description) + ' (' + str(component.marks) +')' + ' ' + str(component.status)}
                                               for component in components])
+        assessment_grade_form = AssessmentGradeForm()
         
-    addGradeDict['grade_formset'] = grade_formset
+    addGradeDict['component_grade_formset'] = component_grade_formset
+    addGradeDict['assessment_grade_form'] = assessment_grade_form
     
     return render(request,'chemapp/add_grades.html',context = addGradeDict)
     

@@ -125,12 +125,23 @@ class AssessmentForm(forms.ModelForm):
                                             'required':True,
                                             }
                                         ))
+
+    componentNumberNeeded = forms.IntegerField(label='',
+                                               widget =  forms.NumberInput(
+                                                   attrs={
+                                                       'min':'0',
+                                                       'type':'number',
+                                                       'placeholder':'Number of Components Needed',
+                                                       'style': 'width:300px',
+                                                       'required':True,
+                                                       }
+                                                   ))
                                     
-    field_order = ['assessmentName', 'weight','totalMarks', 'dueDate']
+    field_order = ['assessmentName', 'weight', 'totalMarks', 'componentNumberNeeded', 'dueDate']
 
     class Meta:
         model = Assessment
-        fields = {'assessmentName','weight','totalMarks','dueDate'}
+        fields = {'assessmentName','weight','totalMarks','componentNumberNeeded','dueDate'}
 
 class AssessmentComponentForm(forms.ModelForm):
     required = forms.BooleanField(label='Required',
@@ -252,6 +263,41 @@ class StudentForm(forms.ModelForm):
     class Meta:
         model = Student
         fields = {'studentID','firstName','lastName','academicPlan','level','graduationDate','comments'}
+
+class AssessmentGradeForm(forms.ModelForm):
+    submissionDate = forms.DateTimeField(input_formats=['%Y-%m-%dT%H:%M',],
+                                         label='',
+                                         widget = forms.DateTimeInput(
+                                             attrs={
+                                                 'style':'width:300px',
+                                                 'placeholder':'Date and Time submitted',
+                                                 'onfocus':"(this.type='datetime-local')",
+                                                 'onblur':"(this.type='text')",
+                                                 'required':True,
+                                                 },
+                                             format='%Y-%m-%dT%H:%M'))
+
+    noDetriment = forms.BooleanField(label='NDP',
+                                     required = False,
+                                     widget = forms.CheckboxInput(
+                                         attrs={
+                                             'placeholder':'NDP',
+                                             }
+                                         ))
+
+    goodCause = forms.BooleanField(label='Good Cause',
+                                   required = False,
+                                   widget = forms.CheckboxInput(
+                                       attrs={
+                                           'placeholder':'Goo Cause',
+                                           }
+                                       ))
+
+    field_order = ['noDetriment', 'goodCause', 'submissionDate']
+    
+    class Meta:
+        model = AssessmentGrade
+        fields = {'submissionDate','noDetriment','goodCause'}
 
 class AssessmentComponentGradeForm(forms.ModelForm):
     description =  forms.CharField(label='',

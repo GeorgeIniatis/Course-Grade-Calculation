@@ -24,13 +24,17 @@
             {% endfor %}
         {% endif %}
     
-        <form id="add_assessmentComponentGrade_form" method="post" action="{% url 'chemapp:add_grades' student_id=student_id course_name_slug=course_name_slug assessment_name_slug=assessment_name_slug  %}" enctype="multipart/form-data">
+        <form id="add_grade_form" method="post" action="{% url 'chemapp:add_grades' student_id=student_id course_name_slug=course_name_slug assessment_name_slug=assessment_name_slug  %}" enctype="multipart/form-data">
         {% csrf_token %}
-       
-        {{ grade_formset.management_form }}
-        {% for grade_form in grade_formset %}
+        
+        <div>
+            {{ assessment_grade_form.as_p }}
+        </div>
+        <br>
+        {{ component_grade_formset.management_form }}
+        {% for component_grade_form in component_grade_formset %}
             <div class="grade-formset">
-                {{ grade_form.as_p }}
+                {{ component_grade_form.as_p }}
                 <br>
             </div>
         {% endfor %}

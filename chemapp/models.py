@@ -27,6 +27,17 @@ COLOR_CHOICES = [
     ("#000000", "black"),
     ]
 
+#Could be removed if not necessary
+LATE_STATUS = (
+    ('1', '1 Band'),
+    ('2', '2 Bands'),
+    )
+
+GOOD_CAUSE_ACTION = (
+    ('Resit', 'Resit Exam'),
+    ('CA', 'Credit Awarded'),
+    )
+
 #People that have access to the site
 #Lecturers etc
 class UserProfile(models.Model):
@@ -82,8 +93,6 @@ class Course(models.Model):
 
     year = models.PositiveIntegerField()
     
-    #I think they want as well a field that would show the current year that the course is being taught
-    #2019-2020 something like that
     #Input mask?
     academicYearTaught = models.CharField(max_length=5,
                                           verbose_name="Academic Year Taught",
@@ -189,54 +198,52 @@ class CourseGrade(models.Model):
 
 
 class Assessment(models.Model):
-     weight = models.DecimalField(max_digits=3,
-                                  decimal_places=2,
-                                  help_text='eg.0.50')
-     
-     totalMarks = models.PositiveIntegerField(verbose_name= "Total Marks",
-                                              help_text= "eg.50")
-     
-     assessmentName = models.CharField(max_length=200,
-                                       help_text='eg.Lab 1',
-                                       verbose_name='Assessment Name')
-     
-     dueDate = models.DateTimeField(verbose_name="Due Date and Time",
-                                    help_text='eg.11/10/2021 at 0800')
-     
-     course = models.ForeignKey(Course,
-                                on_delete=models.CASCADE)
+    weight = models.DecimalField(max_digits=3,
+                                 decimal_places=2,
+                                 help_text='eg.0.50')
 
-     slug = models.SlugField()
-     
-     componentsAdded = models.BooleanField(default = False)
-     
-     class Meta:
-         unique_together = ('assessmentName', 'course')
+    totalMarks = models.PositiveIntegerField(verbose_name= "Total Marks",
+                                             help_text= "eg.50")
 
-     def save(self, *args, **kwargs):
+    assessmentName = models.CharField(max_length=200,
+                                      help_text='eg.Lab 1',
+                                      verbose_name='Assessment Name')
+
+    dueDate = models.DateTimeField(verbose_name="Due Date and Time",
+                                   help_text='eg.11/10/2021 at 0800')
+
+    course = models.ForeignKey(Course,
+                               on_delete=models.CASCADE)
+
+    slug = models.SlugField()
+
+    componentsAdded = models.BooleanField(default = False)
+
+    #Example
+    #If an exam has 3 required question and the student needs to answer 1 more from 4 optional questions
+    #the componentNumberNeeded would be 4 in this case
+    componentNumberNeeded = models.PositiveIntegerField(verbose_name= "Component Number Needed",
+                                                        help_text= "Includes required and optional components",
+                                                        default = 0)
+
+    class Meta:
+        unique_together = ('assessmentName', 'course')
+
+    def save(self, *args, **kwargs):
         self.slug = slugify(self.assessmentName)
         super(Assessment, self).save(*args, **kwargs)
 
-     def __str__(self):
+    def __str__(self):
         return (str(self.course) + " " + str(self.assessmentName))
 
 class AssessmentGrade(models.Model):
-     #basic restricted choice options
-     LATE_STATUS = (
-         ('1', '1 Band'),
-         ('2', '2 Bands'),
-     )
-
-     GOOD_CAUSE_ACTION = (
-         ('Resit', 'Resit Exam'),
-         ('CA', 'Credit Awarded'),
-     )
+     
+     #Removed for now
+     #lateStatus = models.CharField(max_length=1,choices = LATE_STATUS,blank = True,verbose_name="Late Status")
+     #goodCauseAction = models.CharField(max_length=5,choices = GOOD_CAUSE_ACTION,blank = True,verbose_name="Good Cause Action")
+     #penalty = models.CharField()
 
      submissionDate = models.DateTimeField(verbose_name="Submission Date and Time")
-     
-     lateStatus = models.CharField(max_length=1,choices = LATE_STATUS,
-                                   blank = True,
-                                   verbose_name="Late Status")
      
      noDetriment = models.BooleanField(default = False,
                                        verbose_name="No Detriment Policy")
@@ -244,19 +251,16 @@ class AssessmentGrade(models.Model):
      goodCause = models.BooleanField(default = False,
                                      verbose_name="Good Cause")
      
-     goodCauseAction = models.CharField(max_length=5,choices = GOOD_CAUSE_ACTION,
-                                        blank = True,
-                                        verbose_name="Good Cause Action")
-     
      markedGrade = models.DecimalField(max_digits=5,
                                        decimal_places=2,
+                                       null=True,
+                                       blank=True,
                                        verbose_name="Marked Grade")
-     
-     # Is there any need for the penalty field?
-     #penalty = models.CharField()
      
      finalGrade = models.DecimalField(max_digits=5,
                                       decimal_places=2,
+                                      null=True,
+                                      blank=True,
                                       verbose_name="Final Grade")
 
      assessment = models.ForeignKey(Assessment,
