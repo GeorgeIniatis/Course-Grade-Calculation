@@ -9,6 +9,8 @@ urlpatterns = [
     path('home/', views.home, name='home'),
     path('about/', views.about, name='about'),
     path('logout/', views.user_logout, name='logout'),
+    path('degrees/', views.degrees, name='degrees'),
+    path('degrees/add_degree/', views.add_degree, name='add_degree'),
     path('courses/', views.courses, name='courses'),
     path('courses/add_course/',views.add_course, name='add_course'),
     path('courses/<slug:course_name_slug>/', views.course, name='course'),
@@ -17,6 +19,9 @@ urlpatterns = [
     path('students/', views.students, name='students'),
     path('students/add_student/', views.add_student, name='add_student'),
     path('students/upload_student_csv/', views.upload_student_csv, name='upload_student_csv'),
+    path('students/<student_id>/', views.student, name='student'),
+    path('students/<student_id>/<slug:course_name_slug>/<slug:assessment_name_slug>/add_grades/', views.add_grades, name='add_grades'),
+    
 
     
 ]
