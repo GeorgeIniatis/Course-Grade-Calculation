@@ -202,11 +202,17 @@ def add_assessmentComponents(request,course_name_slug,assessment_name_slug):
                 required = form.cleaned_data.get('required')
                 marks = form.cleaned_data.get('marks')
                 description = form.cleaned_data.get('description')
+
+                if required == True:
+                    status = 'Required'
+                else:
+                    status = 'Optional'
  
                 assessmentComponents.append(AssessmentComponent(required=required,
-                                              marks=marks,
-                                              description=description,
-                                              assessment=assessment))
+                                                                status=status,
+                                                                marks=marks,
+                                                                description=description,
+                                                                assessment=assessment))
                 
             AssessmentComponent.objects.bulk_create(assessmentComponents)
             assessment.componentsAdded = True
@@ -365,14 +371,44 @@ def add_grades(request,student_id,course_name_slug,assessment_name_slug):
                 grades.append(AssessmentComponentGrade(grade=grade,
                                                        assessmentComponent=assessmentComponent,
                                                        student=student))
-            
+
+                #Check if Grades have already been added
+                try:
+                    assessmentComponentGrade = AssessmentComponentGrade.objects.get(assessmentComponent=assessmentComponent,student=student)
+                    messages.error(request, 'Grade for ' + str(assessmentComponent.description) + ' already added!')
+                    return redirect(reverse('chemapp:add_grades',kwargs={'student_id':student_id,
+                                                                         'course_name_slug':course_name_slug,
+                                                                         'assessment_name_slug':assessment_name_slug}))
+                    
+                except AssessmentComponentGrade.DoesNotExist:
+                    pass
+
+                #Check if required grade is added
+                if assessmentComponent.required == True and grade is None:
+                    messages.error(request, 'Grade for ' + str(assessmentComponent.description) + ' is required!')
+                    return redirect(reverse('chemapp:add_grades',kwargs={'student_id':student_id,
+                                                                         'course_name_slug':course_name_slug,
+                                                                         'assessment_name_slug':assessment_name_slug}))
+                else:
+                    pass
+
+                #Check if supplied grade is more than the available marks
+                if grade is not None and grade > assessmentComponent.marks:
+                    messages.error(request, 'Grade for ' + str(assessmentComponent.description) + ' exceeds available marks!')
+                    return redirect(reverse('chemapp:add_grades',kwargs={'student_id':student_id,
+                                                                         'course_name_slug':course_name_slug,
+                                                                         'assessment_name_slug':assessment_name_slug}))
+                else:
+                    pass
+                
             AssessmentComponentGrade.objects.bulk_create(grades)
             addGradeDict['gradesAdded'] = True           
         else:
             print(grade_formset.errors)
     else:
         grade_formset = GradeFormSet(initial=[{'assessmentComponent': component,
-                                               'description': component.description} for component in components])
+                                               'description': str(component.description) + ' (' + str(component.marks) +')' + ' ' + str(component.status)}
+                                              for component in components])
         
     addGradeDict['grade_formset'] = grade_formset
     

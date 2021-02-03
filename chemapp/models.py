@@ -272,24 +272,32 @@ class AssessmentGrade(models.Model):
         return (str(self.assessment) + " " + str(self.student))
 
 class AssessmentComponent(models.Model):
-     required = models.BooleanField(default = False)
-     
-     marks = models.PositiveIntegerField()
-     
-     description = models.CharField(max_length=100)
-     
-     assessment = models.ForeignKey(Assessment,
-                                    on_delete=models.CASCADE)
+    required = models.BooleanField(default = False)
 
-     class Meta:
-         unique_together = ('description','assessment')
+    status = models.CharField(max_length=20)
 
-     def __str__(self):
+    marks = models.PositiveIntegerField()
+
+    description = models.CharField(max_length=100)
+
+    assessment = models.ForeignKey(Assessment,
+                                   on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('description','assessment')
+
+    def save(self, *args, **kwargs):
+        self.status = 'Required' if self.required == True  else 'Optional'
+        super(AssessmentComponent, self).save(*args, **kwargs)
+
+    def __str__(self):
         return (str(self.assessment) + " " + str(self.description))
 
 class AssessmentComponentGrade(models.Model):
     grade = models.DecimalField(max_digits=5,
-                                decimal_places=2)
+                                decimal_places=2,
+                                null=True,
+                                blank=True)
 
     assessmentComponent = models.ForeignKey(AssessmentComponent,
                                             on_delete=models.CASCADE,
