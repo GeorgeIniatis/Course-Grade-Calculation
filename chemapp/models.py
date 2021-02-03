@@ -22,10 +22,10 @@ class Degree(models.Model):
     degreeCode = models.CharField(max_length=30,
                            unique=True,
                            help_text='eg.4H-CMC')
-    
+
     numberOfCourses = models.PositiveIntegerField(default=0,verbose_name="Number of Courses")
     numberOfStudent = models.PositiveIntegerField(default=0,verbose_name="Number of Students")
-    
+
     def __str__(self):
         return self.degreeCode
 
@@ -91,7 +91,7 @@ class Course(models.Model):
         ("#000000", "black")
     ]
 
-    courseColor = ColorField(choices=COLOR_CHOICES)
+    courseColor = ColorField(default='#FF0000')
 
     class Meta:
          unique_together = ('code', 'degree')
@@ -105,7 +105,7 @@ class Course(models.Model):
 
     def __str__(self):
         return (str(self.shortHand) + " " + str(self.degree))
-    
+
 class Student(models.Model):
     firstName = models.CharField(max_length=128,verbose_name="First Name")
     lastName = models.CharField(max_length=128,verbose_name="Last Name")
@@ -119,7 +119,7 @@ class Student(models.Model):
 
     #Degree
     academicPlan = models.ForeignKey(Degree, on_delete=models.CASCADE, verbose_name="Academic Plan/Degree")
-    
+
     #should we change this to restricted choice? integer field?
     currentYear = models.IntegerField(validators=[MaxValueValidator(5), MinValueValidator(1)], verbose_name="Current Year")
 
@@ -148,22 +148,22 @@ class Assessment(models.Model):
      weight = models.DecimalField(max_digits=3,
                                   decimal_places=2,
                                   help_text='eg.0.50')
-     
+
      totalMarks = models.PositiveIntegerField(verbose_name= "Total Marks",
                                               help_text= "eg.50")
-     
+
      assessmentName = models.CharField(max_length=200,
                                        help_text='eg.Lab 1',
                                        verbose_name='Assessment Name')
-     
+
      dueDate = models.DateTimeField(verbose_name="Due Date and Time",
                                     help_text='eg.11/10/2021 at 0800')
-     
+
      course = models.ForeignKey(Course, on_delete=models.CASCADE)
 
      slug = models.SlugField()
      componentsAdded = models.BooleanField(default = False)
-     
+
      class Meta:
          unique_together = ('assessmentName', 'course')
 
