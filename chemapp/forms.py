@@ -289,7 +289,7 @@ class AssessmentGradeForm(forms.ModelForm):
                                    required = False,
                                    widget = forms.CheckboxInput(
                                        attrs={
-                                           'placeholder':'Goo Cause',
+                                           'placeholder':'Good Cause',
                                            }
                                        ))
 
