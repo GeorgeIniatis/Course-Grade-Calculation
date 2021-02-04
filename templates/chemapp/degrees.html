@@ -6,13 +6,13 @@
 
 {% block body_block %}
 
-<div class="container mt-5 ">
+<div class="container mt-3">
     {% if degrees %}
         <h2> Degrees </h2>
         {% for degree in degrees %}
             <p> {{ degree }} </p>
         {% endfor %}
-        
+
         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
             <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_degree' %}">Add a degree</a>
         </div>

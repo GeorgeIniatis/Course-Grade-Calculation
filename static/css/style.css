@@ -8,10 +8,23 @@ html{
 
 body{
   min-height:100vh;
+  padding-bottom: 50px;
 }
 
 .uni-blue-btn{
   color: #fff !important;
   background-color: #003865 !important;
   border-color: #003865 !important;
+}
+
+
+.notification{
+    position: absolute;
+}
+
+
+.toast-success{
+  color: #0f5132 ;
+  background-color: #d1e7dd !important ;
+  border-color: #badbcc !important  ;
 }
