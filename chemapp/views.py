@@ -35,32 +35,34 @@ def degrees(request):
 def add_degree(request):
     addDegreeDict = {}
     addDegreeDict['degreesAdded'] = False
-    
+
     DegreeFormSet = formset_factory(DegreeForm,extra=1)
 
     if (request.method == 'POST'):
         degree_formset = DegreeFormSet(request.POST)
-        
+
         if degree_formset.is_valid():
             degrees = []
             for form in degree_formset:
                 degreeCode = form.cleaned_data.get('degreeCode')
-                
+
                 degrees.append(Degree(degreeCode=degreeCode,
                                       numberOfCourses=0,
                                       numberOfStudents=0))
-            
+
             Degree.objects.bulk_create(degrees)
-            addDegreeDict['degreesAdded'] = True             
+            # addDegreeDict['degreesAdded'] = True
+            messages.success(request,"Degrees Added Successfully")
+            return redirect(reverse('chemapp:degrees'))
         else:
             print(degree_formset.errors)
     else:
         degree_formset = DegreeFormSet()
-        
+
     addDegreeDict['degree_formset'] = degree_formset
-    
+
     return render(request,'chemapp/add_degree.html',context = addDegreeDict)
-    
+
 @login_required
 def courses(request):
     coursesDict = {}
@@ -71,7 +73,7 @@ def courses(request):
         slug = course.slug
         name = course.name
         color = course.courseColor
-    
+
         courseList = [year,slug,name,color]
 
         coursesDict[course] = courseList
@@ -95,10 +97,10 @@ def course(request,course_name_slug):
         for assessment in assessments:
                 courseDict['assessments'][assessment] = []
                 components = AssessmentComponent.objects.filter(assessment=assessment)
-                
+
                 for component in components:
                     courseDict['assessments'][assessment].append(component)
-        
+
     except Course.DoesNotExist:
         raise Http404("Course does not exist")
 
@@ -110,7 +112,7 @@ def add_course(request):
 
     if (request.method == 'POST'):
         course_form = CourseForm(request.POST)
-        
+
         if course_form.is_valid():
             course = course_form.save()
             course_slug = course.slug
@@ -119,16 +121,16 @@ def add_course(request):
             degree = course.degree
             degree.numberOfCourses = degree.numberOfCourses + 1
             degree.save()
-            
+
             return redirect(reverse('chemapp:add_assessments',kwargs={'course_name_slug':course_slug}))
-        
+
         else:
             print(course_form.errors)
     else:
         course_form = CourseForm()
-        
+
     addCourseDict['course_form'] = CourseForm()
-    
+
     return render(request,'chemapp/add_course.html',context = addCourseDict)
 
 @login_required
@@ -138,10 +140,10 @@ def add_assessments(request,course_name_slug):
 
     AssessmentFormSet = formset_factory(AssessmentForm,extra=1)
     course = Course.objects.get(slug = course_name_slug)
-    
+
     if (request.method == 'POST'):
         assessment_formset = AssessmentFormSet(request.POST)
-        
+
         if assessment_formset.is_valid():
             assessments = []
             weightSum = 0
@@ -161,33 +163,33 @@ def add_assessments(request,course_name_slug):
                                               componentNumberNeeded=componentNumberNeeded,
                                               course=course,
                                               slug=slug))
-                
+
             if weightSum != 1:
                 messages.error(request, 'The sum of the Assessment Weights must be equal to 1')
                 return redirect(reverse('chemapp:add_assessments',kwargs={'course_name_slug':course_name_slug}))
             else:
                 Assessment.objects.bulk_create(assessments)
                 assessmentsCreated = Assessment.objects.filter(course=course)
-                
+
                 assessment_name_slug = assessmentsCreated.first().slug
                 return redirect(reverse('chemapp:add_assessmentComponents',kwargs={'course_name_slug':course_name_slug,'assessment_name_slug':assessment_name_slug}))
         else:
             print(assessment_formset.errors)
     else:
         assessment_formset = AssessmentFormSet()
-        
+
     addAssessmentsDict['assessment_formset'] = assessment_formset
-    
+
     return render(request,'chemapp/add_assessments.html',context = addAssessmentsDict)
 
 @login_required
 def add_assessmentComponents(request,course_name_slug,assessment_name_slug):
-    
+
     AssessmentComponentFormSet = formset_factory(AssessmentComponentForm,extra=1)
     course = Course.objects.get(slug = course_name_slug)
     allAssessments = Assessment.objects.filter(course=course)
     assessment = Assessment.objects.get(course=course,slug=assessment_name_slug)
-    
+
     addAssessmentComponentsDict = {}
     addAssessmentComponentsDict['course_name_slug'] = course_name_slug
     addAssessmentComponentsDict['assessment_name_slug'] = assessment_name_slug
@@ -196,10 +198,10 @@ def add_assessmentComponents(request,course_name_slug,assessment_name_slug):
 
     if (request.method == 'POST'):
         assessmentComponent_formset = AssessmentComponentFormSet(request.POST)
-        
+
         if assessmentComponent_formset.is_valid():
             assessmentComponents = []
-            
+
             for form in assessmentComponent_formset:
                 required = form.cleaned_data.get('required')
                 marks = form.cleaned_data.get('marks')
@@ -209,13 +211,13 @@ def add_assessmentComponents(request,course_name_slug,assessment_name_slug):
                     status = 'Required'
                 else:
                     status = 'Optional'
- 
+
                 assessmentComponents.append(AssessmentComponent(required=required,
                                                                 status=status,
                                                                 marks=marks,
                                                                 description=description,
                                                                 assessment=assessment))
-                
+
             AssessmentComponent.objects.bulk_create(assessmentComponents)
             assessment.componentsAdded = True
             assessment.save()
@@ -226,14 +228,14 @@ def add_assessmentComponents(request,course_name_slug,assessment_name_slug):
                     return redirect(reverse('chemapp:add_assessmentComponents',kwargs={'course_name_slug':course_name_slug,'assessment_name_slug':assessment_name_slug}))
 
             addAssessmentComponentsDict['allComponentsAdded'] = True
-            
+
         else:
             print(assessmentComponent_formset.errors)
     else:
         assessmentComponent_formset = AssessmentComponentFormSet()
-        
+
     addAssessmentComponentsDict['assessmentComponent_formset'] = assessmentComponent_formset
-    
+
     return render(request,'chemapp/add_assessmentComponents.html',context = addAssessmentComponentsDict)
 
 def user_login(request):
@@ -285,16 +287,16 @@ def student(request,student_id):
         studentDict['student'] = student
         studentDict['courses'] = {}
         studentDict['student_id'] = student_id
-        
+
         for course in student.courses.all():
             studentDict['courses'][course] = []
             assessments = Assessment.objects.filter(course=course)
-            
+
             for assessment in assessments:
                 assessmentDict = {}
                 assessmentDict[assessment] = []
                 components = AssessmentComponent.objects.filter(assessment=assessment)
-                
+
                 for component in components:
                     componentDict = {}
                     try:
@@ -302,17 +304,17 @@ def student(request,student_id):
                         grade = assessmentComponentGrade.grade
                     except AssessmentComponentGrade.DoesNotExist:
                         grade = None
-                            
+
                     componentDict[component] = grade
                     assessmentDict[assessment].append(componentDict)
-                    
+
                 studentDict['courses'][course].append(assessmentDict)
 
     except Student.DoesNotExist:
         raise Http404("Student does not exist")
 
     return render(request,'chemapp/student.html', context=studentDict)
-    
+
 @login_required
 def add_student(request):
     addStudentDict = {}
@@ -325,7 +327,7 @@ def add_student(request):
             #Just to test until we have correct equation
             student.anonID = 0000000
             student.save()
-            
+
             degree = student.academicPlan
             student.courses.set(Course.objects.filter(degree=degree,level=student.level))
             student.save()
@@ -333,7 +335,7 @@ def add_student(request):
             #Increment degree student count
             degree.numberOfStudents = degree.numberOfStudents + 1
             degree.save()
-            
+
             addStudentDict['studentAdded'] = True
         else:
             print(student_form.errors)
@@ -345,7 +347,7 @@ def add_student(request):
 
 @login_required
 def add_grades(request,student_id,course_name_slug,assessment_name_slug):
-    
+
     student = Student.objects.get(studentID = student_id)
     course = Course.objects.get(slug = course_name_slug)
     assessment = Assessment.objects.get(course=course,slug=assessment_name_slug)
@@ -358,19 +360,19 @@ def add_grades(request,student_id,course_name_slug,assessment_name_slug):
     addGradeDict['student_id'] = student_id
     addGradeDict['course_name_slug'] = course_name_slug
     addGradeDict['assessment_name_slug'] = assessment_name_slug
-    
+
     ComponentGradeFormSet = formset_factory(AssessmentComponentGradeForm,extra=0)
 
     if (request.method == 'POST'):
         component_grade_formset = ComponentGradeFormSet(request.POST)
         assessment_grade_form = AssessmentGradeForm(request.POST)
-        
+
         if assessment_grade_form.is_valid() and component_grade_formset.is_valid():
             grades = []
             for form in component_grade_formset:
                 grade = form.cleaned_data.get('grade')
                 assessmentComponent = form.cleaned_data.get('assessmentComponent')
-                
+
                 grades.append(AssessmentComponentGrade(grade=grade,
                                                        assessmentComponent=assessmentComponent,
                                                        student=student))
@@ -382,7 +384,7 @@ def add_grades(request,student_id,course_name_slug,assessment_name_slug):
                     return redirect(reverse('chemapp:add_grades',kwargs={'student_id':student_id,
                                                                          'course_name_slug':course_name_slug,
                                                                          'assessment_name_slug':assessment_name_slug}))
-                    
+
                 except AssessmentComponentGrade.DoesNotExist:
                     pass
 
@@ -403,7 +405,7 @@ def add_grades(request,student_id,course_name_slug,assessment_name_slug):
                                                                          'assessment_name_slug':assessment_name_slug}))
                 else:
                     pass
-                
+
             AssessmentComponentGrade.objects.bulk_create(grades)
 
             # Creating assessmentGrade object
@@ -418,7 +420,7 @@ def add_grades(request,student_id,course_name_slug,assessment_name_slug):
             submissionDate = assessment_grade_form.cleaned_data.get('submissionDate')
             noDetriment = assessment_grade_form.cleaned_data.get('noDetriment')
             goodCause = assessment_grade_form.cleaned_data.get('goodCause')
-            
+
             AssessmentGrade.objects.create(submissionDate=submissionDate,
                                            noDetriment=noDetriment,
                                            goodCause=goodCause,
@@ -426,8 +428,8 @@ def add_grades(request,student_id,course_name_slug,assessment_name_slug):
                                            finalGrade=None,
                                            assessment=assessment,
                                            student=student)
-                                           
-            addGradeDict['gradesAdded'] = True           
+
+            addGradeDict['gradesAdded'] = True
         else:
             print(assessment_grade_form,component_grade_formset.errors)
     else:
@@ -435,12 +437,12 @@ def add_grades(request,student_id,course_name_slug,assessment_name_slug):
                                                'description': str(component.description) + ' (' + str(component.marks) +')' + ' ' + str(component.status)}
                                               for component in components])
         assessment_grade_form = AssessmentGradeForm()
-        
+
     addGradeDict['component_grade_formset'] = component_grade_formset
     addGradeDict['assessment_grade_form'] = assessment_grade_form
-    
+
     return render(request,'chemapp/add_grades.html',context = addGradeDict)
-    
+
 @login_required
 def upload_student_csv(request):
     #student_dict = {'boldmessage':'Upload csv file to add students'}
