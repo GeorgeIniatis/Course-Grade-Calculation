@@ -2,116 +2,133 @@
 {% load static %}
 
 <html lang="en">
-    <head>
-        <!-- Required meta tags-->
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <!-- Bootstrap CSS -->
-        <link rel="stylesheet"  type="text/css" href="{% static 'css/style.css' %}">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+<head>
+  <!-- Required meta tags-->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet"  type="text/css" href="{% static 'css/style.css' %}">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
 
-        {% block links %}
-        {% endblock %}
+  {% block links %}
+  {% endblock %}
 
-         <!-- jQuery and jQuery UI -->
-        <link rel="stylesheet" href="{% static 'js/jquery-ui/jquery-ui.min.css' %}" type="text/css" />
-        <script src = "{% static 'js/jquery-3.4.1.min.js' %}"></script>
-        <script src="{% static 'js/jquery-ui/jquery-ui.min.js' %}"></script>
+  <!-- jQuery and jQuery UI -->
+  <link rel="stylesheet" href="{% static 'js/jquery-ui/jquery-ui.min.css' %}" type="text/css" />
 
-        {% block js_block %}
-        {% endblock %}
+  {% block js_block %}
+  {% endblock %}
 
-        <title>
-            Chemapp -
-            {% block title_block %}
-            {% endblock %}
+  <title>
+    Chemapp -
+    {% block title_block %}
+    {% endblock %}
 
-        </title>
-    </head>
+  </title>
+</head>
 
-    <nav class="navbar  navbar-expand-lg navbar-dark text-white bg-logo">
-      <div class="container-fluid text-white">
-        <a class="navbar-brand" href="#">
-        	<a href="{% url 'chemapp:home' %}">
-          		<img src="{% static 'images/just_logo.PNG' %}" alt="UofG logo" height="75" class="me-3" >
-          	</a>
-          School of Chemistry
+<div id="topheader">
+  <nav class="navbar  navbar-expand-lg navbar-dark text-white bg-logo">
+    <div class="container-fluid text-white">
+      <a class="navbar-brand" href="#">
+        <a href="{% url 'chemapp:home' %}">
+          <img src="{% static 'images/just_logo.PNG' %}" alt="UofG logo" height="75" class="me-3" >
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            {% if user.is_authenticated %}
-              <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="{% url 'chemapp:home' %}">Home</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'chemapp:degrees' %}">Degrees</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'chemapp:courses' %}">Courses</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'chemapp:students' %}">Students</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'chemapp:about' %}">About</a>
-              </li>
-              <li class="nav-item">
-                <a type="button" class="nav-link" data-bs-toggle="modal" data-bs-target="#logoutModal">Logout</a>
-              </li>
-            </ul>
+        School of Chemistry
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          {% if user.is_authenticated %}
+          <li class="nav-item ">
+            <a class="nav-link  "  href="{% url 'chemapp:home' %}">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link " href="{% url 'chemapp:degrees' %}">Degrees</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'chemapp:courses' %}">Courses</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'chemapp:students' %}">Students</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'chemapp:about' %}">About</a>
+          </li>
+          <li class="nav-item">
+            <a type="button" class="nav-link" data-bs-toggle="modal" data-bs-target="#logoutModal">Logout</a>
+          </li>
+        </ul>
 
-            <!-- Modal -->
-            <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="logoutModalLabel">Are you sure?</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">Stay logged in</button>
-                    <a class="btn btn-danger" href="{% url 'chemapp:logout' %}">Logout</a>
-                  </div>
-                </div>
+        <!-- Modal -->
+        <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="logoutModalLabel">Are you sure?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal">Stay logged in</button>
+                <a class="btn btn-danger" href="{% url 'chemapp:logout' %}">Logout</a>
               </div>
             </div>
-
-
-            <span class=" me-2">
-              Welcome, {{request.user.username}}
-            </span>
-            {% else %}
-             <li class="nav-item">
-               <a class="nav-link" href="{% url 'chemapp:login' %}">Login</a>
-             </li>
-           </ul>
-            {% endif %}
+          </div>
         </div>
-      </div>
-    </nav>
+
+
+        <span class=" me-2">
+          Welcome, {{request.user.username}}
+        </span>
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'chemapp:login' %}">Login</a>
+        </li>
+      </ul>
+      {% endif %}
+    </div>
+  </div>
+</nav>
+</div>
 
 
 
 
 
-    <body>
+<body>
 
-      <!-- page content goes here -->
-      {% block body_block %}
-      {% endblock %}
+  <!-- page content goes here -->
+  {% block body_block %}
+  {% endblock %}
 
-    </body>
 
-    <footer>
+  <footer>
 
-      <!-- footer goes here-->
-      {% block footer_block %}
-      {% endblock %}
+    <script src = "{% static 'js/jquery-3.4.1.min.js' %}"></script>
+    <script src="{% static 'js/jquery-ui/jquery-ui.min.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
 
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
-    </footer>
+    <script>
+    var path = window.location.href; // Just grabbing a handy reference to it
+    $('ul a').each(function() {
+      if (this.href === path) {
+        $(this).addClass('active');
+      }
+    });
+    </script>
+
+    <!-- footer goes here-->
+    {% block footer_block %}
+    {% endblock %}
+
+  </footer>
+
+
+
+
+
+</body>
 
 </html>
