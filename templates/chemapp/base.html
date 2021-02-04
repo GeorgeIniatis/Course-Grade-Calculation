@@ -8,6 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Bootstrap CSS -->
   <link rel="stylesheet"  type="text/css" href="{% static 'css/style.css' %}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
 
   {% block links %}
@@ -57,17 +58,22 @@
           <li class="nav-item">
             <a class="nav-link" href="{% url 'chemapp:about' %}">About</a>
           </li>
-          <li class="nav-item">
-            <a type="button" class="nav-link" data-bs-toggle="modal" data-bs-target="#logoutModal">Logout</a>
-          </li>
         </ul>
+
+
+
+
+        <form class="d-flex">
+          <button class="btn text-white" type="submit">Welcome, {{request.user.username}}</button>
+          <a type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#logoutModal"><i class="bi bi-box-arrow-right"></i> Logout</a>
+        </form>
 
         <!-- Modal -->
         <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title" id="logoutModalLabel">Are you sure?</h5>
+                <h5 class="modal-title text-dark" id="logoutModalLabel">Are you sure?</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-footer">
@@ -79,9 +85,9 @@
         </div>
 
 
-        <span class=" me-2">
-          Welcome, {{request.user.username}}
-        </span>
+
+
+
         {% else %}
         <li class="nav-item">
           <a class="nav-link" href="{% url 'chemapp:login' %}">Login</a>
