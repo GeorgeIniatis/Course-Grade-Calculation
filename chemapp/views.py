@@ -34,7 +34,6 @@ def degrees(request):
 @login_required
 def add_degree(request):
     addDegreeDict = {}
-    addDegreeDict['degreesAdded'] = False
 
     DegreeFormSet = formset_factory(DegreeForm,extra=1)
 
@@ -51,7 +50,7 @@ def add_degree(request):
                                       numberOfStudents=0))
 
             Degree.objects.bulk_create(degrees)
-            # addDegreeDict['degreesAdded'] = True
+
             messages.success(request,"Degrees Added Successfully")
             return redirect(reverse('chemapp:degrees'))
         else:
@@ -201,7 +200,6 @@ def add_assessmentComponents(request,course_name_slug,assessment_name_slug):
     addAssessmentComponentsDict = {}
     addAssessmentComponentsDict['course_name_slug'] = course_name_slug
     addAssessmentComponentsDict['assessment_name_slug'] = assessment_name_slug
-    addAssessmentComponentsDict['allComponentsAdded'] = False
     addAssessmentComponentsDict['assessment'] = assessment.assessmentName
 
     if (request.method == 'POST'):
@@ -234,8 +232,6 @@ def add_assessmentComponents(request,course_name_slug,assessment_name_slug):
                 if assessment.componentsAdded == False:
                     assessment_name_slug = assessment.slug
                     return redirect(reverse('chemapp:add_assessmentComponents',kwargs={'course_name_slug':course_name_slug,'assessment_name_slug':assessment_name_slug}))
-
-            addAssessmentComponentsDict['allComponentsAdded'] = True
 
             messages.success(request,"Added a course along with its corresponding assessments and components successfully")
             return redirect(reverse('chemapp:courses'))
