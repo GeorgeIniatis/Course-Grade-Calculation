@@ -237,6 +237,9 @@ def add_assessmentComponents(request,course_name_slug,assessment_name_slug):
 
             addAssessmentComponentsDict['allComponentsAdded'] = True
 
+            messages.success(request,"Added a course along with its corresponding assessments and components successfully")
+            return redirect(reverse('chemapp:courses'))
+
         else:
             print(assessmentComponent_formset.errors)
     else:
