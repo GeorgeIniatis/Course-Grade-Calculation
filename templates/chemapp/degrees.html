@@ -6,9 +6,10 @@
 
 {% block body_block %}
 
-<div class="container mt-3">
+<div class="container ">
+  <h2> Degrees </h2>
     {% if degrees %}
-        <h2> Degrees </h2>
+
         {% for degree in degrees %}
             <p> {{ degree }} </p>
         {% endfor %}
