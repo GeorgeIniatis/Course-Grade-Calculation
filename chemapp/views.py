@@ -121,6 +121,17 @@ def add_course(request):
         course_form = CourseForm(request.POST)
 
         if course_form.is_valid():
+            code = course_form.cleaned_data.get('code').upper()
+            degree = course_form.cleaned_data.get('degree')
+        
+            #Check if Course has already been added
+            try:
+                course = Course.objects.get(code=code,degree=degree)
+                messages.error(request, 'Course has already been added!')
+                return redirect(reverse('chemapp:add_course'))
+            except Course.DoesNotExist:
+                pass
+            
             course = course_form.save()
             course_slug = course.slug
 
@@ -163,6 +174,14 @@ def add_assessments(request,course_name_slug):
                 componentNumberNeeded = form.cleaned_data.get('componentNumberNeeded')
                 slug = slugify(name)
 
+                #Check if Assessment has already been added
+                try:
+                    assessment = Assessment.objects.get(course=course,assessmentName=name)
+                    messages.error(request, 'Assessment ' + '"' + str(name) + '"' + ' has already been added!')
+                    return redirect(reverse('chemapp:add_assessments',kwargs={'course_name_slug':course_name_slug}))
+                except Assessment.DoesNotExist:
+                    pass
+                
                 assessments.append(Assessment(weight=weight,
                                               assessmentName=name,
                                               totalMarks=marks,
@@ -217,6 +236,14 @@ def add_assessmentComponents(request,course_name_slug,assessment_name_slug):
                     status = 'Required'
                 else:
                     status = 'Optional'
+
+                #Check if Assessment Component has already been added
+                try:
+                    componet = AssessmentComponent.objects.get(assessment=assessment,description=description)
+                    messages.error(request, 'Assessment Component ' + '"' + str(description) + '"' + ' has already been added!')
+                    return redirect(reverse('chemapp:add_assessmentComponents',kwargs={'course_name_slug':course_name_slug,'assessment_name_slug':assessment_name_slug}))
+                except AssessmentComponent.DoesNotExist:
+                    pass
 
                 assessmentComponents.append(AssessmentComponent(required=required,
                                                                 status=status,

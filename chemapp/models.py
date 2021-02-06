@@ -122,11 +122,6 @@ class Course(models.Model):
 
     slug = models.SlugField(unique=True)
 
-    COLOR_CHOICES = [
-        ("#FFFFFF", "white"),
-        ("#000000", "black")
-    ]
-
     courseColor = ColorField(default='#FF0000')
 
     class Meta:
