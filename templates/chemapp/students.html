@@ -11,19 +11,20 @@
 <div class="container ">
 <div>
     <h2>Students</h2>
-  	<body>
+ 
+ 	<body>
         {% render_table students %}
     </body>
-    <br>
-    <div>
-        <a href="{% url 'chemapp:add_student' %}"><button>Add a student manually</button></a>
-	</div>
-    <br>
-	<div>
-        <a href="{% url 'chemapp:upload_student_csv' %}"><button>Upload a csv file</button></a>
-	</div>
+    
+   <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+    	<a class="btn btn-danger mt-3" href="{% url 'chemapp:add_student' %}">Add a Student Manually</a>
+  	</div>
+  	<div class="d-grid gap-2 d-md-flex justify-content-md-start">
+    	<a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_student_csv' %}">Upload CSV File</a>
+  	</div>
 
-    <!-- Test. Just to access individual student pages -->
+
+       <!-- Test. Just to access individual student pages -->
     <br>
     <div>
         {% for student in students %}
@@ -31,6 +32,7 @@
              <br>
         {% endfor %}
     </div>
+
 
 </div>
 </div>
