@@ -7,30 +7,18 @@
 
 {% block body_block %}
 <div class="container mt-5 mb-5 ">
-    {% if gradesAdded %}
-        <h4> Grades successfully added!</h4>
-    {% else %}
-        <h2> Add Grades</h2>
-        <h2> {{ assessment.assessmentName }} </h2>
-        {% if messages %}
-            {% for message in messages %}
-                {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
-                    <b>{{ message }}</b>
-                {% endif %}
-                {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
-                    <b>{{ message }}</b>
-                    <br><br>
-                {% endif %}
-            {% endfor %}
-        {% endif %}
+    <h2> Add Grades</h2>
     
-        <form id="add_grade_form" method="post" action="{% url 'chemapp:add_grades' student_id=student_id course_name_slug=course_name_slug assessment_name_slug=assessment_name_slug  %}" enctype="multipart/form-data">
+    <h2> {{ assessment.assessmentName }} </h2>
+        
+    <form id="add_grade_form" method="post" action="{% url 'chemapp:add_grades' student_id=student_id course_name_slug=course_name_slug assessment_name_slug=assessment_name_slug  %}" enctype="multipart/form-data">
         {% csrf_token %}
         
         <div>
             {{ assessment_grade_form.as_p }}
         </div>
         <br>
+        
         {{ component_grade_formset.management_form }}
         {% for component_grade_form in component_grade_formset %}
             <div class="grade-formset">
@@ -39,8 +27,8 @@
             </div>
         {% endfor %}
         <br>
+        
         <button type="submit">Save</button>
         </form>
-    {% endif %}
     
 {% endblock %}

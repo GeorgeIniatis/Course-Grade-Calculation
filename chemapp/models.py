@@ -259,8 +259,6 @@ class AssessmentGrade(models.Model):
      
      markedGrade = models.DecimalField(max_digits=5,
                                        decimal_places=2,
-                                       null=True,
-                                       blank=True,
                                        verbose_name="Marked Grade")
      
      finalGrade = models.DecimalField(max_digits=5,
@@ -268,6 +266,17 @@ class AssessmentGrade(models.Model):
                                       null=True,
                                       blank=True,
                                       verbose_name="Final Grade")
+
+     componentNumberAnswered = models.PositiveIntegerField(verbose_name= "Component Number Answered",
+                                                        help_text= "Includes required and optional components",
+                                                        default = 0)
+
+     late = models.BooleanField(default = False,
+                                verbose_name="Late")
+
+     componentNumberMatch = models.BooleanField(default = False,
+                                                verbose_name="Component Numbers Match")
+     
 
      assessment = models.ForeignKey(Assessment,
                                     on_delete=models.CASCADE)

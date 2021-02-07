@@ -13,6 +13,7 @@
 {% block body_block %}
 <div class="container mt-5 mb-5 ">
     <h2> Add Assessment Components</h2>
+    <h2> {{ assessment }} </h2>
         
     <form id="add_assessmentComponent_form" method="post" action="{% url 'chemapp:add_assessmentComponents' course_name_slug=course_name_slug assessment_name_slug=assessment_name_slug  %}" enctype="multipart/form-data">
     

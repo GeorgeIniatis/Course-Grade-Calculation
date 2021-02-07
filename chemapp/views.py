@@ -260,6 +260,7 @@ def add_assessmentComponents(request,course_name_slug,assessment_name_slug):
                     assessment_name_slug = assessment.slug
                     return redirect(reverse('chemapp:add_assessmentComponents',kwargs={'course_name_slug':course_name_slug,'assessment_name_slug':assessment_name_slug}))
 
+            #Success message
             messages.success(request,"Added a course along with its corresponding assessments and components successfully")
             return redirect(reverse('chemapp:courses'))
 
@@ -307,10 +308,13 @@ def students(request):
 
 # Dictionary structure
 # studentDict = {'student':studentObject,
-#                'courses':{courseObject1:[{assessmentObject1:[{componentObject1:grade},{componentObject2:grade}]},
-#                                          {assessmentObject2:[{compoentnObject3:grade},{componentObject3:grade}]},
+#                'courses':{courseObject1:[{assessmentObject1:{'gradeObject':assessmentGradeObject1,
+#                                                              'componentList':[{componentObject1:grade},{componentObject2:grade}]}},
+#                                          {assessmentObject2:{'gradeObject':assessmentGradeObject2,
+#                                                              'componentList':[{componentObject3:grade},{componentObject4:grade}]}},
 #                                         ],
-#                           courseObject2:[{assessmentObject3:[{componentObject4:grade},{componentObject5:grade}]},
+#                           courseObject2:[{assessmentObject3:{assessmentObject3:{'gradeObject':assessmentGradeObject3,
+#                                                              'componentList':[{componentObject5:grade},{componentObject6:grade}]}},
 #                                         ]},
 #               }
 @login_required
@@ -328,7 +332,17 @@ def student(request,student_id):
 
             for assessment in assessments:
                 assessmentDict = {}
-                assessmentDict[assessment] = []
+                assessmentDict[assessment] = {}
+               
+                try:
+                    assessmentGrade = AssessmentGrade.objects.get(assessment=assessment,student=student)
+                    assessmentDict[assessment]['gradeObject'] = assessmentGrade
+                    
+                except AssessmentGrade.DoesNotExist:
+                    assessmentDict[assessment]['gradeObject'] = None
+                    
+                assessmentDict[assessment]['componentList'] = []
+                
                 components = AssessmentComponent.objects.filter(assessment=assessment)
 
                 for component in components:
@@ -340,7 +354,7 @@ def student(request,student_id):
                         grade = None
 
                     componentDict[component] = grade
-                    assessmentDict[assessment].append(componentDict)
+                    assessmentDict[assessment]['componentList'].append(componentDict)
 
                 studentDict['courses'][course].append(assessmentDict)
 
@@ -378,6 +392,7 @@ def add_student(request):
             degree.numberOfStudents = degree.numberOfStudents + 1
             degree.save()
 
+            #Success message
             messages.success(request,"Student Added Successfully")
             return redirect(reverse('chemapp:students'))
         
@@ -398,7 +413,6 @@ def add_grades(request,student_id,course_name_slug,assessment_name_slug):
     components = AssessmentComponent.objects.filter(assessment = assessment)
 
     addGradeDict = {}
-    addGradeDict['gradesAdded'] = False
     addGradeDict['assessment'] = assessment
     addGradeDict['components'] = components
     addGradeDict['student_id'] = student_id
@@ -454,26 +468,45 @@ def add_grades(request,student_id,course_name_slug,assessment_name_slug):
 
             # Creating assessmentGrade object
             # Calculating marked grade
-            # Needs error logic
+            count = 0
             grade = 0
             for component in components:
                 assessmentComponentGrade = AssessmentComponentGrade.objects.get(assessmentComponent=component)
                 if assessmentComponentGrade.grade is not None:
+                    count = count + 1
                     grade = grade + assessmentComponentGrade.grade
 
             submissionDate = assessment_grade_form.cleaned_data.get('submissionDate')
             noDetriment = assessment_grade_form.cleaned_data.get('noDetriment')
             goodCause = assessment_grade_form.cleaned_data.get('goodCause')
 
+            #Check if submission date and time is after due date
+            if submissionDate > assessment.dueDate:
+                late = True
+            else:
+                late = False
+                
+            #Check if the number of components answered match number of components needed
+            if count == assessment.componentNumberNeeded:
+                componentNumberMatch = True
+            else:
+                componentNumberMatch = False
+                
             AssessmentGrade.objects.create(submissionDate=submissionDate,
                                            noDetriment=noDetriment,
                                            goodCause=goodCause,
                                            markedGrade=grade,
                                            finalGrade=None,
+                                           componentNumberAnswered=count,
+                                           componentNumberMatch=componentNumberMatch,
+                                           late=late,
                                            assessment=assessment,
                                            student=student)
 
-            addGradeDict['gradesAdded'] = True
+            #Success message
+            messages.success(request, 'Grades Added Successfully')
+            return redirect(reverse('chemapp:student',kwargs={'student_id':student_id,}))
+ 
         else:
             print(assessment_grade_form,component_grade_formset.errors)
     else:
