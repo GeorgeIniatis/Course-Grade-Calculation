@@ -352,16 +352,24 @@ def student(request,student_id):
 @login_required
 def add_student(request):
     addStudentDict = {}
-    addStudentDict['studentAdded'] = False
 
     if request.method == 'POST':
         student_form = StudentForm(request.POST)
         if student_form.is_valid():
             student = student_form.save(commit=False)
+            
+            gapYear = student_form.cleaned_data.get('gapYear')
+            if gapYear == False:
+                status = 'Enrolled'
+            else:
+                status = 'Gap Year'
+    
+            student.status = status
             #Just to test until we have correct equation
             student.anonID = 0000000
             student.save()
 
+            #Populate student's courses
             degree = student.academicPlan
             student.courses.set(Course.objects.filter(degree=degree,level=student.level))
             student.save()
@@ -370,7 +378,9 @@ def add_student(request):
             degree.numberOfStudents = degree.numberOfStudents + 1
             degree.save()
 
-            addStudentDict['studentAdded'] = True
+            messages.success(request,"Student Added Successfully")
+            return redirect(reverse('chemapp:students'))
+        
         else:
             print(student_form.errors)
     else:

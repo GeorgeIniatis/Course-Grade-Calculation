@@ -394,6 +394,14 @@ class StudentForm(forms.ModelForm):
                                              },
                                          format='%Y-%m-%d'))
 
+    gapYear = forms.BooleanField(label='Gap Year',
+                                 required = False,
+                                 widget = forms.CheckboxInput(
+                                     attrs={
+                                         'placeholder':'Required',
+                                         }
+                                     ))
+
     comments = forms.CharField(label='',
                                required = False,
                                widget = forms.TextInput(
@@ -405,7 +413,7 @@ class StudentForm(forms.ModelForm):
                                        }
                                    ))
 
-    field_order = ['studentID', 'firstName', 'lastName','academicPlan','level','graduationDate','comments']
+    field_order = ['gapYear','studentID', 'firstName', 'lastName','academicPlan','level','graduationDate','comments']
     
     class Meta:
         model = Student

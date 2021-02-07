@@ -12,19 +12,16 @@
 {{ student_form.media }}
 <div class="container mt-5 ">
 	<div>
-        {% if studentAdded %}
-            <h4> You have successfully added a student! </h4>
-        {% else %}
-            <h2> Add a Student </h2>
+        <h2> Add a Student </h2>
             
-            <form id="add_student_form" method="post" action="{% url 'chemapp:add_student' %}" enctype="multipart/form-data">
+        <form id="add_student_form" method="post" action="{% url 'chemapp:add_student' %}" enctype="multipart/form-data">
             
-    		{% csrf_token %}
-    		{{ student_form.as_p }}
+        {% csrf_token %}
+    	{{ student_form.as_p }}
             
-   		 	<input type="submit" value="Save">
-			</form>
-        {% endif %}
+   		<input type="submit" value="Save">
+		</form>
+        
     </div>
 </div>
 

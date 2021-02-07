@@ -13,8 +13,8 @@
     <p> Academic Plan/Degree: {{ student.academicPlan }} </p>
     <p> Level: {{ student.level }} </p>
     <p> Graduation Date: {{ student.graduationDate }} </p>
+    <p> Status: {{ student.status }} </p>
     <p> Comments: {{ student.comments }} </p>
-    <p> Gap Year: {{ student.gapYear }} </p>
     
     <h2> Courses and Assessments </h2>
     {% for course,assessmentsList in courses.items %}
@@ -24,11 +24,12 @@
                 <h4> Assessment: {{ assessment.assessmentName }} </h4>
                 <p> Weight: {{ assessment.weight }} </p>
                 <p> Total Marks: {{ assessment.totalMarks }} </p>
+                <p> Number of Components Needed: {{ assessment.componentNumberNeeded }} </p>
                 <p> Due Date and Time: {{ assessment.dueDate }} </p>
                 {% for componentDict in componentsList %}
                     {% for component,grade in componentDict.items %}
                         <h4> Component: {{ component.description }} </h4>
-                        <p> Required: {{ component.required }} </p>
+                        <p> Status: {{ component.status }} </p>
                         <p> Marks: {{ component.marks }} </p>
                         {% if grade is None %}
                             <p> Grade: Not added yet </p>

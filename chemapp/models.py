@@ -174,8 +174,14 @@ class Student(models.Model):
     
     #I don't really think gap year is necessary as they could start uni at any age.
     gapYear = models.BooleanField(default = False)
+
+    status = models.CharField(max_length=20)
     
     courses = models.ManyToManyField(Course,blank=True)
+
+    def save(self, *args, **kwargs):
+        self.status = 'Enrolled' if self.gapYear == False  else 'Gap Year'
+        super(Student, self).save(*args, **kwargs)
 
     def __str__(self):
         return (str(self.firstName) + " " + str(self.lastName) + " " + str(self.studentID))
