@@ -490,4 +490,23 @@ class AssessmentComponentGradeForm(forms.ModelForm):
     class Meta:
         model = AssessmentComponentGrade
         fields= {'description','assessmentComponent','grade'}
+
+class FinalAssessmentGradeForm(forms.ModelForm):
+
+    finalGrade = forms.DecimalField(label='',
+                                    widget = forms.NumberInput(
+                                        attrs={
+                                            'min':'0',
+                                            'step':'0.01',
+                                            'type':'number',
+                                            'placeholder':'Final Grade',
+                                            'style': 'width:300px',
+                                            'autofocus':True,
+                                            'required':True,
+                                            }
+                                       ))
+    
+    class Meta:
+        model = AssessmentGrade
+        fields = {'finalGrade'}
 		

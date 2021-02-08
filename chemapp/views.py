@@ -536,6 +536,68 @@ def add_grades(request,student_id,course_name_slug,assessment_name_slug):
     return render(request,'chemapp/add_grades.html',context = addGradeDict)
 
 @login_required
+def add_final_grade(request,student_id,course_name_slug,assessment_name_slug):
+
+    student = Student.objects.get(studentID = student_id)
+    course = Course.objects.get(slug = course_name_slug) 
+    assessment = Assessment.objects.get(course=course,slug=assessment_name_slug)
+    assessmentGrade = AssessmentGrade.objects.get(assessment=assessment,student=student)
+
+    addfinalGradeDict = {}
+    addfinalGradeDict['assessment'] = assessment 
+    addfinalGradeDict['assessmentGrade'] = assessmentGrade
+    addfinalGradeDict['student_id'] = student_id
+    addfinalGradeDict['course_name_slug'] = course_name_slug
+    addfinalGradeDict['assessment_name_slug'] = assessment_name_slug
+
+    if (request.method == 'POST'):
+        final_grade_form = FinalAssessmentGradeForm(request.POST)
+
+        if final_grade_form.is_valid():
+            finalGrade = final_grade_form.cleaned_data.get('finalGrade')
+            assessmentGrade.finalGrade = finalGrade
+            assessmentGrade.save()
+
+            #Check if Course Grade can be calculated
+            canCourseGradeBeCalculated = True
+            assessments = Assessment.objects.filter(course=course)
+            assessmentGrades = []
+            for assessment in assessments:
+                assessmentGradeObject = AssessmentGrade.objects.get(assessment=assessment,student=student)
+                assessmentGrades.append(assessmentGradeObject)
+
+                if(assessmentGradeObject.finalGrade is None):
+                    canCourseGradeBeCalculated = False
+                    
+            if canCourseGradeBeCalculated == False:
+                #Success message
+                #Final assessment grade added but course grade cannot be calculated
+                messages.success(request, 'Final Grade Added Successfully')
+                return redirect(reverse('chemapp:student',kwargs={'student_id':student_id,}))
+            else:
+                courseGrade = 0
+                for assessmentGrade in assessmentGrades:
+                    weight = assessmentGrade.assessment.weight
+                    finalBand = (assessmentGrade.finalGrade * 22)/assessmentGrade.assessment.totalMarks
+                    weightedGrade = weight * finalBand
+                    courseGrade = courseGrade + weightedGrade
+
+                courseGradeObject = CourseGrade.objects.create(course=course,student=student,grade=courseGrade)
+                #Success message
+                #Final assessment grade added and course grade calculated
+                messages.success(request, 'Final Grade Added Successfully and Course Grade Calculated!')
+                return redirect(reverse('chemapp:student',kwargs={'student_id':student_id,}))
+                       
+        else:
+            print(final_grade_form.errors)
+
+    else:
+        final_grade_form = FinalAssessmentGradeForm()
+            
+    addfinalGradeDict['final_grade_form'] = final_grade_form
+    return render(request,'chemapp/add_final_grade.html',context=addfinalGradeDict)
+
+@login_required
 def upload_student_csv(request):
     #student_dict = {'boldmessage':'Upload csv file to add students'}
     #return render(request,'chemapp/upload_student_csv.html', context=student_dict)

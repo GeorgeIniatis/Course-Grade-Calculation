@@ -1,0 +1,31 @@
+{% extends 'chemapp/base.html' %}
+{% load static %}
+
+{% block title_block %}
+    Add Final Assessment Grade
+{% endblock %}
+
+{% block body_block %}
+<div class="container mt-5 mb-5 ">
+    <h2> Add Final Grade</h2>
+    
+    <h2> {{ assessment.assessmentName }} </h2>
+    <p> NDP: {{ assessmentGrade.noDetriment }} </p>
+    <p> Good Cause: {{ assessmentGrade.goodCause }} </p>
+    <p> Date and Time of Submission: {{ assessmentGrade.submissionDate }} </p>
+    <p> <b> Late: {{ assessmentGrade.late }} </b> </p>
+    <p> <b> Component Numbers Match: {{ assessmentGrade.componentNumberMatch }} </b> </p>
+    <p> Marked Grade: {{ assessmentGrade.markedGrade }} </p>
+        
+    <form id="add_final_grade_form" method="post" action="{% url 'chemapp:add_final_grade' student_id=student_id course_name_slug=course_name_slug assessment_name_slug=assessment_name_slug  %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div>
+            {{ final_grade_form.as_p }}
+        </div>
+        <br>
+        
+        <button type="submit">Save</button>
+        </form>
+    
+{% endblock %}

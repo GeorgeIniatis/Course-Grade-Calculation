@@ -26,7 +26,7 @@
         {% if nestedDict.gradeObject is None %}
             <p> Course Grade has not been calculated yet </p>
         {% else %}
-            <p> Grade: {{ nestedDict.gradeObject.grade }} </p>
+            <p> Grade (Out of 22): {{ nestedDict.gradeObject.grade }} </p>
         {% endif %}
         {% for assessmentDict in nestedDict.assessmentList %}
             <!-- Assessment Section -->
@@ -46,8 +46,17 @@
                     <p> Date and Time of Submission: {{ nestedDict.gradeObject.submissionDate }} </p>
                     <p> <b> Late: {{ nestedDict.gradeObject.late }} </b> </p>
                     <p> <b> Component Numbers Match: {{ nestedDict.gradeObject.componentNumberMatch }} </b> </p>
-                    <p> Marked Grade: {{ nestedDict.gradeObject.markedGrade }} </p>
-                    <p> Final Grade: {{ nestedDict.gradeObject.finalGrade }} </p>
+                    <p> Marked Grade (Out of {{ assessment.totalMarks }}) : {{ nestedDict.gradeObject.markedGrade }} </p>
+                    <p> Final Grade (Out of {{ assessment.totalMarks }}): {{ nestedDict.gradeObject.finalGrade }} </p>
+                    
+                    <!-- Add Final Grade Button -->
+                    {% if nestedDict.gradeObject.finalGrade is None %}
+                        <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_final_grade' student_id=student_id course_name_slug=course.slug assessment_name_slug=assessment.slug %}">Add final assessment grade</a>
+                        <br><br>
+                    {% else %}
+                    <!-- Show Edit Final Grade Button -->
+                    {% endif %}
+                    
                 {% endif %}
                 <!-- Assesment Component Section -->
                 {% for componentDict in nestedDict.componentList %}
@@ -62,15 +71,17 @@
                         {% endif %}
                     {% endfor %}
                 {% endfor %}
-                <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_grades' student_id=student_id course_name_slug=course.slug assessment_name_slug=assessment.slug %}">Add grades</a>
-                <br><br>
+                 
+                <!-- Add Grades Button -->
+                {% if nestedDict.gradeObject is None %}
+                    <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_grades' student_id=student_id course_name_slug=course.slug assessment_name_slug=assessment.slug %}">Add grades</a>
+                    <br><br>
+                {% else %}
+                <!-- Show Edit Grades Button -->
+                {% endif %}
+                
             {% endfor %}
         {% endfor %}
-        
-        <form id="calculate_course_grade" method="post" action="{% url 'chemapp:student' student_id=student_id %}" enctype="multipart/form-data">
-            {% csrf_token %}
-            <button type="submit">Calculate course grade</button>
-        </form>
     {% endfor %}
 </div>
 </div>
