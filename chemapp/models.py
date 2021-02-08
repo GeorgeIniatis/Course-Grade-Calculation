@@ -22,6 +22,13 @@ LEVEL_CHOICES = [
     ('5-M-CP', 'Level 5 Variation 5'),
     ]
 
+SEMESTER_CHOICES = [
+    ('', 'Semester'),
+    ('1', 'Semester 1'),
+    ('2', 'Semester 2'),
+    ('Both', 'Both'),
+    ]
+
 COLOR_CHOICES = [
     ("#FFFFFF", "white"),
     ("#000000", "black"),
@@ -98,8 +105,8 @@ class Course(models.Model):
                                           verbose_name="Academic Year Taught",
                                           help_text='eg.19-20')
 
-    semester = models.IntegerField(validators=[MaxValueValidator(2), MinValueValidator(1)],
-                                   help_text='1-2')
+    semester = models.CharField(max_length = 20,
+                                choices=SEMESTER_CHOICES)
 
     #description could possible be an uploaded txt file so we dont have to manage length.
     description = models.TextField(max_length=2000)

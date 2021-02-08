@@ -25,6 +25,7 @@ SEMESTER_CHOICES = [
     ('', 'Semester'),
     ('1', 'Semester 1'),
     ('2', 'Semester 2'),
+    ('Both', 'Both'),
     ]
 
 class UserForm(forms.ModelForm):

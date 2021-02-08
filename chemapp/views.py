@@ -115,18 +115,21 @@ def course(request,course_name_slug):
 @login_required
 def add_course(request):
     addCourseDict = {}
-    course_form = CourseForm(request.POST or None)
-
-
 
     if (request.method == 'POST'):
+        course_form = CourseForm(request.POST)
+        
         if course_form.is_valid():
-            code = course_form.cleaned_data["code"]
-            degree = course_form.cleaned_data["degree"]
-            # code = course_form.cleaned_data.get('code').upper()
-            # degree = course_form.cleaned_data.get('degree')
+            code = course_form.cleaned_data.get('code').upper()
+            degree = course_form.cleaned_data.get('degree')
 
             #Check if Course has already been added
+            try:
+                course = Course.objects.get(code=code,degree=degree)
+                messages.error(request, 'Course has already been added!')
+                return redirect(reverse('chemapp:add_course'))
+            except Course.DoesNotExist:
+                pass
 
             course = course_form.save()
             course_slug = course.slug
@@ -139,7 +142,7 @@ def add_course(request):
             return redirect(reverse('chemapp:add_assessments',kwargs={'course_name_slug':course_slug}))
 
         else:
-            messages.error(request, 'Invalid form, possible duplicate data')
+            messages.error(request, 'Course has already been added!')
             print(course_form.errors)
     else:
         course_form = CourseForm()
