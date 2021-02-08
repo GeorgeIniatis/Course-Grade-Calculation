@@ -116,22 +116,19 @@ def course(request,course_name_slug):
 @login_required
 def add_course(request):
     addCourseDict = {}
+    course_form = CourseForm(request.POST or None)
+
+
 
     if (request.method == 'POST'):
-        course_form = CourseForm(request.POST)
-
         if course_form.is_valid():
-            code = course_form.cleaned_data.get('code').upper()
-            degree = course_form.cleaned_data.get('degree')
-        
+            code = course_form.cleaned_data["code"]
+            degree = course_form.cleaned_data["degree"]
+            # code = course_form.cleaned_data.get('code').upper()
+            # degree = course_form.cleaned_data.get('degree')
+
             #Check if Course has already been added
-            try:
-                course = Course.objects.get(code=code,degree=degree)
-                messages.error(request, 'Course has already been added!')
-                return redirect(reverse('chemapp:add_course'))
-            except Course.DoesNotExist:
-                pass
-            
+
             course = course_form.save()
             course_slug = course.slug
 
@@ -143,6 +140,7 @@ def add_course(request):
             return redirect(reverse('chemapp:add_assessments',kwargs={'course_name_slug':course_slug}))
 
         else:
+            messages.error(request, 'Invalid form, possible duplicate data')
             print(course_form.errors)
     else:
         course_form = CourseForm()
@@ -181,7 +179,7 @@ def add_assessments(request,course_name_slug):
                     return redirect(reverse('chemapp:add_assessments',kwargs={'course_name_slug':course_name_slug}))
                 except Assessment.DoesNotExist:
                     pass
-                
+
                 assessments.append(Assessment(weight=weight,
                                               assessmentName=name,
                                               totalMarks=marks,
@@ -333,16 +331,16 @@ def student(request,student_id):
             for assessment in assessments:
                 assessmentDict = {}
                 assessmentDict[assessment] = {}
-               
+
                 try:
                     assessmentGrade = AssessmentGrade.objects.get(assessment=assessment,student=student)
                     assessmentDict[assessment]['gradeObject'] = assessmentGrade
-                    
+
                 except AssessmentGrade.DoesNotExist:
                     assessmentDict[assessment]['gradeObject'] = None
-                    
+
                 assessmentDict[assessment]['componentList'] = []
-                
+
                 components = AssessmentComponent.objects.filter(assessment=assessment)
 
                 for component in components:
@@ -371,13 +369,13 @@ def add_student(request):
         student_form = StudentForm(request.POST)
         if student_form.is_valid():
             student = student_form.save(commit=False)
-            
+
             gapYear = student_form.cleaned_data.get('gapYear')
             if gapYear == False:
                 status = 'Enrolled'
             else:
                 status = 'Gap Year'
-    
+
             student.status = status
             #Just to test until we have correct equation
             student.anonID = 0000000
@@ -395,7 +393,7 @@ def add_student(request):
             #Success message
             messages.success(request,"Student Added Successfully")
             return redirect(reverse('chemapp:students'))
-        
+
         else:
             print(student_form.errors)
     else:
@@ -485,13 +483,13 @@ def add_grades(request,student_id,course_name_slug,assessment_name_slug):
                 late = True
             else:
                 late = False
-                
+
             #Check if the number of components answered match number of components needed
             if count == assessment.componentNumberNeeded:
                 componentNumberMatch = True
             else:
                 componentNumberMatch = False
-                
+
             AssessmentGrade.objects.create(submissionDate=submissionDate,
                                            noDetriment=noDetriment,
                                            goodCause=goodCause,
@@ -506,7 +504,7 @@ def add_grades(request,student_id,course_name_slug,assessment_name_slug):
             #Success message
             messages.success(request, 'Grades Added Successfully')
             return redirect(reverse('chemapp:student',kwargs={'student_id':student_id,}))
- 
+
         else:
             print(assessment_grade_form,component_grade_formset.errors)
     else:
