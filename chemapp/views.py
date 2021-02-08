@@ -11,6 +11,7 @@ from django.shortcuts import get_object_or_404
 import csv, io
 from django.forms.formsets import formset_factory
 from django.template.defaultfilters import slugify
+import random
 
 @login_required
 def home(request):
@@ -299,8 +300,8 @@ def user_logout(request):
 @login_required
 def students(request):
     studentsDict = {}
-
-    students = Student.objects.all()
+	# checking order by
+    students = Student.objects.order_by('level')
     studentsDict['students'] = students
 
     return render(request, 'chemapp/students.html',context=studentsDict)
@@ -379,8 +380,8 @@ def add_student(request):
                 status = 'Gap Year'
 
             student.status = status
-            #Just to test until we have correct equation
-            student.anonID = 0000000
+            #Just to test until we have correct equation && 000000 did not allow for more students since it has to be unique
+            student.anonID = random.randint(0,99999)
             student.save()
 
             #Populate student's courses
