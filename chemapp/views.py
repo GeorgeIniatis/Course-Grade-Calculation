@@ -67,7 +67,6 @@ def courses(request):
     coursesDict = {}
     courses = Course.objects.all()
 
-
     yearDict = {}
 
     for course in courses:
