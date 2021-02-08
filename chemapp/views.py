@@ -309,15 +309,18 @@ def students(request):
 
 # Dictionary structure
 # studentDict = {'student':studentObject,
-#                'courses':{courseObject1:[{assessmentObject1:{'gradeObject':assessmentGradeObject1,
-#                                                              'componentList':[{componentObject1:grade},{componentObject2:grade}]}},
-#                                          {assessmentObject2:{'gradeObject':assessmentGradeObject2,
-#                                                              'componentList':[{componentObject3:grade},{componentObject4:grade}]}},
-#                                         ],
-#                           courseObject2:[{assessmentObject3:{assessmentObject3:{'gradeObject':assessmentGradeObject3,
-#                                                              'componentList':[{componentObject5:grade},{componentObject6:grade}]}},
-#                                         ]},
-#               }
+#                'courses':{courseObject1:{'gradeObject':courseGradeObject,
+#                                          'assessmentList':[{assessmentObject:{'gradeObject':assessmentGradeObject,
+#                                                                               'componentList':[{componentObject:grade},{componentObject:grade}]}},
+#                                                            {assessmentObject:{'gradeObject':assessmentGradeObject,
+#                                                                                'componentList':[{componentObject:grade},{componentObject:grade}]}},
+#                                                           ]},
+#                           courseObject2:{'gradeObject':courseGradeObject,
+#                                          'assessmentList':[{assessmentObject:{'gradeObject':assessmentGradeObject,
+#                                                                              'componentList':[{componentObject:grade},{componentObject:grade}]}},
+#                                                            {assessmentObject:{'gradeObject':assessmentGradeObject,
+#                                                                                'componentList':[{componentObject:grade},{componentObject:grade}]}},
+#                                                           ]},
 @login_required
 def student(request,student_id):
     studentDict = {}
@@ -328,7 +331,18 @@ def student(request,student_id):
         studentDict['student_id'] = student_id
 
         for course in student.courses.all():
-            studentDict['courses'][course] = []
+            studentDict['courses'][course] = {}
+
+            try:
+                courseGrade = CourseGrade.objects.get(course=course,student=student)
+                studentDict['courses'][course]['gradeObject'] = courseGrade
+                
+            except CourseGrade.DoesNotExist:
+                studentDict['courses'][course]['gradeObject'] = None
+
+            
+            studentDict['courses'][course]['assessmentList'] = []
+
             assessments = Assessment.objects.filter(course=course)
 
             for assessment in assessments:
@@ -357,7 +371,7 @@ def student(request,student_id):
                     componentDict[component] = grade
                     assessmentDict[assessment]['componentList'].append(componentDict)
 
-                studentDict['courses'][course].append(assessmentDict)
+                studentDict['courses'][course]['assessmentList'].append(assessmentDict)
 
     except Student.DoesNotExist:
         raise Http404("Student does not exist")

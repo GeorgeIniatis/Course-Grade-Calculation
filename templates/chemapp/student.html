@@ -18,11 +18,17 @@
     <p> Comments: {{ student.comments }} </p>
     
     <h2> Courses and Assessments </h2>
-    {% for course,assessmentsList in courses.items %}
+    {% for course,nestedDict in courses.items %}
         
         <!-- Course Section -->
         <h4> Course: {{ course.name }} </h4>
-        {% for assessmentDict in assessmentsList %}
+        <!-- Course Grade Section -->
+        {% if nestedDict.gradeObject is None %}
+            <p> Course Grade has not been calculated yet </p>
+        {% else %}
+            <p> Grade: {{ nestedDict.gradeObject.grade }} </p>
+        {% endif %}
+        {% for assessmentDict in nestedDict.assessmentList %}
             <!-- Assessment Section -->
             {% for assessment,nestedDict in assessmentDict.items %}
                 <h4> Assessment: {{ assessment.assessmentName }} </h4>
@@ -39,7 +45,7 @@
                     <p> Good Cause: {{ nestedDict.gradeObject.goodCause }} </p>
                     <p> Date and Time of Submission: {{ nestedDict.gradeObject.submissionDate }} </p>
                     <p> <b> Late: {{ nestedDict.gradeObject.late }} </b> </p>
-                    </p> <b> Component Numbers Match: {{ nestedDict.gradeObject.componentNumberMatch }} </b> </p>
+                    <p> <b> Component Numbers Match: {{ nestedDict.gradeObject.componentNumberMatch }} </b> </p>
                     <p> Marked Grade: {{ nestedDict.gradeObject.markedGrade }} </p>
                     <p> Final Grade: {{ nestedDict.gradeObject.finalGrade }} </p>
                 {% endif %}
@@ -60,7 +66,11 @@
                 <br><br>
             {% endfor %}
         {% endfor %}
-        <a class="btn btn-danger mt-3" href="">Calculate course grade</a>
+        
+        <form id="calculate_course_grade" method="post" action="{% url 'chemapp:student' student_id=student_id %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <button type="submit">Calculate course grade</button>
+        </form>
     {% endfor %}
 </div>
 </div>
