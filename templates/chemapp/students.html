@@ -20,20 +20,12 @@
 <div>
     <h2>Students</h2>
  
- 	<body>
-        #{% render_table students %}
-    </body>
+        <!----render_table students----> 
+
     
-   <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-    	<a class="btn btn-danger mt-3" href="{% url 'chemapp:add_student' %}">Add a Student Manually</a>
-  	</div>
-  	<div class="d-grid gap-2 d-md-flex justify-content-md-start">
-    	<a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_student_csv' %}">Upload CSV File</a>
-  	</div>
-	<br>
-	
-	
-	
+
+<!----the levels----> 	
+
 <div id="accordion">
 
   <div class="card">
@@ -95,6 +87,18 @@
       </div>
     </div>
   </div>
+  
+  <!----the buttons----> 
+
+   <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+    	<a class="btn btn-danger mt-3" href="{% url 'chemapp:add_student' %}">Add a Student Manually</a>
+  	</div>
+  	<div class="d-grid gap-2 d-md-flex justify-content-md-start">
+    	<a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_student_csv' %}">Upload CSV File</a>
+  	</div>
+	<br>
+	
+	
 
 </div>
 {% endblock %}

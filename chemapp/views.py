@@ -617,13 +617,41 @@ def upload_student_csv(request):
     next(io_string)
     for column in csv.reader(io_string,delimiter=',',quotechar="|"):
     	_, created = Student.objects.update_or_create(
-    		firstName= column[0],
-    		lastName= column[1],
-    		studentID= column[2],
-    		anonID=column[2],
+    		studentID= column[0],
+    		firstName= column[6],
+    		lastName= column[5],
     		academicPlan=column[3],
-    		currentYear=column[4],
-    		#graduationDate=column[5],
+    		level=column[0],
+    		anonID=column[0],
+    		graduationDate=column[7],
     	)
     context={}
     return render(request,template,context)
+    
+    
+
+@login_required 
+def upload_degree_csv(request):
+    template='chemapp/upload_degree_csv.html'
+    data=Degree.objects.all()
+
+
+    if request.method == "GET":
+    	return render(request, template)
+
+    csv_file =request.FILES['file']
+    if not csv_file.name.endswith('.csv'):
+    	messages.error(request, 'THIS IS NOT A CSV FILE')
+
+    data_set =csv_file.read().decode('UTF-8')
+    io_string = io.StringIO(data_set)
+    next(io_string)
+    for column in csv.reader(io_string,delimiter=',',quotechar="|"):
+    	_, created = Degree.objects.update_or_create(
+    		degreeCode=column[0],
+    		numberOfCourses=column[1],
+    		numberOfStudents=column[2],
+    	)
+    context={}
+    messages.success(request,"Degrees Added Successfully")
+    return redirect(reverse('chemapp:degrees'))

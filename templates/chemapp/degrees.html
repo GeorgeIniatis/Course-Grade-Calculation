@@ -17,11 +17,17 @@
         <div class="d-grid gap-2 d-md-flex justify-content-md-start">
             <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_degree' %}">Add a degree</a>
         </div>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+    	<a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_degree_csv' %}">Upload CSV File</a>
+  	</div>
     {% else %}
         <h4>There are no degrees!</h4>
         <div>
             <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_degree' %}">Add a degree</a>
         </div>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+    	<a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_degree_csv' %}">Upload CSV File</a>
+  	</div>
     {% endif %}
 </div>
 {% endblock %}
