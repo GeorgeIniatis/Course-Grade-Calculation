@@ -616,6 +616,10 @@ def upload_student_csv(request):
     io_string = io.StringIO(data_set)
     next(io_string)
     for column in csv.reader(io_string,delimiter=',',quotechar="|"):
+    	if not Student.objects.filter(studentID=column[0]).exists():
+    		degree=Degree.objects.get(degreeCode=column[3])
+    		degree.numberOfStudents = degree.numberOfStudents + 1
+    		degree.save()
     	_, created = Student.objects.update_or_create(
     		studentID= column[0],
     		firstName= column[1],
@@ -625,9 +629,7 @@ def upload_student_csv(request):
     		anonID=column[5],
     		graduationDate=column[6],
     	)
-    	degree=Degree.objects.get(degreeCode=column[3])
-    	degree.numberOfStudents = degree.numberOfStudents + 1
-    	degree.save()
+    	
     context={}
     messages.success(request,"Student Added Successfully")
     return redirect(reverse('chemapp:students'))
