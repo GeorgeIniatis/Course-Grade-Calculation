@@ -618,15 +618,19 @@ def upload_student_csv(request):
     for column in csv.reader(io_string,delimiter=',',quotechar="|"):
     	_, created = Student.objects.update_or_create(
     		studentID= column[0],
-    		firstName= column[6],
-    		lastName= column[5],
-    		academicPlan=column[3],
-    		level=column[0],
-    		anonID=column[0],
-    		graduationDate=column[7],
+    		firstName= column[1],
+    		lastName= column[2],
+    		academicPlan=Degree.objects.get(degreeCode=column[3]),
+    		level=column[4],
+    		anonID=column[5],
+    		graduationDate=column[6],
     	)
+    	degree=Degree.objects.get(degreeCode=column[3])
+    	degree.numberOfStudents = degree.numberOfStudents + 1
+    	degree.save()
     context={}
-    return render(request,template,context)
+    messages.success(request,"Student Added Successfully")
+    return redirect(reverse('chemapp:students'))
     
     
 
@@ -649,8 +653,6 @@ def upload_degree_csv(request):
     for column in csv.reader(io_string,delimiter=',',quotechar="|"):
     	_, created = Degree.objects.update_or_create(
     		degreeCode=column[0],
-    		numberOfCourses=column[1],
-    		numberOfStudents=column[2],
     	)
     context={}
     messages.success(request,"Degrees Added Successfully")

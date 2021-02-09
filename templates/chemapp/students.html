@@ -37,12 +37,12 @@
     <div id="collapseL1" class="collapse show" data-parent="#accordion">
       <div class="card-body">
         {% for student in students %}
-      	{% if student.level == '1' %}
+      		{% if student.level == '1' %}
       	<p>
              <a href="{{ student.studentID }}"><button>{{ student.firstName }}</button></a>
              <br>
         </p>
-    	{% endif %}
+    		{% endif %}
     	{% endfor %}
       </div>
     </div>
@@ -78,6 +78,48 @@
       <div class="card-body">
         {% for student in students %}
       	{% if student.level == '3' %}
+      	<p>
+             <a href="{{ student.studentID }}"><button>{{ student.firstName }}</button></a>
+             <br>
+        </p>
+    	{% endif %}
+    	{% endfor %}
+      </div>
+    </div>
+  </div>
+  
+  
+  <div class="card">
+    <div class="card-header">
+      <a class="collapsed card-link" data-toggle="collapse" href="#collapseL4">
+        Level 4 Students
+      </a>
+    </div>
+    <div id="collapseL4" class="collapse" data-parent="#accordion">
+      <div class="card-body">
+        {% for student in students %}
+      	{% if student.level == '4' %}
+      	<p>
+             <a href="{{ student.studentID }}"><button>{{ student.firstName }}</button></a>
+             <br>
+        </p>
+    	{% endif %}
+    	{% endfor %}
+      </div>
+    </div>
+  </div>
+  
+  
+  <div class="card">
+    <div class="card-header">
+      <a class="collapsed card-link" data-toggle="collapse" href="#collapseL5">
+        Level 5 Students
+      </a>
+    </div>
+    <div id="collapseL5" class="collapse" data-parent="#accordion">
+      <div class="card-body">
+        {% for student in students %}
+      	{% if student.level == '5' %}
       	<p>
              <a href="{{ student.studentID }}"><button>{{ student.firstName }}</button></a>
              <br>
