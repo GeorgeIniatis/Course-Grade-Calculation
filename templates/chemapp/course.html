@@ -39,6 +39,10 @@
                 <br>
             {% endfor %}
         {% endif %}
+        
 </div>
+<div class="d-grid gap-2 d-md-flex justify-content-md-start">
+    	<a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_assessment_csv'  course_code=course.code %}">Upload CSV File</a>
+  	</div>
 </div>
 {% endblock %}

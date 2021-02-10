@@ -711,3 +711,42 @@ def upload_course_csv(request):
     context={}
     messages.success(request,"Courses Added Successfully")
     return redirect(reverse('chemapp:courses'))
+
+
+
+@login_required 
+def upload_assessment_csv(request, course_code):
+    template='chemapp/upload_assessment_csv.html'
+    data=Assessment.objects.all()
+    weightsum=0
+
+    
+    if request.method == "GET":
+    	return render(request, template)
+
+    csv_file =request.FILES['file']
+    if not csv_file.name.endswith('.csv'):
+    	messages.error(request, 'THIS IS NOT A CSV FILE')
+
+    data_set =csv_file.read().decode('UTF-8')
+    io_string = io.StringIO(data_set)
+    next(io_string)
+    for column in csv.reader(io_string,delimiter=',',quotechar="|"):
+    	weightsum=weightsum+int(column[2])
+    	_, created = Assessment.objects.update_or_create(
+    		weight=column[2],
+    		totalMarks=column[1],
+    		assessmentName=column[0],
+    		dueDate=column[3],
+    		course=Course.objects.get(code=course_code),
+    		componentNumberNeeded=column[4],	
+    	)
+    if weightsum != 1:
+            messages.error(request, 'The sum of the Assessment Weights must be equal to 1')
+            return redirect(reverse('chemapp:courses'))
+            
+    else:
+    	messages.success(request,"Assessment Added Successfully")
+    	return redirect(reverse('chemapp:courses'))
+
+
