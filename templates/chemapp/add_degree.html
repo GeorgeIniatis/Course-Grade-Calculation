@@ -11,21 +11,50 @@
 {% endblock %}
 
 {% block body_block %}
-<div class="container mt-5 mb-5 ">
-  
-    <h2> Add Degrees </h2>
+<div class="container  mb-5 ">
+
+    <h2 class="mb-5"> Add Degrees </h2>
 
     <form id="add_degree_form" method="post" action="{% url 'chemapp:add_degree' %}" enctype="multipart/form-data">
     {% csrf_token %}
 
     {{ degree_formset.management_form }}
     {% for degree_form in degree_formset %}
-        <div class="degree-formset">
-            {{ degree_form.as_p }}
-        </div>
+        <div class="degree-formset row mb-2">
+
+
+            {% for field in degree_form %}
+            <div class="col-md-auto mb-auto">
+                  <label>{{ field.label }}</label>
+                  {{ field }}
+                    {% for error in field.errors %}
+                        <div class="text-danger">
+                            <strong>*{{ error|escape }}</strong>
+                        </div>
+                    {% endfor %}
+                    <br>
+                    </div>
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                  <div class="">
+                      <strong>*{{ error|escape }}</strong>
+                  </div>
+                {% endfor %}
+                </div>
+
+
+
+
+
+
     {% endfor %}
-    <br><br>
-    <button type="submit">Save</button>
+
+
+
+
+    <br>
+    <button class="btn btn-primary mt-5" type="submit">Save</button>
     </form>
-   
+  </div>
+
 {% endblock %}

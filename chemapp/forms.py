@@ -42,25 +42,23 @@ class UserProfileForm(forms.ModelForm):
         fields = {'title'}
 
 class DegreeForm(forms.ModelForm):
-    degreeCode = forms.CharField(label='',
+    degreeCode = forms.CharField(label='Degree Code',
                                  help_text='4A-ABC',
                                  widget = forms.TextInput(
                                      attrs={
                                          'maxlength':'30',
                                          'type':'text',
-                                         'placeholder':'Degree Code',
                                          'style':'width:300px',
                                          'autofocus':True,
                                          'required':True,
                                          }
                                      ))
 
-    name = forms.CharField(label='',
+    name = forms.CharField(label='Name',
                            widget = forms.TextInput(
                                attrs={
                                    'maxlength':'200',
                                    'type':'text',
-                                   'placeholder':'Name',
                                    'style':'width:300px',
                                    'required':True,
                                    }
@@ -83,7 +81,7 @@ class CourseForm(forms.ModelForm):
                                    'required':True,
                                    }
                                ))
-    
+
     degree = forms.ModelChoiceField(label='',
                                     help_text='4A-ABC',
                                     empty_label="Degree",
@@ -222,7 +220,7 @@ class CourseForm(forms.ModelForm):
 
     field_order = ['code', 'degree', 'name', 'shortHand', 'creditsWorth','level','academicYearTaught',
                    'semester','minimumPassGrade','minimumRequirementsForCredit','description','comments','courseColor']
-    
+
     class Meta:
         model = Course
         fields = {'code','degree','creditsWorth','name','shortHand','level','academicYearTaught',
@@ -242,7 +240,7 @@ class AssessmentForm(forms.ModelForm):
                                              'required':True,
                                             }
                                          ))
-    
+
     weight = forms.DecimalField(label='',
                                 help_text='0.80',
                                 widget = forms.NumberInput(
@@ -256,7 +254,7 @@ class AssessmentForm(forms.ModelForm):
                                         'required':True,
                                         }
                                     ))
-    
+
     dueDate = forms.DateTimeField(input_formats=['%Y-%m-%dT%H:%M',],
                                   label='',
                                   help_text='12/01/2021 10:00',
@@ -293,7 +291,7 @@ class AssessmentForm(forms.ModelForm):
                                                        'required':True,
                                                        }
                                                    ))
-                                    
+
     field_order = ['assessmentName', 'weight', 'totalMarks', 'componentNumberNeeded', 'dueDate']
 
     class Meta:
@@ -332,13 +330,13 @@ class AssessmentComponentForm(forms.ModelForm):
                                           'required':True,
                                           }
                                       ))
-    
+
     field_order = ['required', 'description', 'marks']
 
     class Meta:
         model = AssessmentComponent
         fields = {'required','marks','description'}
-                            
+
 class StudentForm(forms.ModelForm):
     studentID = forms.IntegerField(label='',
                                    widget = forms.NumberInput(
@@ -352,7 +350,7 @@ class StudentForm(forms.ModelForm):
                                        'required':True,
                                        }
                                    ))
-    
+
     firstName = forms.CharField(label='',
                                 widget = forms.TextInput(
                                     attrs={
@@ -363,7 +361,7 @@ class StudentForm(forms.ModelForm):
                                         'required':True,
                                         }
                                     ))
-    
+
     lastName = forms.CharField(label='',
                                widget = forms.TextInput(
                                    attrs={
@@ -426,7 +424,7 @@ class StudentForm(forms.ModelForm):
                                    ))
 
     field_order = ['gapYear','studentID', 'firstName', 'lastName','academicPlan','level','graduationDate','comments']
-    
+
     class Meta:
         model = Student
         fields = {'studentID','firstName','lastName','academicPlan','level','graduationDate','comments'}
@@ -461,7 +459,7 @@ class AssessmentGradeForm(forms.ModelForm):
                                        ))
 
     field_order = ['noDetriment', 'goodCause', 'submissionDate']
-    
+
     class Meta:
         model = AssessmentGrade
         fields = {'submissionDate','noDetriment','goodCause'}
@@ -497,7 +495,7 @@ class AssessmentComponentGradeForm(forms.ModelForm):
                                    ))
 
     field_order = ['description','assessmentComponent', 'grade']
-    
+
     class Meta:
         model = AssessmentComponentGrade
         fields= {'description','assessmentComponent','grade'}
@@ -516,8 +514,7 @@ class FinalAssessmentGradeForm(forms.ModelForm):
                                             'required':True,
                                             }
                                        ))
-    
+
     class Meta:
         model = AssessmentGrade
         fields = {'finalGrade'}
-		

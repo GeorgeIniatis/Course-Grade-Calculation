@@ -58,6 +58,7 @@ def add_degree(request):
             return redirect(reverse('chemapp:degrees'))
         else:
             print(degree_formset.errors)
+
     else:
         degree_formset = DegreeFormSet()
 
@@ -121,7 +122,7 @@ def add_course(request):
 
     if (request.method == 'POST'):
         course_form = CourseForm(request.POST)
-        
+
         if course_form.is_valid():
             code = course_form.cleaned_data.get('code').upper()
             degree = course_form.cleaned_data.get('degree')
@@ -339,11 +340,11 @@ def student(request,student_id):
             try:
                 courseGrade = CourseGrade.objects.get(course=course,student=student)
                 studentDict['courses'][course]['gradeObject'] = courseGrade
-                
+
             except CourseGrade.DoesNotExist:
                 studentDict['courses'][course]['gradeObject'] = None
 
-            
+
             studentDict['courses'][course]['assessmentList'] = []
 
             assessments = Assessment.objects.filter(course=course)
@@ -411,7 +412,7 @@ def add_student(request):
             for course in courses:
                 course.numberOfStudents = course.numberOfStudents + 1
                 course.save()
-            
+
             #Increment degree student count
             degree.numberOfStudents = degree.numberOfStudents + 1
             degree.save()
@@ -548,12 +549,12 @@ def add_grades(request,student_id,course_name_slug,assessment_name_slug):
 def add_final_grade(request,student_id,course_name_slug,assessment_name_slug):
 
     student = Student.objects.get(studentID = student_id)
-    course = Course.objects.get(slug = course_name_slug) 
+    course = Course.objects.get(slug = course_name_slug)
     assessment = Assessment.objects.get(course=course,slug=assessment_name_slug)
     assessmentGrade = AssessmentGrade.objects.get(assessment=assessment,student=student)
 
     addfinalGradeDict = {}
-    addfinalGradeDict['assessment'] = assessment 
+    addfinalGradeDict['assessment'] = assessment
     addfinalGradeDict['assessmentGrade'] = assessmentGrade
     addfinalGradeDict['student_id'] = student_id
     addfinalGradeDict['course_name_slug'] = course_name_slug
@@ -577,7 +578,7 @@ def add_final_grade(request,student_id,course_name_slug,assessment_name_slug):
 
                 if(assessmentGradeObject.finalGrade is None):
                     canCourseGradeBeCalculated = False
-                    
+
             if canCourseGradeBeCalculated == False:
                 #Success message
                 #Final assessment grade added but course grade cannot be calculated
@@ -596,13 +597,13 @@ def add_final_grade(request,student_id,course_name_slug,assessment_name_slug):
                 #Final assessment grade added and course grade calculated
                 messages.success(request, 'Final Grade Added Successfully and Course Grade Calculated!')
                 return redirect(reverse('chemapp:student',kwargs={'student_id':student_id,}))
-                       
+
         else:
             print(final_grade_form.errors)
 
     else:
         final_grade_form = FinalAssessmentGradeForm()
-            
+
     addfinalGradeDict['final_grade_form'] = final_grade_form
     return render(request,'chemapp/add_final_grade.html',context=addfinalGradeDict)
 
@@ -638,14 +639,14 @@ def upload_student_csv(request):
     		anonID=column[5],
     		graduationDate=column[6],
     	)
-    	
+
     context={}
     messages.success(request,"Student Added Successfully")
     return redirect(reverse('chemapp:students'))
-    
-    
 
-@login_required 
+
+
+@login_required
 def upload_degree_csv(request):
     template='chemapp/upload_degree_csv.html'
     data=Degree.objects.all()
@@ -671,7 +672,7 @@ def upload_degree_csv(request):
 
 
 
-@login_required 
+@login_required
 def upload_course_csv(request):
     template='chemapp/upload_course_csv.html'
     data=Course.objects.all()
@@ -706,7 +707,7 @@ def upload_course_csv(request):
     		minimumRequirementsForCredit=column[10],
     		description=column[11],
     		comments=column[12],
-    		 		
+
     	)
     context={}
     messages.success(request,"Courses Added Successfully")
@@ -714,13 +715,13 @@ def upload_course_csv(request):
 
 
 
-@login_required 
+@login_required
 def upload_assessment_csv(request, course_code):
     template='chemapp/upload_assessment_csv.html'
     data=Assessment.objects.all()
     weightsum=0
 
-    
+
     if request.method == "GET":
     	return render(request, template)
 
@@ -739,14 +740,12 @@ def upload_assessment_csv(request, course_code):
     		assessmentName=column[0],
     		dueDate=column[3],
     		course=Course.objects.get(code=course_code),
-    		componentNumberNeeded=column[4],	
+    		componentNumberNeeded=column[4],
     	)
     if weightsum != 1:
             messages.error(request, 'The sum of the Assessment Weights must be equal to 1')
             return redirect(reverse('chemapp:courses'))
-            
+
     else:
     	messages.success(request,"Assessment Added Successfully")
     	return redirect(reverse('chemapp:courses'))
-
-
