@@ -1,6 +1,10 @@
 {% extends 'chemapp/base.html' %}
 {% load static %}
 
+{% block js_block %}
+    <script src="{% static 'js/chemapp-courseInputMask.js' %}"></script>
+{% endblock %}
+
 {% block title_block %}
     Add a Course
 {% endblock %}
