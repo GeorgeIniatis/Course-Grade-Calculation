@@ -45,8 +45,10 @@ def add_degree(request):
             degrees = []
             for form in degree_formset:
                 degreeCode = form.cleaned_data.get('degreeCode')
+                name = form.cleaned_data.get('name')
 
                 degrees.append(Degree(degreeCode=degreeCode,
+                                      name=name,
                                       numberOfCourses=0,
                                       numberOfStudents=0))
 
@@ -191,6 +193,7 @@ def add_assessments(request,course_name_slug):
                                               course=course,
                                               slug=slug))
 
+            #Check that the weights add to 1
             if weightSum != 1:
                 messages.error(request, 'The sum of the Assessment Weights must be equal to 1')
                 return redirect(reverse('chemapp:add_assessments',kwargs={'course_name_slug':course_name_slug}))
@@ -403,6 +406,12 @@ def add_student(request):
             student.courses.set(Course.objects.filter(degree=degree,level=student.level))
             student.save()
 
+            #Increment each course student count
+            courses = Course.objects.filter(degree=degree,level=student.level)
+            for course in courses:
+                course.numberOfStudents = course.numberOfStudents + 1
+                course.save()
+            
             #Increment degree student count
             degree.numberOfStudents = degree.numberOfStudents + 1
             degree.save()

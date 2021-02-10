@@ -55,9 +55,20 @@ class DegreeForm(forms.ModelForm):
                                          }
                                      ))
 
+    name = forms.CharField(label='',
+                           widget = forms.TextInput(
+                               attrs={
+                                   'maxlength':'200',
+                                   'type':'text',
+                                   'placeholder':'Name',
+                                   'style':'width:300px',
+                                   'required':True,
+                                   }
+                               ))
+
     class Meta:
         model = Degree
-        fields = {'degreeCode'}
+        fields = {'degreeCode','name'}
 
 class CourseForm(forms.ModelForm):
     code = forms.CharField(label='',
@@ -109,11 +120,11 @@ class CourseForm(forms.ModelForm):
                                     ))
 
     creditsWorth = forms.IntegerField(label='',
-                                      help_text='20, Between 5-20 credits',
+                                      help_text='20, Between 5-120 credits',
                                       widget =  forms.NumberInput(
                                           attrs={
                                               'min':'5',
-                                              'max':'20',
+                                              'max':'120',
                                               'type':'number',
                                               'placeholder':'Credits Worth',
                                               'style': 'width:300px',

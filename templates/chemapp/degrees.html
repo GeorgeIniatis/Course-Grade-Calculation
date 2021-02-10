@@ -11,7 +11,7 @@
     {% if degrees %}
 
         {% for degree in degrees %}
-            <b> {{ degree }} </b>
+            <b> {{ degree.name }} {{ degree.degreeCode }} </b>
             <p> &emsp;The number of students enrolled: {{degree.numberOfStudents}} </p>
         {% endfor %}
 

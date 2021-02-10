@@ -65,6 +65,8 @@ class Degree(models.Model):
                                   unique=True,
                                   help_text='eg.4H-CMC')
 
+    name = models.CharField(max_length=200)
+
     numberOfCourses = models.PositiveIntegerField(default=0,
                                                   verbose_name="Number of Courses")
     
@@ -85,9 +87,9 @@ class Course(models.Model):
 
     #any paramets here max min?
     #Question to ask customer
-    creditsWorth = models.IntegerField(validators=[MaxValueValidator(20), MinValueValidator(5)],
+    creditsWorth = models.IntegerField(validators=[MaxValueValidator(120), MinValueValidator(5)],
                                        verbose_name='Credits Worth',
-                                       help_text='5-20 Credits')
+                                       help_text='5-120 Credits')
 
     name = models.CharField(max_length=200,
                             help_text='eg.Biological Chemistry 3')
@@ -126,6 +128,9 @@ class Course(models.Model):
                                                        decimal_places = 2,
                                                        verbose_name="Minimum Requirements For Credit",
                                                        help_text='eg.0.60')
+
+    numberOfStudents = models.PositiveIntegerField(default=0,
+                                                   verbose_name="Number of Students")
 
     slug = models.SlugField(unique=True)
 
