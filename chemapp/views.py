@@ -659,3 +659,46 @@ def upload_degree_csv(request):
     context={}
     messages.success(request,"Degrees Added Successfully")
     return redirect(reverse('chemapp:degrees'))
+
+
+
+@login_required 
+def upload_course_csv(request):
+    template='chemapp/upload_course_csv.html'
+    data=Course.objects.all()
+
+
+    if request.method == "GET":
+    	return render(request, template)
+
+    csv_file =request.FILES['file']
+    if not csv_file.name.endswith('.csv'):
+    	messages.error(request, 'THIS IS NOT A CSV FILE')
+
+    data_set =csv_file.read().decode('UTF-8')
+    io_string = io.StringIO(data_set)
+    next(io_string)
+    for column in csv.reader(io_string,delimiter=',',quotechar="|"):
+    	if not Course.objects.filter(code=column[0]).exists():
+    		degree=Degree.objects.get(degreeCode=column[1])
+    		degree.numberOfCourses = degree.numberOfCourses + 1
+    		degree.save()
+    	_, created = Course.objects.update_or_create(
+    		code=column[0],
+    		degree=Degree.objects.get(degreeCode=column[1]),
+    		creditsWorth=column[2],
+    		name=column[3],
+    		shortHand=column[4],
+    		level=column[5],
+    		year=column[6],
+    		academicYearTaught=column[7],
+    		semester=column[8],
+    		minimumPassGrade=column[9],
+    		minimumRequirementsForCredit=column[10],
+    		description=column[11],
+    		comments=column[12],
+    		 		
+    	)
+    context={}
+    messages.success(request,"Courses Added Successfully")
+    return redirect(reverse('chemapp:courses'))

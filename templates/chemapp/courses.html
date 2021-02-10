@@ -154,11 +154,16 @@ Courses
   <div class="d-grid gap-2 d-md-flex justify-content-md-start">
     <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_course' %}">Add a course</a>
   </div>
-
+	<div class="d-grid gap-2 d-md-flex justify-content-md-start">
+    	<a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_course_csv' %}">Upload CSV File</a>
+  	</div>
   {% else %}
   <h4>There are no courses!</h4>
   <div class="d-grid gap-2 d-md-flex justify-content-md-start">
     <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_course' %}">Add a course</a>
+  </div>
+  <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+    	<a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_course_csv' %}">Upload CSV File</a>
   </div>
   {% endif %}
 </div>
