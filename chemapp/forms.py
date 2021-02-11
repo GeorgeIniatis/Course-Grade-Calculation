@@ -51,6 +51,7 @@ class DegreeForm(forms.ModelForm):
                                          'style':'width:300px',
                                          'autofocus':True,
                                          'required':True,
+                                         'class':'form-control'
                                          }
                                      ))
 
@@ -61,6 +62,7 @@ class DegreeForm(forms.ModelForm):
                                    'type':'text',
                                    'style':'width:300px',
                                    'required':True,
+                                   'class':'form-control'
                                    }
                                ))
 

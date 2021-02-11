@@ -56,7 +56,7 @@
                 var delCssSelector = $.trim(options.deleteCssClass).replace(/\s+/g, '.'),
                     addCssSelector = $.trim(options.addCssClass).replace(/\s+/g, '.');
 
-                var delButtonHTML = '<div class="col-2"><a class=" btn btn-danger btn-sm ' + options.deleteCssClass + '" href="javascript:void(0)"><i class="bi bi-x"></i> ' + options.deleteText +'</a></div>';
+                var delButtonHTML = '<div class="col-2 my-auto"><a class=" btn btn-danger ' + options.deleteCssClass + '" href="javascript:void(0)"><i class="bi bi-x"></i> ' + options.deleteText +'</a></div>';
                 if (options.deleteContainerClass) {
                     // If we have a specific container for the remove button,
                     // place it as the last child of that container:

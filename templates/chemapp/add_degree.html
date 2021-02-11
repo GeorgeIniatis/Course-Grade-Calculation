@@ -20,12 +20,12 @@
 
     {{ degree_formset.management_form }}
     {% for degree_form in degree_formset %}
-        <div class="degree-formset row mb-2">
+        <div class="degree-formset row ">
 
 
             {% for field in degree_form %}
-            <div class="col-md-auto mb-auto">
-                  <label>{{ field.label }}</label>
+            <div class="col-md-auto ">
+                  <label  class="form-label">{{ field.label }}</label>
                   {{ field }}
                     {% for error in field.errors %}
                         <div class="text-danger">
