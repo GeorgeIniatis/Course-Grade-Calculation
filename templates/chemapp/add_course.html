@@ -2,24 +2,44 @@
 {% load static %}
 
 {% block js_block %}
-    <script src="{% static 'js/chemapp-courseInputMask.js' %}"></script>
+<script src="{% static 'js/chemapp-courseInputMask.js' %}"></script>
 {% endblock %}
 
 {% block title_block %}
-    Add a Course
+Add a Course
 {% endblock %}
 
 {% block body_block %}
 <div class="container mt-5 mb-5 ">
-    <h2> Add a Course </h2>
-        
-    <form id="add_course_form" method="post" action="{% url 'chemapp:add_course' %}" enctype="multipart/form-data">
-    
+  <h2> Add a Course </h2>
+
+  <form id="add_course_form" method="post" action="{% url 'chemapp:add_course' %}" enctype="multipart/form-data">
+
     {% csrf_token %}
-    {{ course_form.as_p }}
-        
+
+
+      {% for field in course_form %}
+
+        <label  class="form-label">{{ field.label }}</label>
+        {{ field }}
+        <div id="" class="form-text">e.g. {{ field.help_text }}</div>
+        {% for error in field.errors %}
+        <div class="text-danger">
+          <strong>*{{ error|escape }}</strong>
+        </div>
+        {% endfor %}
+        <br>
+
+      {% endfor %}
+      {% for error in form.non_field_errors %}
+      <div class="">
+        <strong>*{{ error|escape }}</strong>
+      </div>
+      {% endfor %}
+
+
     <button type="submit">Save</button>
-    </form>
+  </form>
 </div>
-        
+
 {% endblock %}
