@@ -56,6 +56,7 @@ class DegreeForm(forms.ModelForm):
                                      ))
 
     name = forms.CharField(label='Name',
+                           help_text='BSci Chemistry',
                            widget = forms.TextInput(
                                attrs={
                                    'maxlength':'200',
@@ -71,55 +72,63 @@ class DegreeForm(forms.ModelForm):
         fields = {'degreeCode','name'}
 
 class CourseForm(forms.ModelForm):
-    code = forms.CharField(label='',
+    code = forms.CharField(label='Code',
                            help_text='CHEM1006',
                            widget = forms.TextInput(
                                attrs={
                                    'maxlength':'30',
                                    'type':'text',
+                                   'id':'floatingCode',
                                    'placeholder':'Code',
-                                   'style':'width:300px;text-transform:uppercase',
+                                   'class':'form-control',
+                                   'style':'width:100%;text-transform:uppercase',
                                    'autofocus':True,
                                    'required':True,
                                    }
                                ))
 
-    degree = forms.ModelChoiceField(label='',
+    degree = forms.ModelChoiceField(label='Degree',
                                     help_text='4A-ABC',
-                                    empty_label="Degree",
+                                    empty_label="Select a choice",
                                     queryset=Degree.objects.all(),
                                     widget=forms.Select(
                                         attrs={
-                                            'style':'width:300px',
+                                            'style':'width:100%',
                                             'required':True,
+                                            'id':'floatingDegree',
+                                            'class':'form-select',
                                             }
                                         ))
 
-    name = forms.CharField(label='',
+    name = forms.CharField(label='Name',
                            help_text='Biological Chemistry 1',
                            widget = forms.TextInput(
                                attrs={
                                    'maxlength':'200',
                                    'type':'text',
                                    'placeholder':'Name',
+                                   'id':'floatingName',
+                                   'class':'form-control ',
                                    'style':'width:300px',
                                    'required':True,
                                    }
                                ))
 
-    shortHand = forms.CharField(label='',
+    shortHand = forms.CharField(label='Shorthand',
                                 help_text='BIOCHEM1',
                                 widget = forms.TextInput(
                                     attrs={
                                         'maxlength':'30',
                                         'type':'text',
                                         'placeholder':'Shorthand',
+                                        'id':'floatingShorthand',
+                                        'class':'form-control',
                                         'style':'width:300px;text-transform:uppercase',
                                         'required':True,
                                         }
                                     ))
 
-    creditsWorth = forms.IntegerField(label='',
+    creditsWorth = forms.IntegerField(label='Credits Worth',
                                       help_text='20, Between 5-120 credits',
                                       widget =  forms.NumberInput(
                                           attrs={
@@ -127,22 +136,24 @@ class CourseForm(forms.ModelForm):
                                               'max':'120',
                                               'type':'number',
                                               'placeholder':'Credits Worth',
+                                              'class':'form-control',
                                               'style': 'width:300px',
                                               'required':True,
                                               }
                                           ))
 
-    level = forms.ChoiceField(label='',
+    level = forms.ChoiceField(label='Level',
                               help_text='Level 1',
                               choices=LEVEL_CHOICES,
                               widget=forms.Select(
                                   attrs={
                                       'style':'width:300px',
                                       'required':True,
+                                      'class':'form-select',
                                       }
                                   ))
 
-    academicYearTaught = forms.CharField(label='',
+    academicYearTaught = forms.CharField(label='Academic Year Taught',
                                          help_text='19-20',
                                          widget = forms.TextInput(
                                              attrs={
@@ -151,32 +162,35 @@ class CourseForm(forms.ModelForm):
                                                  'placeholder':'Academic Year Taught',
                                                  'style':'width:300px',
                                                  'required':True,
+                                                 'class':'form-control',
                                                  }
                                              ))
 
-    semester = forms.ChoiceField(label='',
+    semester = forms.ChoiceField(label='Semester',
                                  help_text='Semester 1',
                                  choices=SEMESTER_CHOICES,
                                  widget=forms.Select(
                                      attrs={
                                          'style':'width:300px',
                                          'required':True,
+                                         'class':'form-select',
                                          }
                                      ))
 
-    minimumPassGrade = forms.CharField(label='',
+    minimumPassGrade = forms.CharField(label='Minimum Pass Grade',
                                        help_text='B3',
                                        widget = forms.TextInput(
                                            attrs={
                                                'maxlength':'2',
                                                'type':'text',
                                                'placeholder':'Minimum Pass Grade',
+                                               'class':'form-control',
                                                'style':'width:300px;text-transform:uppercase',
                                                'required':True,
                                                }
                                            ))
 
-    minimumRequirementsForCredit = forms.DecimalField(label='',
+    minimumRequirementsForCredit = forms.DecimalField(label='Minimum Requirements For Credit',
                                                       help_text='0.75',
                                                       widget = forms.NumberInput(
                                                           attrs={
@@ -185,37 +199,42 @@ class CourseForm(forms.ModelForm):
                                                               'step':'0.05',
                                                               'type':'number',
                                                               'placeholder':'Minimum Requirements For Credit',
+                                                              'class':'form-control',
                                                               'style': 'width:300px',
                                                               'required':True,
                                                               }
                                                           ))
 
-    courseColor = forms.CharField(label='Colour',
+    courseColor = forms.CharField(label='Color',
                                   widget=forms.TextInput(
                                       attrs={
-                                          'maxlength':'7',
                                           'type': 'color',
+                                          'class':'form-control form-control-color',
+                                          'title':'Choose course color',
+                                          'style':'width:300px',
                                           }
                                       ))
 
-    description = forms.CharField(label='',
+    description = forms.CharField(label='Description',
                                   widget = forms.TextInput(
                                       attrs={
                                           'maxlength':'2000',
                                           'type':'text',
                                           'placeholder':'Description',
+                                          'class':'form-control',
                                           'style':'width:400px;height:50px',
                                           'required':True,
                                           }
                                       ))
 
-    comments = forms.CharField(label='',
+    comments = forms.CharField(label='Comments',
                                required = False,
                                widget = forms.TextInput(
                                    attrs={
                                        'maxlength':'2000',
                                        'type':'text',
                                        'placeholder':'Comments',
+                                       'class':'form-control',
                                        'style':'width:400px;height:50px',
                                        }
                                    ))

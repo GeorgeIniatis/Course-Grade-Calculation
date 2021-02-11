@@ -17,29 +17,64 @@ Add a Course
 
     {% csrf_token %}
 
-
+    <div class="row ">
       {% for field in course_form %}
 
-        <label  class="form-label">{{ field.label }}</label>
-        {{ field }}
-        <div id="" class="form-text">e.g. {{ field.help_text }}</div>
-        {% for error in field.errors %}
-        <div class="text-danger">
-          <strong>*{{ error|escape }}</strong>
+      {% if field.label == 'Code' %}
+      <div class="col-4 mb-4">
+        {% elif field.label == 'Degree' %}
+        <div class="col-4">
+          {% else %}
+          <div class="col-12 mb-4">
+            {% endif %}
+
+            {% if field.label == 'Color' %}<label for="exampleColorInput" class="form-label">Color picker</label>
+            <input type="color" class="form-control form-control-color" id="exampleColorInput" value="#563d7c" title="Choose your color">
+
+            {% else %}
+
+
+
+
+            <div class="form-floating">
+              {{ field }}
+              <label for="floating{{ field.label }}">{{ field.label }}</label>
+            </div>
+            {% endif %}
+
+            <!-- <p  class="form-label">{{ field.label }}</p>
+
+            {{ field }} -->
+
+            <div class=" text-start">
+              <div id="" class="form-text">e.g. {{ field.help_text }}</div>
+            </div>
+
+
+
+            {% for error in field.errors %}
+            <div class="text-danger">
+              <strong>*{{ error|escape }}</strong>
+            </div>
+            {% endfor %}
+          </div>
+
+
+          {% endfor %}
+
+
+          {% for error in form.non_field_errors %}
+          <div class="">
+            <strong>*{{ error|escape }}</strong>
+          </div>
+          {% endfor %}
+
+
         </div>
-        {% endfor %}
-        <br>
-
-      {% endfor %}
-      {% for error in form.non_field_errors %}
-      <div class="">
-        <strong>*{{ error|escape }}</strong>
-      </div>
-      {% endfor %}
 
 
-    <button type="submit">Save</button>
-  </form>
-</div>
+        <button type="submit">Save</button>
+      </form>
+    </div>
 
-{% endblock %}
+    {% endblock %}
