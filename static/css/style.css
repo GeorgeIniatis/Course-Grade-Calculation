@@ -28,3 +28,12 @@ body{
   background-color: #d1e7dd !important ;
   border-color: #badbcc !important  ;
 }
+
+
+.form-control-color{
+  max-width:100% !important;
+}
+
+.color-box-course{
+  width:300px !important;
+}

@@ -24,12 +24,22 @@ Add a Course
       <div class="col-4 mb-4">
         {% elif field.label == 'Degree' %}
         <div class="col-4">
+          {% elif field.label == 'Description'  %}
+          <div class="col-8 mb-2">
+            {% elif field.label == 'Comments' %}
+            <div class="col-8">
+              {% elif field.label == 'Color' %}
+              <div class="col-12">
           {% else %}
           <div class="col-12 mb-4">
             {% endif %}
 
-            {% if field.label == 'Color' %}<label for="exampleColorInput" class="form-label">Color picker</label>
-            <input type="color" class="form-control form-control-color" id="exampleColorInput" value="#563d7c" title="Choose your color">
+
+
+            {% if field.label == 'Color' %}
+            <label for="exampleColorInput" class="form-label">Color picker</label>
+
+            <input type="color" class="form-control form-control-color color-box-course"  id="exampleColorInput" value="#563d7c" title="Choose your color">
 
             {% else %}
 
@@ -47,7 +57,7 @@ Add a Course
             {{ field }} -->
 
             <div class=" text-start">
-              <div id="" class="form-text">e.g. {{ field.help_text }}</div>
+              <div id="" class="form-text">{{ field.help_text }}</div>
             </div>
 
 

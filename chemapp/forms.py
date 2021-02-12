@@ -209,33 +209,33 @@ class CourseForm(forms.ModelForm):
                                   widget=forms.TextInput(
                                       attrs={
                                           'type': 'color',
-                                          'class':'form-control form-control-color',
+                                          'class':'form-control form-control-color ',
                                           'title':'Choose course color',
-                                          'style':'width:300px',
+                                          'style': 'width:300px',
                                           }
                                       ))
 
     description = forms.CharField(label='Description',
-                                  widget = forms.TextInput(
+                                  widget = forms.Textarea(
                                       attrs={
                                           'maxlength':'2000',
                                           'type':'text',
                                           'placeholder':'Description',
                                           'class':'form-control',
-                                          'style':'width:400px;height:50px',
+                                          'style':'width:100%;height:150px',
                                           'required':True,
                                           }
                                       ))
 
     comments = forms.CharField(label='Comments',
                                required = False,
-                               widget = forms.TextInput(
+                               widget = forms.Textarea(
                                    attrs={
                                        'maxlength':'2000',
                                        'type':'text',
                                        'placeholder':'Comments',
                                        'class':'form-control',
-                                       'style':'width:400px;height:50px',
+                                       'style':'width:100%;height:150px',
                                        }
                                    ))
 
