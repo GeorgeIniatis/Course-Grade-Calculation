@@ -49,6 +49,8 @@ class DegreeForm(forms.ModelForm):
                                          'maxlength':'30',
                                          'type':'text',
                                          'style':'width:300px',
+                                         'placeholder':'Degree Code',
+                                         'id':'degreeCode',
                                          'autofocus':True,
                                          'required':True,
                                          'class':'form-control'
@@ -62,7 +64,9 @@ class DegreeForm(forms.ModelForm):
                                    'maxlength':'200',
                                    'type':'text',
                                    'style':'width:300px',
+                                   'placeholder':'Name',
                                    'required':True,
+                                   'id':'degreeCode',
                                    'class':'form-control'
                                    }
                                ))
