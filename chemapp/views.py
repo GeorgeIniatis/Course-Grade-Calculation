@@ -50,10 +50,8 @@ def add_degree(request):
                 degreeCode = form.cleaned_data.get('degreeCode')
                 name = form.cleaned_data.get('name')
 
-
-
                 if degreeCode in codes:
-                    messages.error(request,"degree "+degreeCode+" was not added as it already exists")
+                    messages.error(request,"Duplicate degree " + degreeCode + " was only added once")
                 else:
                     codes.append(degreeCode)
                     degrees.append(Degree(degreeCode=degreeCode,
