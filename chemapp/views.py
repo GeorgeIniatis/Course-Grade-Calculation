@@ -175,6 +175,9 @@ def add_assessments(request,course_name_slug):
 
         if assessment_formset.is_valid():
             assessments = []
+
+            #this list is used to detect duplicated in formset
+            codes = []
             weightSum = 0
             for form in assessment_formset:
                 weight = form.cleaned_data.get('weight')
@@ -193,13 +196,19 @@ def add_assessments(request,course_name_slug):
                 except Assessment.DoesNotExist:
                     pass
 
-                assessments.append(Assessment(weight=weight,
-                                              assessmentName=name,
-                                              totalMarks=marks,
-                                              dueDate=dueDate,
-                                              componentNumberNeeded=componentNumberNeeded,
-                                              course=course,
-                                              slug=slug))
+                if (name+course.code) in codes:
+                    messages.error(request,"Duplicate Assessment " + name + " was only added once")
+                else:
+                    codes.append(name+course.code)
+                    assessments.append(Assessment(weight=weight,
+                                                  assessmentName=name,
+                                                  totalMarks=marks,
+                                                  dueDate=dueDate,
+                                                  componentNumberNeeded=componentNumberNeeded,
+                                                  course=course,
+                                                  slug=slug))
+
+
 
             #Check that the weights add to 1
             if weightSum != 1:
