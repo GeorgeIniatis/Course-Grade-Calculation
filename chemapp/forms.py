@@ -253,20 +253,21 @@ class CourseForm(forms.ModelForm):
                   'minimumRequirementsForCredit','courseColor'}
 
 class AssessmentForm(forms.ModelForm):
-    assessmentName = forms.CharField(label='',
-                                     help_text='Exam',
+    assessmentName = forms.CharField(label='Name',
+                                     help_text='Exam 1',
                                      widget = forms.TextInput(
                                          attrs={
                                              'maxlength':'200',
                                              'type':'text',
                                              'placeholder':'Name',
                                              'style':'width:300px',
+                                             'class':'form-control',
                                              'autofocus':True,
                                              'required':True,
                                             }
                                          ))
 
-    weight = forms.DecimalField(label='',
+    weight = forms.DecimalField(label='Weight',
                                 help_text='0.80',
                                 widget = forms.NumberInput(
                                     attrs={
@@ -275,44 +276,48 @@ class AssessmentForm(forms.ModelForm):
                                         'step':'0.05',
                                         'type':'number',
                                         'placeholder':'Weight',
-                                        'style': 'width:300px',
+                                        'class':'form-control',
+                                        'style': 'width:140px',
                                         'required':True,
                                         }
                                     ))
 
     dueDate = forms.DateTimeField(input_formats=['%Y-%m-%dT%H:%M',],
-                                  label='',
-                                  help_text='12/01/2021 10:00',
+                                  label='Due Date and Time',
+                                  help_text='12-01-2021 10:00',
                                   widget = forms.DateTimeInput(
                                       attrs={
-                                          'placeholder':'Due Date and Time',
+                                          'placeholder':'dd-mm-yyyy --:--',
                                           'onfocus':"(this.type='datetime-local')",
                                           'onblur':"(this.type='text')",
-                                          'style':'width:300px',
+                                          'style':'width:200px',
+                                          'class':'form-control',
                                           'required':True,
                                           },
                                       format='%Y-%m-%dT%H:%M'))
 
-    totalMarks = forms.IntegerField(label='',
-                                    help_text='120',
+    totalMarks = forms.IntegerField(label='Total Marks',
+                                    help_text='5-120',
                                     widget =  forms.NumberInput(
                                         attrs={
                                             'min':'0',
                                             'type':'number',
                                             'placeholder':'Total Marks',
-                                            'style': 'width:300px',
+                                            'style': 'width:140px',
+                                            'class':'form-control',
                                             'required':True,
                                             }
                                         ))
 
-    componentNumberNeeded = forms.IntegerField(label='',
-                                               help_text='3,Includes required and optional components',
+    componentNumberNeeded = forms.IntegerField(label='Components Needed',
+                                               help_text='number of exams/labs/tests',
                                                widget =  forms.NumberInput(
                                                    attrs={
                                                        'min':'0',
                                                        'type':'number',
-                                                       'placeholder':'Number of Components Needed',
-                                                       'style': 'width:300px',
+                                                       'placeholder':'Components Needed',
+                                                       'style': 'width:200px',
+                                                       'class':'form-control',
                                                        'required':True,
                                                        }
                                                    ))
