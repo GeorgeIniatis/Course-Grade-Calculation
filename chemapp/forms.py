@@ -334,10 +334,11 @@ class AssessmentComponentForm(forms.ModelForm):
                                   widget = forms.CheckboxInput(
                                       attrs={
                                           'placeholder':'Required',
+                                          'class':'form-check-input',
                                           }
                                       ))
 
-    marks = forms.IntegerField(label='',
+    marks = forms.IntegerField(label='Marks',
                                help_text='20',
                                widget = forms.NumberInput(
                                    attrs={
@@ -345,10 +346,11 @@ class AssessmentComponentForm(forms.ModelForm):
                                         'type':'number',
                                         'placeholder':'Marks',
                                         'style': 'width:300px',
+                                        'class':'form-control',
                                         'required':True,
                                         }
                                     ))
-    description = forms.CharField(label='',
+    description = forms.CharField(label='Description',
                                   help_text='Question 1',
                                   widget = forms.TextInput(
                                       attrs={
@@ -356,6 +358,7 @@ class AssessmentComponentForm(forms.ModelForm):
                                           'type':'text',
                                           'placeholder':'Description',
                                           'style':'width:300px',
+                                          'class':'form-control',
                                           'autofocus':True,
                                           'required':True,
                                           }

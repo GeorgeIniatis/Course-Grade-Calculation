@@ -13,20 +13,61 @@
 {% block body_block %}
 <div class="container mt-5 mb-5 ">
     <h2> Add Assessment Components</h2>
-    <h2> {{ assessment }} </h2>
-        
+    <h2 class="mb-4"> {{ assessment }} </h2>
+
     <form id="add_assessmentComponent_form" method="post" action="{% url 'chemapp:add_assessmentComponents' course_name_slug=course_name_slug assessment_name_slug=assessment_name_slug  %}" enctype="multipart/form-data">
-    
+
     {% csrf_token %}
-       
+
     {{ assessmentComponent_formset.management_form }}
     {% for assessmentComponent_form in assessmentComponent_formset %}
-        <div class="assessmentComponent-formset">
-            {{ assessmentComponent_form.as_p }}
+        <div class="assessmentComponent-formset row mt ">
+
+
+
+
+          {% for field in assessmentComponent_form %}
+
+
+            {% if field.label == 'Required' %}
+            <div class="col-md-auto my-3 ">
+            <div class="form-check ">
+              {{ field }}
+              <label class="form-check-label" for="flexCheckDefault">{{ field.label }}</label>
+            </div>
+
+            {% else %}
+            <div class="col-md-auto ">
+            <div class="form-floating">
+              {{ field }}
+              <label for="floating{{ field.label }}">{{ field.label }}</label>
+            </div>
+            {% endif %}
+            <div class=" text-start">
+              <div id="" class=" ps-2 form-text">{{ field.help_text }}</div>
+            </div>
+            {% for error in field.errors %}
+            <div class="text-danger">
+              <strong>*{{ error|escape }}</strong>
+            </div>
+            {% endfor %}
+            <br>
+          </div>
+          {% endfor %}
+          {% for error in form.non_field_errors %}
+          <div class="">
+            <strong>*{{ error|escape }}</strong>
+          </div>
+          {% endfor %}
+
+
+
+
         </div>
     {% endfor %}
     <br>
-    <button type="submit">Save</button>
+    <button class="btn btn-primary mt-5" type="submit">Save</button>
     </form>
-    
+</div>
+
 {% endblock %}
