@@ -25,9 +25,10 @@ Add Degree
 
       {% for field in degree_form %}
       <div class="col-md-auto ">
-        <label  class="form-label">{{ field.label }}</label>
-        {{ field }}
-        <div id="" class="form-text">e.g. {{ field.help_text }}</div>
+        <div class="form-floating">
+          {{ field }}
+          <label for="floating{{ field.label }}">{{ field.label }}</label>
+        </div>
         {% for error in field.errors %}
         <div class="text-danger">
           <strong>*{{ error|escape }}</strong>
