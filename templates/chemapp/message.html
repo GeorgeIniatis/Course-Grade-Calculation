@@ -17,7 +17,7 @@
 <div aria-live="polite" aria-atomic="true" class="bg-dark position-relative bd-example-toasts">
   <div class="toast-container position-absolute p-3 top-0 start-50 translate-middle-x mt-5" id="toastPlacement">
     {% for message in messages %}
-      <div class="mt-5 toast  {% if message.tags == 'success' %}toast-success{% endif %}" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000">
+      <div class="mt-5 toast  {% if message.tags == 'success' %}toast-success{% elif message.tags == 'error' %}toast-error{% endif %}" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000">
 
         <div class="toast-body">
           {{message|safe}}

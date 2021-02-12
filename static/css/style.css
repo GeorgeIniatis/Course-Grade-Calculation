@@ -29,6 +29,12 @@ body{
   border-color: #badbcc !important  ;
 }
 
+.toast-error{
+  color: #664d03 ;
+  background-color: #fff3cd !important ;
+  border-color: #ffecb5 !important  ;
+}
+
 
 .form-control-color{
   max-width:100% !important;

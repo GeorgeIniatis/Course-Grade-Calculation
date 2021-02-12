@@ -43,14 +43,23 @@ def add_degree(request):
 
         if degree_formset.is_valid():
             degrees = []
+
+            #this is used to check if codes is in list for bulk create
+            codes = []
             for form in degree_formset:
                 degreeCode = form.cleaned_data.get('degreeCode')
                 name = form.cleaned_data.get('name')
 
-                degrees.append(Degree(degreeCode=degreeCode,
-                                      name=name,
-                                      numberOfCourses=0,
-                                      numberOfStudents=0))
+
+
+                if degreeCode in codes:
+                    messages.error(request,"degree "+degreeCode+" was not added as it already exists")
+                else:
+                    codes.append(degreeCode)
+                    degrees.append(Degree(degreeCode=degreeCode,
+                                          name=name,
+                                          numberOfCourses=0,
+                                          numberOfStudents=0))
 
             Degree.objects.bulk_create(degrees)
 
