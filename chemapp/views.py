@@ -175,6 +175,9 @@ def add_assessments(request,course_name_slug):
 
         if assessment_formset.is_valid():
             assessments = []
+
+            #this list is used to detect duplicated in formset
+            codes = []
             weightSum = 0
             for form in assessment_formset:
                 weight = form.cleaned_data.get('weight')
@@ -193,13 +196,19 @@ def add_assessments(request,course_name_slug):
                 except Assessment.DoesNotExist:
                     pass
 
-                assessments.append(Assessment(weight=weight,
-                                              assessmentName=name,
-                                              totalMarks=marks,
-                                              dueDate=dueDate,
-                                              componentNumberNeeded=componentNumberNeeded,
-                                              course=course,
-                                              slug=slug))
+                if (name+course.code) in codes:
+                    messages.error(request,"Duplicate Assessment " + name + " was only added once")
+                else:
+                    codes.append(name+course.code)
+                    assessments.append(Assessment(weight=weight,
+                                                  assessmentName=name,
+                                                  totalMarks=marks,
+                                                  dueDate=dueDate,
+                                                  componentNumberNeeded=componentNumberNeeded,
+                                                  course=course,
+                                                  slug=slug))
+
+
 
             #Check that the weights add to 1
             if weightSum != 1:
@@ -239,6 +248,8 @@ def add_assessmentComponents(request,course_name_slug,assessment_name_slug):
         if assessmentComponent_formset.is_valid():
             assessmentComponents = []
 
+            #this list is used to detect duplicated in formset
+            codes = []
             for form in assessmentComponent_formset:
                 required = form.cleaned_data.get('required')
                 marks = form.cleaned_data.get('marks')
@@ -251,17 +262,24 @@ def add_assessmentComponents(request,course_name_slug,assessment_name_slug):
 
                 #Check if Assessment Component has already been added
                 try:
-                    componet = AssessmentComponent.objects.get(assessment=assessment,description=description)
+                    component = AssessmentComponent.objects.get(assessment=assessment,description=description)
                     messages.error(request, 'Assessment Component ' + '"' + str(description) + '"' + ' has already been added!')
                     return redirect(reverse('chemapp:add_assessmentComponents',kwargs={'course_name_slug':course_name_slug,'assessment_name_slug':assessment_name_slug}))
                 except AssessmentComponent.DoesNotExist:
                     pass
 
-                assessmentComponents.append(AssessmentComponent(required=required,
-                                                                status=status,
-                                                                marks=marks,
-                                                                description=description,
-                                                                assessment=assessment))
+
+                if (description) in codes:
+                    messages.error(request,"Duplicate Assessment Component " + description + " was only added once")
+                else:
+                    codes.append(description)
+                    assessmentComponents.append(AssessmentComponent(required=required,
+                                                                    status=status,
+                                                                    marks=marks,
+                                                                    description=description,
+                                                                    assessment=assessment))
+
+
 
             AssessmentComponent.objects.bulk_create(assessmentComponents)
             assessment.componentsAdded = True

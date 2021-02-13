@@ -253,20 +253,21 @@ class CourseForm(forms.ModelForm):
                   'minimumRequirementsForCredit','courseColor'}
 
 class AssessmentForm(forms.ModelForm):
-    assessmentName = forms.CharField(label='',
-                                     help_text='Exam',
+    assessmentName = forms.CharField(label='Name',
+                                     help_text='Exam 1',
                                      widget = forms.TextInput(
                                          attrs={
                                              'maxlength':'200',
                                              'type':'text',
                                              'placeholder':'Name',
                                              'style':'width:300px',
+                                             'class':'form-control',
                                              'autofocus':True,
                                              'required':True,
                                             }
                                          ))
 
-    weight = forms.DecimalField(label='',
+    weight = forms.DecimalField(label='Weight',
                                 help_text='0.80',
                                 widget = forms.NumberInput(
                                     attrs={
@@ -275,44 +276,48 @@ class AssessmentForm(forms.ModelForm):
                                         'step':'0.05',
                                         'type':'number',
                                         'placeholder':'Weight',
-                                        'style': 'width:300px',
+                                        'class':'form-control',
+                                        'style': 'width:140px',
                                         'required':True,
                                         }
                                     ))
 
     dueDate = forms.DateTimeField(input_formats=['%Y-%m-%dT%H:%M',],
-                                  label='',
-                                  help_text='12/01/2021 10:00',
+                                  label='Due Date and Time',
+                                  help_text='12-01-2021 10:00',
                                   widget = forms.DateTimeInput(
                                       attrs={
-                                          'placeholder':'Due Date and Time',
+                                          'placeholder':'dd-mm-yyyy --:--',
                                           'onfocus':"(this.type='datetime-local')",
                                           'onblur':"(this.type='text')",
-                                          'style':'width:300px',
+                                          'style':'width:200px',
+                                          'class':'form-control',
                                           'required':True,
                                           },
                                       format='%Y-%m-%dT%H:%M'))
 
-    totalMarks = forms.IntegerField(label='',
-                                    help_text='120',
+    totalMarks = forms.IntegerField(label='Total Marks',
+                                    help_text='5-120',
                                     widget =  forms.NumberInput(
                                         attrs={
                                             'min':'0',
                                             'type':'number',
                                             'placeholder':'Total Marks',
-                                            'style': 'width:300px',
+                                            'style': 'width:140px',
+                                            'class':'form-control',
                                             'required':True,
                                             }
                                         ))
 
-    componentNumberNeeded = forms.IntegerField(label='',
-                                               help_text='3,Includes required and optional components',
+    componentNumberNeeded = forms.IntegerField(label='Components Needed',
+                                               help_text='number of exams/labs/tests',
                                                widget =  forms.NumberInput(
                                                    attrs={
                                                        'min':'0',
                                                        'type':'number',
-                                                       'placeholder':'Number of Components Needed',
-                                                       'style': 'width:300px',
+                                                       'placeholder':'Components Needed',
+                                                       'style': 'width:200px',
+                                                       'class':'form-control',
                                                        'required':True,
                                                        }
                                                    ))
@@ -329,10 +334,11 @@ class AssessmentComponentForm(forms.ModelForm):
                                   widget = forms.CheckboxInput(
                                       attrs={
                                           'placeholder':'Required',
+                                          'class':'form-check-input',
                                           }
                                       ))
 
-    marks = forms.IntegerField(label='',
+    marks = forms.IntegerField(label='Marks',
                                help_text='20',
                                widget = forms.NumberInput(
                                    attrs={
@@ -340,10 +346,11 @@ class AssessmentComponentForm(forms.ModelForm):
                                         'type':'number',
                                         'placeholder':'Marks',
                                         'style': 'width:300px',
+                                        'class':'form-control',
                                         'required':True,
                                         }
                                     ))
-    description = forms.CharField(label='',
+    description = forms.CharField(label='Description',
                                   help_text='Question 1',
                                   widget = forms.TextInput(
                                       attrs={
@@ -351,6 +358,7 @@ class AssessmentComponentForm(forms.ModelForm):
                                           'type':'text',
                                           'placeholder':'Description',
                                           'style':'width:300px',
+                                          'class':'form-control',
                                           'autofocus':True,
                                           'required':True,
                                           }
@@ -363,7 +371,8 @@ class AssessmentComponentForm(forms.ModelForm):
         fields = {'required','marks','description'}
 
 class StudentForm(forms.ModelForm):
-    studentID = forms.IntegerField(label='',
+    studentID = forms.IntegerField(label='StudentID',
+                                   help_text='1234567',
                                    widget = forms.NumberInput(
                                    attrs={
                                        'min':'0',
@@ -372,60 +381,71 @@ class StudentForm(forms.ModelForm):
                                        'placeholder':'Student ID',
                                        'style': 'width:300px',
                                        'autofocus':True,
+                                       'class':'form-control',
                                        'required':True,
                                        }
                                    ))
 
-    firstName = forms.CharField(label='',
+    firstName = forms.CharField(label='First Name',
+                                help_text='Boyd',
                                 widget = forms.TextInput(
                                     attrs={
                                         'maxlength':'128',
                                         'type':'text',
                                         'placeholder':'First Name',
-                                        'style':'width:300px',
+                                        'style':'width:100%',
+                                        'class':'form-control',
                                         'required':True,
                                         }
                                     ))
 
-    lastName = forms.CharField(label='',
+    lastName = forms.CharField(label='Last Name',
+                               help_text='Orr',
                                widget = forms.TextInput(
                                    attrs={
                                        'maxlength':'128',
                                        'type':'text',
                                        'placeholder':'Last Name',
-                                       'style':'width:300px',
+                                       'style':'width:100%',
+                                       'class':'form-control',
                                        'required':True,
                                        }
                                    ))
 
-    academicPlan = forms.ModelChoiceField(label='',
+    academicPlan = forms.ModelChoiceField(label='Academic Plan/Degree',
                                           empty_label="Academic Plan/Degree",
                                           queryset=Degree.objects.all(),
                                           widget=forms.Select(
                                               attrs={
                                                   'style':'width:300px',
+                                                  'placeholder':'Academic Plan/Degree',
                                                   'required':True,
+                                                  'class':'form-select',
                                                   }
                                               ))
 
-    level = forms.ChoiceField(label='',
+    level = forms.ChoiceField(label='Level',
                               choices=LEVEL_CHOICES,
                               widget=forms.Select(
                                   attrs={
                                       'style':'width:300px',
                                       'required':True,
+                                      'placeholder':'Level',
+                                      'class':'form-select',
                                       }
                                   ))
 
     graduationDate = forms.DateField(input_formats=['%Y-%m-%d'],
-                                     label='',
+                                     label='Graduation Date',
+                                     help_text='12-01-2021',
                                      widget = forms.DateInput(
                                          attrs={
-                                             'placeholder':'Graduation Date',
+                                             'placeholder':'dd-mm-yyyy',
                                              'onfocus':"(this.type='date')",
                                              'onblur':"(this.type='text')",
                                              'style':'width:300px',
                                              'required':True,
+                                             'class':'form-control',
                                              },
                                          format='%Y-%m-%d'))
 
@@ -434,21 +454,23 @@ class StudentForm(forms.ModelForm):
                                  widget = forms.CheckboxInput(
                                      attrs={
                                          'placeholder':'Required',
+                                         'class':'form-check-input',
                                          }
                                      ))
 
-    comments = forms.CharField(label='',
+    comments = forms.CharField(label='Comments',
                                required = False,
-                               widget = forms.TextInput(
+                               widget = forms.Textarea(
                                    attrs={
                                        'maxlength':'2000',
                                        'type':'text',
                                        'placeholder':'Comments',
-                                       'style':'width:400px;height:50px',
+                                       'class':'form-control',
+                                       'style':'width:100%;height:150px',
                                        }
                                    ))
 
-    field_order = ['gapYear','studentID', 'firstName', 'lastName','academicPlan','level','graduationDate','comments']
+    field_order = ['studentID','gapYear', 'firstName', 'lastName','academicPlan','level','graduationDate','comments']
 
     class Meta:
         model = Student
