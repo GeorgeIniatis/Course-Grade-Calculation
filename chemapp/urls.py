@@ -22,6 +22,7 @@ urlpatterns = [
     path('courses/<course_code>/upload_assessment_csv/', views.upload_assessment_csv, name='upload_assessment_csv'),
     path('courses/<slug:course_name_slug>/add_assessments/', views.add_assessments, name='add_assessments'),
     path('courses/<slug:course_name_slug>/<slug:assessment_name_slug>/add_assessmentComponents/', views.add_assessmentComponents, name='add_assessmentComponents'),
+    path('courses/<course_code>/<assessment_name>/upload_assessment_comp_csv/', views.upload_assessment_comp_csv, name='upload_assessment_comp_csv'),
     path('students/', views.students, name='students'),
     path('students/add_student/', views.add_student, name='add_student'),
     path('students/upload_student_csv/', views.upload_student_csv, name='upload_student_csv'),
