@@ -371,7 +371,8 @@ class AssessmentComponentForm(forms.ModelForm):
         fields = {'required','marks','description'}
 
 class StudentForm(forms.ModelForm):
-    studentID = forms.IntegerField(label='',
+    studentID = forms.IntegerField(label='StudentID',
+                                   help_text='1234567',
                                    widget = forms.NumberInput(
                                    attrs={
                                        'min':'0',
@@ -380,60 +381,71 @@ class StudentForm(forms.ModelForm):
                                        'placeholder':'Student ID',
                                        'style': 'width:300px',
                                        'autofocus':True,
+                                       'class':'form-control',
                                        'required':True,
                                        }
                                    ))
 
-    firstName = forms.CharField(label='',
+    firstName = forms.CharField(label='First Name',
+                                help_text='Boyd',
                                 widget = forms.TextInput(
                                     attrs={
                                         'maxlength':'128',
                                         'type':'text',
                                         'placeholder':'First Name',
-                                        'style':'width:300px',
+                                        'style':'width:100%',
+                                        'class':'form-control',
                                         'required':True,
                                         }
                                     ))
 
-    lastName = forms.CharField(label='',
+    lastName = forms.CharField(label='Last Name',
+                               help_text='Orr',
                                widget = forms.TextInput(
                                    attrs={
                                        'maxlength':'128',
                                        'type':'text',
                                        'placeholder':'Last Name',
-                                       'style':'width:300px',
+                                       'style':'width:100%',
+                                       'class':'form-control',
                                        'required':True,
                                        }
                                    ))
 
-    academicPlan = forms.ModelChoiceField(label='',
+    academicPlan = forms.ModelChoiceField(label='Academic Plan/Degree',
                                           empty_label="Academic Plan/Degree",
                                           queryset=Degree.objects.all(),
                                           widget=forms.Select(
                                               attrs={
                                                   'style':'width:300px',
+                                                  'placeholder':'Academic Plan/Degree',
                                                   'required':True,
+                                                  'class':'form-select',
                                                   }
                                               ))
 
-    level = forms.ChoiceField(label='',
+    level = forms.ChoiceField(label='Level',
                               choices=LEVEL_CHOICES,
                               widget=forms.Select(
                                   attrs={
                                       'style':'width:300px',
                                       'required':True,
+                                      'placeholder':'Level',
+                                      'class':'form-select',
                                       }
                                   ))
 
     graduationDate = forms.DateField(input_formats=['%Y-%m-%d'],
-                                     label='',
+                                     label='Graduation Date',
+                                     help_text='12-01-2021',
                                      widget = forms.DateInput(
                                          attrs={
-                                             'placeholder':'Graduation Date',
+                                             'placeholder':'dd-mm-yyyy',
                                              'onfocus':"(this.type='date')",
                                              'onblur':"(this.type='text')",
                                              'style':'width:300px',
                                              'required':True,
+                                             'class':'form-control',
                                              },
                                          format='%Y-%m-%d'))
 
@@ -442,21 +454,23 @@ class StudentForm(forms.ModelForm):
                                  widget = forms.CheckboxInput(
                                      attrs={
                                          'placeholder':'Required',
+                                         'class':'form-check-input',
                                          }
                                      ))
 
-    comments = forms.CharField(label='',
+    comments = forms.CharField(label='Comments',
                                required = False,
-                               widget = forms.TextInput(
+                               widget = forms.Textarea(
                                    attrs={
                                        'maxlength':'2000',
                                        'type':'text',
                                        'placeholder':'Comments',
-                                       'style':'width:400px;height:50px',
+                                       'class':'form-control',
+                                       'style':'width:100%;height:150px',
                                        }
                                    ))
 
-    field_order = ['gapYear','studentID', 'firstName', 'lastName','academicPlan','level','graduationDate','comments']
+    field_order = ['studentID','gapYear', 'firstName', 'lastName','academicPlan','level','graduationDate','comments']
 
     class Meta:
         model = Student
