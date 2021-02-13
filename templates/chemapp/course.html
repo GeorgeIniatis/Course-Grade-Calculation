@@ -21,7 +21,7 @@
     <p> Comments: {{ course.comments }} </p>
     <p> Number of Students: {{ course.numberOfStudents }} </p>
     <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-    	<a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_assessment_csv'  course_code=course.code %}">Upload CSV File to add Assessments</a>
+    	<a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_assessment_csv'  course_code=course.code %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Upload CSV File to add Assessments</a>
   	</div>
     <h2> Assessments and Components</h2>
         {% if not assessments %}
@@ -34,7 +34,7 @@
                 <p> Number of Components Needed: {{ assessment.componentNumberNeeded }} </p>
                 <p> Due Date and Time: {{ assessment.dueDate }} </p>
                 <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-    				<a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_assessment_comp_csv' course_code=course.code  assessment_name=assessment.assessmentName %}">Upload CSV File to add {{assessment.assessmentName}} components</a>
+    				<a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_assessment_comp_csv' course_code=course.code  assessment_name=assessment.assessmentName %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Upload CSV File to add {{assessment.assessmentName}} components</a>
   				</div>
                 {% for component in components %}
                     <h4> Component: {{ component.description }} </h4>
