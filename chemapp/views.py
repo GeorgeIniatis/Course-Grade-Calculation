@@ -13,6 +13,15 @@ from django.forms.formsets import formset_factory
 from django.template.defaultfilters import slugify
 import random
 
+GRADE_TO_BAND = {22: 'A1', 21: 'A2', 20: 'A3', 19: 'A4', 18: 'A5',
+                 17: 'B1', 16: 'B2', 15: 'B3',
+                 14: 'C1', 13: 'C2', 12: 'C3',
+                 11: 'D1', 10: 'D2', 9: 'D3',
+                 8: 'E1', 7: 'E2', 6: 'E3',
+                 5: 'F1', 4: 'F2', 3: 'F3',
+                 2: 'G1', 1: 'G2', 0: 'G3',
+                 }
+
 
 @login_required
 def home(request):
@@ -105,7 +114,7 @@ def courses(request):
 # Dictionary structure
 # courseDict = {'course':courseObject,
 #               'assessments':{assessmentObject1:[componentObject1,componentObject2],
-#                              assessmentObject2:[compoentnObject3,componentObject4]},
+#                              assessmentObject2:[componentObject3,componentObject4]},
 #              }
 @login_required
 def course(request, course_name_slug):
@@ -570,6 +579,8 @@ def add_grades(request, student_id, course_name_slug, assessment_name_slug):
                                            goodCause=goodCause,
                                            markedGrade=grade,
                                            finalGrade=None,
+                                           finalGrade22Scale=None,
+                                           band=None,
                                            componentNumberAnswered=count,
                                            componentNumberMatch=componentNumberMatch,
                                            late=late,
@@ -616,7 +627,12 @@ def add_final_grade(request, student_id, course_name_slug, assessment_name_slug)
 
         if final_grade_form.is_valid():
             finalGrade = final_grade_form.cleaned_data.get('finalGrade')
+            finalGrade22Scale = round((finalGrade * 22) / assessmentGrade.assessment.totalMarks)
+            band = GRADE_TO_BAND[finalGrade22Scale]
+
             assessmentGrade.finalGrade = finalGrade
+            assessmentGrade.finalGrade22Scale = finalGrade22Scale
+            assessmentGrade.band = band
             assessmentGrade.save()
 
             # Check if Course Grade can be calculated
@@ -624,10 +640,15 @@ def add_final_grade(request, student_id, course_name_slug, assessment_name_slug)
             assessments = Assessment.objects.filter(course=course)
             assessmentGrades = []
             for assessment in assessments:
-                assessmentGradeObject = AssessmentGrade.objects.get(assessment=assessment, student=student)
-                assessmentGrades.append(assessmentGradeObject)
+                try:
+                    assessmentGradeObject = AssessmentGrade.objects.get(assessment=assessment, student=student)
 
-                if (assessmentGradeObject.finalGrade is None):
+                    if (assessmentGradeObject.finalGrade is None):
+                        canCourseGradeBeCalculated = False
+                    else:
+                        assessmentGrades.append(assessmentGradeObject)
+
+                except AssessmentGrade.DoesNotExist:
                     canCourseGradeBeCalculated = False
 
             if canCourseGradeBeCalculated == False:
@@ -639,11 +660,14 @@ def add_final_grade(request, student_id, course_name_slug, assessment_name_slug)
                 courseGrade = 0
                 for assessmentGrade in assessmentGrades:
                     weight = assessmentGrade.assessment.weight
-                    finalBand = (assessmentGrade.finalGrade * 22) / assessmentGrade.assessment.totalMarks
-                    weightedGrade = weight * finalBand
+                    weightedGrade = weight * assessmentGrade.finalGrade22Scale
                     courseGrade = courseGrade + weightedGrade
 
-                courseGradeObject = CourseGrade.objects.create(course=course, student=student, grade=courseGrade)
+                courseGrade = round(courseGrade)
+                band = GRADE_TO_BAND[courseGrade]
+
+                courseGradeObject = CourseGrade.objects.create(course=course, student=student,   band=band)
+
                 # Success message
                 # Final assessment grade added and course grade calculated
                 messages.success(request, 'Final Grade Added Successfully and Course Grade Calculated!')

@@ -3,7 +3,7 @@ from chemapp.models import *
 from django.contrib.auth.models import User
 
 LEVEL_CHOICES = [
-    ('', 'Level'),
+    ('', 'Select a choice'),
     ('1', 'Level 1'),
     ('2', 'Level 2'),
     ('3', 'Level 3'),
@@ -21,7 +21,7 @@ LEVEL_CHOICES = [
 ]
 
 SEMESTER_CHOICES = [
-    ('', 'Semester'),
+    ('', 'Select a choice'),
     ('1', 'Semester 1'),
     ('2', 'Semester 2'),
     ('Both', 'Both'),
@@ -52,7 +52,6 @@ class DegreeForm(forms.ModelForm):
                                          'style': 'width:300px',
                                          'placeholder': 'Degree Code',
                                          'id': 'degreeCode',
-                                         'autofocus': True,
                                          'required': True,
                                          'class': 'form-control'
                                      }
@@ -67,6 +66,7 @@ class DegreeForm(forms.ModelForm):
                                    'style': 'width:300px',
                                    'placeholder': 'Name',
                                    'required': True,
+                                   'autofocus': True,
                                    'id': 'degreeCode',
                                    'class': 'form-control'
                                }
@@ -219,6 +219,7 @@ class CourseForm(forms.ModelForm):
                                           'type': 'color',
                                           'class': 'form-control form-control-color ',
                                           'title': 'Choose course color',
+                                          'value': '#563d7c',
                                           'style': 'width:300px',
                                       }
                                   ))
@@ -420,7 +421,7 @@ class StudentForm(forms.ModelForm):
                                ))
 
     academicPlan = forms.ModelChoiceField(label='Academic Plan/Degree',
-                                          empty_label="Academic Plan/Degree",
+                                          empty_label="Select a choice",
                                           queryset=Degree.objects.all(),
                                           widget=forms.Select(
                                               attrs={

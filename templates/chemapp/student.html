@@ -27,6 +27,7 @@
             <p> Course Grade has not been calculated yet </p>
         {% else %}
             <p> Grade (Out of 22): {{ nestedDict.gradeObject.grade }} </p>
+            <p> Band : {{ nestedDict.gradeObject.band }}</p>
         {% endif %}
         {% for assessmentDict in nestedDict.assessmentList %}
             <!-- Assessment Section -->
@@ -47,7 +48,11 @@
                     <p> <b> Late: {{ nestedDict.gradeObject.late }} </b> </p>
                     <p> <b> Component Numbers Match: {{ nestedDict.gradeObject.componentNumberMatch }} </b> </p>
                     <p> Marked Grade (Out of {{ assessment.totalMarks }}) : {{ nestedDict.gradeObject.markedGrade }} </p>
-                    <p> Final Grade (Out of {{ assessment.totalMarks }}): {{ nestedDict.gradeObject.finalGrade }} </p>
+                    {% if nestedDict.gradeObject.finalGrade is not None %}
+                        <p> Final Grade (Out of {{ assessment.totalMarks }}): {{ nestedDict.gradeObject.finalGrade }} </p>
+                        <p> Final Grade (Out of 22): {{ nestedDict.gradeObject.finalGrade22Scale }} </p>
+                        <p> Band : {{ nestedDict.gradeObject.band }}</p>
+                    {% endif %}
                     
                     <!-- Add Final Grade Button -->
                     {% if nestedDict.gradeObject.finalGrade is None %}

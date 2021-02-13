@@ -29,10 +29,23 @@ SEMESTER_CHOICES = [
     ('Both', 'Both'),
 ]
 
-COLOR_CHOICES = [
-    ("#FFFFFF", "white"),
-    ("#000000", "black"),
-]
+GRADE_TO_BAND = {22: 'A1', 21: 'A2', 20: 'A3', 19: 'A4', 18: 'A5',
+                 17: 'B1', 16: 'B2', 15: 'B3',
+                 14: 'C1', 13: 'C2', 12: 'C3',
+                 11: 'D1', 10: 'D2', 9: 'D3',
+                 8: 'E1', 7: 'E2', 6: 'E3',
+                 5: 'F1', 4: 'F2', 3: 'F3',
+                 2: 'G1', 1: 'G2', 0: 'G3',
+                 }
+
+BAND_TO_GRADE = {'A1': 22, 'A2': 21, 'A3': 20, 'A4': 19, 'A5': 18,
+                 'B1': 17, 'B2': 16, 'B3': 15,
+                 'C1': 14, 'C2': 13, 'C3': 12,
+                 'D1': 11, 'D2': 10, 'D3': 9,
+                 'E1': 8, 'E2': 7, 'E3': 6,
+                 'F1': 5, 'F2': 4, 'F3': 3,
+                 'G1': 2, 'G2': 1, 'G3': 0,
+                 }
 
 # Could be removed if not necessary
 LATE_STATUS = (
@@ -197,8 +210,9 @@ class Student(models.Model):
 
 
 class CourseGrade(models.Model):
-    grade = models.DecimalField(max_digits=5,
-                                decimal_places=2)
+    grade = models.PositiveIntegerField()
+
+    band = models.CharField(max_length=2)
 
     course = models.ForeignKey(Course,
                                on_delete=models.CASCADE)
@@ -208,6 +222,10 @@ class CourseGrade(models.Model):
 
     class Meta:
         unique_together = ('course', 'student')
+
+    def save(self, *args, **kwargs):
+        self.band = GRADE_TO_BAND[round(self.grade)]
+        super(CourseGrade, self).save(*args, **kwargs)
 
     def __str__(self):
         return (str(self.course) + " " + str(self.student))
@@ -276,6 +294,14 @@ class AssessmentGrade(models.Model):
                                      null=True,
                                      blank=True,
                                      verbose_name="Final Grade")
+
+    finalGrade22Scale = models.PositiveIntegerField(verbose_name="Final Grade Out of 22",
+                                                    null=True,
+                                                    blank=True)
+
+    band = models.CharField(max_length=2,
+                            null=True,
+                            blank=True)
 
     componentNumberAnswered = models.PositiveIntegerField(verbose_name="Component Number Answered",
                                                           help_text="Includes required and optional components",
