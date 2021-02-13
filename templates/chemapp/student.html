@@ -28,6 +28,12 @@
         {% else %}
             <p> Grade (Out of 22): {{ nestedDict.gradeObject.grade }} </p>
             <p> Band : {{ nestedDict.gradeObject.band }}</p>
+            <!-- Check if Student passed course -->
+            {% if nestedDict.gradeObject.grade < course.minimumPassGrade22Scale %}
+                <p> <b> Student needs to resit course </b> </p>
+            {% else %}
+                <p> <b> Student passed course </b> </p>
+            {% endif %}
         {% endif %}
         {% for assessmentDict in nestedDict.assessmentList %}
             <!-- Assessment Section -->
@@ -42,9 +48,9 @@
                 {% if nestedDict.gradeObject is None %}
                     <p> Assessment Grade has not been calculated yet </p>
                 {% else %}
-                    <p> NDP: {{ nestedDict.gradeObject.noDetriment }} </p>
-                    <p> Good Cause: {{ nestedDict.gradeObject.goodCause }} </p>
                     <p> Date and Time of Submission: {{ nestedDict.gradeObject.submissionDate }} </p>
+                    <p> <b> NDP: {{ nestedDict.gradeObject.noDetriment }} </b> </p>
+                    <p> <b> Good Cause: {{ nestedDict.gradeObject.goodCause }} </b> </p>
                     <p> <b> Late: {{ nestedDict.gradeObject.late }} </b> </p>
                     <p> <b> Component Numbers Match: {{ nestedDict.gradeObject.componentNumberMatch }} </b> </p>
                     <p> Marked Grade (Out of {{ assessment.totalMarks }}) : {{ nestedDict.gradeObject.markedGrade }} </p>

@@ -129,10 +129,11 @@ class Course(models.Model):
                                 blank=True,
                                 help_text='Anything worth mentioning')
 
-    # may have to change decimal places
     minimumPassGrade = models.CharField(max_length=2,
                                         verbose_name="Minimum Pass Grade",
                                         help_text='eg.B3')
+
+    minimumPassGrade22Scale = models.PositiveIntegerField()
 
     minimumRequirementsForCredit = models.DecimalField(max_digits=3,
                                                        decimal_places=2,
@@ -153,6 +154,7 @@ class Course(models.Model):
         self.code = self.code.upper()
         self.shortHand = self.shortHand.upper()
         self.minimumPassGrade = self.minimumPassGrade.upper()
+        self.minimumPassGrade22Scale = BAND_TO_GRADE[self.minimumPassGrade]
         self.year = int(self.level[0])
         self.slug = slugify(str(self.code) + "-" + str(self.degree))
         super(Course, self).save(*args, **kwargs)

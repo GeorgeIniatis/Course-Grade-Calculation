@@ -259,7 +259,7 @@ def add_assessmentComponents(request, course_name_slug, assessment_name_slug):
     addAssessmentComponentsDict = {}
     addAssessmentComponentsDict['course_name_slug'] = course_name_slug
     addAssessmentComponentsDict['assessment_name_slug'] = assessment_name_slug
-    addAssessmentComponentsDict['assessment'] = assessment.assessmentName
+    addAssessmentComponentsDict['assessment'] = assessment
 
     if (request.method == 'POST'):
         assessmentComponent_formset = AssessmentComponentFormSet(request.POST)
