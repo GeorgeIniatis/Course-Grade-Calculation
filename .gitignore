@@ -4,9 +4,12 @@
 #Compiled Documents
 *.pdf
 *.ps
-__pycache__/
 db.sqlite3
+.DS_Store
 
+#Directories
+__pycache__/
 chemapp/migrations/
-
 CSV/
+venv/
+.idea/
