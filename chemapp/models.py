@@ -232,8 +232,8 @@ class CourseGrade(models.Model):
 
 
 class Assessment(models.Model):
-    weight = models.DecimalField(max_digits=3,
-                                 decimal_places=2,
+    weight = models.DecimalField(max_digits=6,
+                                 decimal_places=5,
                                  help_text='eg.0.50')
 
     totalMarks = models.PositiveIntegerField(verbose_name="Total Marks",

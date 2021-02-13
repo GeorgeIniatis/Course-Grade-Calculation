@@ -280,7 +280,7 @@ class AssessmentForm(forms.ModelForm):
                                     attrs={
                                         'min': '0',
                                         'max': '1',
-                                        'step': '0.05',
+                                        'step': '0.00001',
                                         'type': 'number',
                                         'placeholder': 'Weight',
                                         'class': 'form-control',
