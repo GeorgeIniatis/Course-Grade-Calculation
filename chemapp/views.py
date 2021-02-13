@@ -795,3 +795,41 @@ def upload_assessment_csv(request, course_code):
     else:
         messages.success(request, "Assessment Added Successfully")
         return redirect(reverse('chemapp:courses'))
+
+
+
+@login_required
+def upload_assessment_comp_csv(request,course_code, assessment_name):
+    template = 'chemapp/upload_assessment_comp_csv.html'
+    data = AssessmentComponent.objects.all()
+    totalmarks=0
+    course=Course.objects.get(code=course_code)
+
+    if request.method == "GET":
+        return render(request, template)
+
+    csv_file = request.FILES['file']
+    if not csv_file.name.endswith('.csv'):
+        messages.error(request, 'THIS IS NOT A CSV FILE')
+
+    data_set = csv_file.read().decode('UTF-8')
+    io_string = io.StringIO(data_set)
+    next(io_string)
+ 
+    for column in csv.reader(io_string, delimiter=',', quotechar="|"):	
+    	totalmarks = totalmarks + int(column[2])
+    	_, created = AssessmentComponent.objects.update_or_create(
+            description=column[0],
+            required=column[1],
+            marks=column[2],
+            assessment=Assessment.objects.get(assessmentName=assessment_name, course=course),
+        )
+        
+    assessment=Assessment.objects.get(assessmentName=assessment_name, course=course)
+    if totalmarks != assessment.totalMarks:
+    	AssessmentComponent.objects.filter(assessment=assessment).delete()
+    	messages.error(request, 'The sum of the Assessment Components must be equal to %s' % assessment.totalMarks )        
+    	return redirect(reverse('chemapp:courses'))	
+           
+    messages.success(request, "Assessment Components Added Successfully")
+    return redirect(reverse('chemapp:courses'))
