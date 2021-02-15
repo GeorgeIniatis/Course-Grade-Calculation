@@ -319,7 +319,7 @@ class AssessmentForm(forms.ModelForm):
                                             'min': '0',
                                             'type': 'number',
                                             'placeholder': 'Total Marks',
-                                            'style': 'width:140px',
+                                            'style': 'width:200px',
                                             'class': 'form-control',
                                             'required': True,
                                         }
@@ -343,6 +343,29 @@ class AssessmentForm(forms.ModelForm):
     class Meta:
         model = Assessment
         fields = {'assessmentName', 'weight', 'totalMarks', 'componentNumberNeeded', 'dueDate'}
+
+
+class EditAssessmentForm(AssessmentForm):
+    assessmentName = None
+    weight = None
+
+    dueDate = forms.DateTimeField(input_formats=['%Y-%m-%dT%H:%M', ],
+                                  label='Due Date and Time',
+                                  help_text='12/01/2021 10:00',
+                                  widget=forms.DateTimeInput(
+                                      attrs={
+                                          'placeholder': 'Due Date and Time',
+                                          'type': 'datetime-local',
+                                          'style': 'width:200px',
+                                          'class': 'form-control',
+                                          'required': True,
+                                      },
+                                      format='%Y-%m-%dT%H:%M'))
+
+    class Meta:
+        model = Assessment
+        fields = AssessmentForm.Meta.fields
+        exclude = {'assessmentName', 'weight'}
 
 
 class AssessmentComponentForm(forms.ModelForm):

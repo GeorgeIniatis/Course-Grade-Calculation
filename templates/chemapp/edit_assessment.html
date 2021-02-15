@@ -1,0 +1,22 @@
+{% extends 'chemapp/base.html' %}
+{% load static %}
+
+{% block title_block %}
+Edit Assessment
+{% endblock %}
+
+{% block body_block %}
+<div class="container mt-5 mb-5 ">
+    <h2> Edit Assessment "{{assessment.assessmentName}}" </h2>
+
+    <form id="edit_assessment_form" method="post" action="{% url 'chemapp:edit_assessment' course_name_slug=course_name_slug assessment_name_slug=assessment_name_slug %}"  enctype="multipart/form-data">
+
+        {% csrf_token %}
+
+        {{ edit_assessment_form.as_p }}
+
+        <button type="submit" class="btn btn-primary mt-5">Save</button>
+    </form>
+</div>
+
+{% endblock %}
