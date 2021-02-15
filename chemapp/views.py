@@ -119,6 +119,8 @@ def courses(request):
 @login_required
 def course(request, course_name_slug):
     courseDict = {}
+    courseDict['course_name_slug'] = course_name_slug
+
     try:
         course = Course.objects.get(slug=course_name_slug)
         assessments = Assessment.objects.filter(course=course)
@@ -136,6 +138,54 @@ def course(request, course_name_slug):
         raise Http404("Course does not exist")
 
     return render(request, 'chemapp/course.html', context=courseDict)
+
+
+@login_required
+def edit_course(request, course_name_slug):
+    editCourseDict = {}
+    editCourseDict['course_name_slug'] = course_name_slug
+    course = Course.objects.get(slug=course_name_slug)
+
+    if (request.method == 'POST'):
+        edit_course_form = EditCourseForm(request.POST)
+
+        if edit_course_form.is_valid():
+            name = edit_course_form.cleaned_data.get('name')
+            shortHand = edit_course_form.cleaned_data.get('shortHand')
+            creditsWorth = edit_course_form.cleaned_data.get('creditsWorth')
+            level = edit_course_form.cleaned_data.get('level')
+            academicYearTaught = edit_course_form.cleaned_data.get('academicYearTaught')
+            semester = edit_course_form.cleaned_data.get('semester')
+            minimumPassGrade = edit_course_form.cleaned_data.get('minimumPassGrade')
+            minimumRequirementsForCredit = edit_course_form.cleaned_data.get('minimumRequirementsForCredit')
+            description = edit_course_form.cleaned_data.get('description')
+            comments = edit_course_form.cleaned_data.get('comments')
+            courseColor = edit_course_form.cleaned_data.get('courseColor')
+
+            course.name = name
+            course.shortHand = shortHand
+            course.creditsWorth = creditsWorth
+            course.level = level
+            course.academicYearTaught = academicYearTaught
+            course.semester = semester
+            course.minimumPassGrade = minimumPassGrade
+            course.minimumRequirementsForCredit = minimumRequirementsForCredit
+            course.description = description
+            course.comments = comments
+            course.courseColor = courseColor
+
+            course.save()
+
+            messages.success(request, 'Course was updated successfully!')
+            return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
+        else:
+            print(edit_course_form.errors)
+    else:
+        edit_course_form = EditCourseForm(instance=course)
+
+    editCourseDict['edit_course_form'] = edit_course_form
+
+    return render(request, 'chemapp/edit_course.html', context=editCourseDict)
 
 
 @login_required

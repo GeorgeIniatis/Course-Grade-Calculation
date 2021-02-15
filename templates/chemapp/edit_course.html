@@ -1,0 +1,84 @@
+{% extends 'chemapp/base.html' %}
+{% load static %}
+
+{% block js_block %}
+<script src="{% static 'js/chemapp-courseInputMask.js' %}"></script>
+{% endblock %}
+
+{% block title_block %}
+Edit a Course
+{% endblock %}
+
+{% block body_block %}
+<div class="container mt-5 mb-5 ">
+  <h2> Edit Course </h2>
+
+  <form id="edit_course_form" method="post" action="{% url 'chemapp:edit_course' course_name_slug=course_name_slug %}" enctype="multipart/form-data">
+
+    {% csrf_token %}
+
+    <div class="row ">
+      {% for field in edit_course_form %}
+
+      {% if field.label == 'Description'  %}
+          <div class="col-8 mb-2">
+            {% elif field.label == 'Comments' %}
+            <div class="col-8">
+              {% elif field.label == 'Color' %}
+              <div class="col-12">
+                {% else %}
+                <div class="col-12 mb-4">
+                  {% endif %}
+
+                  {% if field.label == 'Color' %}
+                  <label for="exampleColorInput" class="form-label mt-2">Color picker</label>
+
+                  {{ field }}
+
+                  {% else %}
+
+
+
+
+                  <div class="form-floating">
+                    {{ field }}
+                    <label for="floating{{ field.label }}">{{ field.label }}</label>
+                  </div>
+                  {% endif %}
+
+                  <!-- <p  class="form-label">{{ field.label }}</p>
+
+                  {{ field }} -->
+
+                  <div class=" text-start">
+                    <div id="" class=" ps-2 form-text">{{ field.help_text }}</div>
+                  </div>
+
+
+
+                  {% for error in field.errors %}
+                  <div class="text-danger">
+                    <strong>*{{ error|escape }}</strong>
+                  </div>
+                  {% endfor %}
+                </div>
+
+
+                {% endfor %}
+
+
+                {% for error in form.non_field_errors %}
+                <div class="">
+                  <strong>*{{ error|escape }}</strong>
+                </div>
+                {% endfor %}
+
+
+              </div>
+
+
+              <button type="submit" class="btn btn-primary mt-5">Save</button>
+            </form>
+          </div>
+
+          {% endblock %}

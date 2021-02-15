@@ -259,6 +259,16 @@ class CourseForm(forms.ModelForm):
                   'minimumRequirementsForCredit', 'courseColor'}
 
 
+class EditCourseForm(CourseForm):
+    code = None
+    degree = None
+
+    class Meta:
+        model = Course
+        fields = CourseForm.Meta.fields
+        exclude = {'code', 'degree'}
+
+
 class AssessmentForm(forms.ModelForm):
     assessmentName = forms.CharField(label='Name',
                                      help_text='Exam 1',
