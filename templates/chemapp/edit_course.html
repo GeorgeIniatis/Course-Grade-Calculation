@@ -6,25 +6,21 @@
 {% endblock %}
 
 {% block title_block %}
-Add a Course
+Edit a Course
 {% endblock %}
 
 {% block body_block %}
 <div class="container mt-5 mb-5 ">
-  <h2> Add a Course </h2>
+  <h2> Edit Course </h2>
 
-  <form id="add_course_form" method="post" action="{% url 'chemapp:add_course' %}" enctype="multipart/form-data">
+  <form id="edit_course_form" method="post" action="{% url 'chemapp:edit_course' course_name_slug=course_name_slug %}" enctype="multipart/form-data">
 
     {% csrf_token %}
 
     <div class="row ">
-      {% for field in course_form %}
+      {% for field in edit_course_form %}
 
-      {% if field.label == 'Code' %}
-      <div class="col-4 mb-4">
-        {% elif field.label == 'Degree' %}
-        <div class="col-4">
-          {% elif field.label == 'Description'  %}
+      {% if field.label == 'Description'  %}
           <div class="col-8 mb-2">
             {% elif field.label == 'Comments' %}
             <div class="col-8">
@@ -33,8 +29,6 @@ Add a Course
                 {% else %}
                 <div class="col-12 mb-4">
                   {% endif %}
-
-
 
                   {% if field.label == 'Color' %}
                   <label for="exampleColorInput" class="form-label mt-2">Color picker</label>

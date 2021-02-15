@@ -6,21 +6,30 @@
 
 {% block body_block %}
 
-<div class="container mt-5 ">
+<div class="container ">
+  <h2> Degrees </h2>
     {% if degrees %}
-        <h2> Degrees </h2>
+
         {% for degree in degrees %}
-            <p> {{ degree }} </p>
+            <b> {{ degree.name }} {{ degree.degreeCode }} </b>
+            <p> &emsp;Number of courses: {{degree.numberOfCourses}} </p>
+            <p> &emsp;Number of students enrolled: {{degree.numberOfStudents}} </p>
         {% endfor %}
-        
-        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-            <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_degree' %}">Add a degree</a>
+
+        <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+            <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_degree' %}"><i class="bi bi-plus"></i> Add a degree</a>
         </div>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+    	<a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_degree_csv' %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>  Upload CSV File</a>
+  	</div>
     {% else %}
         <h4>There are no degrees!</h4>
         <div>
-            <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_degree' %}">Add a degree</a>
+            <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_degree' %}"><i class="bi bi-plus"></i> Add a degree</a>
         </div>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+    	<a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_degree_csv' %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>  Upload CSV File</a>
+  	</div>
     {% endif %}
 </div>
 {% endblock %}

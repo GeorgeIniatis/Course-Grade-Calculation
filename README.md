@@ -13,18 +13,20 @@ First clone the repository
 
  When you have the required Depenencies for the enviroment we can run
 
- `$ python manage.py migrate`
+ `$ python manage.py makemigrations chemapp`
 
  This will create the database needed to run our project.
 
  `$ python manage.py runserver`
 
- This will start our project. The site will be bare as this will be a fresh database file. We have provided a simple file `populate_db.py`
- This can be used to populate the project with some randomly generated user accounts and models.
+ This will start our project. The site will be bare as this will be a fresh database file. We have provided some simple populations scripts.
+
+    -   populate_user.py (creates some admin and staff acounts for testing not production)
+
 
  To run, stop the server and run the command below:
 
- `$ python populate_db.py`
+ `$ python populate_user.py`
 
  You will see a print out on the console of all the data used to populate the database, such as username and passwords for the temporary accounts. NOT FOR PRODUCTION.
 
