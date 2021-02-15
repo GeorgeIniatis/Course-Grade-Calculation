@@ -50,5 +50,10 @@
         <a class="btn btn-danger mt-3" href="{% url 'chemapp:edit_course' course_name_slug=course_name_slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Edit Course</a>
     </div>
 
+    <form id="course_delete_form" method="post" action="{% url 'chemapp:delete_course' course_name_slug=course_name_slug %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary mt-5">Delete</button>
+    </form>
+
 </div>
 {% endblock %}

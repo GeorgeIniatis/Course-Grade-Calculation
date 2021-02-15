@@ -189,6 +189,24 @@ def edit_course(request, course_name_slug):
 
 
 @login_required
+def delete_course(request, course_name_slug):
+    course = Course.objects.get(slug=course_name_slug)
+    degree = course.degree
+
+    if request.method == 'POST':
+        course.delete()
+
+        # Reduce degree course count
+        degree.numberOfCourses = degree.numberOfCourses - 1
+        degree.save()
+
+        messages.success(request, 'Course deleted successfully!')
+        return redirect(reverse('chemapp:courses'))
+
+    return render(request, 'chemapp/course.html', context={})
+
+
+@login_required
 def add_course(request):
     addCourseDict = {}
 
