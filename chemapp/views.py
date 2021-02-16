@@ -620,6 +620,17 @@ def edit_student(request, student_id):
         edit_student_form = EditStudentForm(request.POST)
 
         if edit_student_form.is_valid():
+            # Reduce degree student count
+            degree = student.academicPlan
+            degree.numberOfStudents = degree.numberOfStudents - 1
+            degree.save()
+
+            # Reduce each course student count
+            courses = student.courses.all()
+            for course in courses:
+                course.numberOfStudents = course.numberOfStudents - 1
+                course.save()
+
             firstName = edit_student_form.cleaned_data.get('firstName')
             lastName = edit_student_form.cleaned_data.get('lastName')
             gapYear = edit_student_form.cleaned_data.get('gapYear')
@@ -627,6 +638,7 @@ def edit_student(request, student_id):
             level = edit_student_form.cleaned_data.get('level')
             graduationDate = edit_student_form.cleaned_data.get('graduationDate')
             comments = edit_student_form.cleaned_data.get('comments')
+            courses = edit_student_form.cleaned_data.get('courses')
 
             student.firstName = firstName
             student.lastName = lastName
@@ -637,6 +649,22 @@ def edit_student(request, student_id):
             student.comments = comments
 
             student.save()
+
+            # Populate student's courses
+            student.courses.set(courses)
+            student.save()
+
+            student = Student.objects.get(studentID=student_id)
+            # Increment degree student count
+            degree = student.academicPlan
+            degree.numberOfStudents = degree.numberOfStudents + 1
+            degree.save()
+
+            # Increment each course student count
+            courses = student.courses.all()
+            for course in courses:
+                course.numberOfStudents = course.numberOfStudents + 1
+                course.save()
 
             messages.success(request, 'Student was updated successfully!')
             return redirect(reverse('chemapp:student', kwargs={'student_id': student_id}))
@@ -654,19 +682,19 @@ def edit_student(request, student_id):
 def delete_student(request, student_id):
     student = Student.objects.get(studentID=student_id)
     degree = student.academicPlan
+    courses = student.courses.all()
 
     if request.method == 'POST':
-        student.delete()
-
         # Reduce degree student count
         degree.numberOfStudents = degree.numberOfStudents - 1
         degree.save()
 
         # Reduce each course student count
-        courses = Course.objects.filter(degree=degree, level=student.level)
         for course in courses:
             course.numberOfStudents = course.numberOfStudents - 1
             course.save()
+
+        student.delete()
 
         messages.success(request, 'Student deleted successfully!')
         return redirect(reverse('chemapp:students'))
@@ -681,33 +709,43 @@ def add_student(request):
     if request.method == 'POST':
         student_form = StudentForm(request.POST)
         if student_form.is_valid():
-            student = student_form.save(commit=False)
-
+            studentID = student_form.cleaned_data.get('studentID')
+            firstName = student_form.cleaned_data.get('firstName')
+            lastName = student_form.cleaned_data.get('lastName')
             gapYear = student_form.cleaned_data.get('gapYear')
+            academicPlan = student_form.cleaned_data.get('academicPlan')
+            level = student_form.cleaned_data.get('level')
+            graduationDate = student_form.cleaned_data.get('graduationDate')
+            comments = student_form.cleaned_data.get('comments')
+            courses = student_form.cleaned_data.get('courses')
+
             if gapYear == False:
                 status = 'Enrolled'
             else:
                 status = 'Gap Year'
 
-            student.status = status
             # Just to test until we have correct equation && 000000 did not allow for more students since it has to be unique
-            student.anonID = random.randint(0, 99999)
-            student.save()
+            anonID = random.randint(0, 99999)
+
+            student = Student.objects.create(studentID=studentID, anonID=anonID, firstName=firstName, lastName=lastName,
+                                             gapYear=gapYear, status=status, academicPlan=academicPlan, level=level,
+                                             graduationDate=graduationDate,
+                                             comments=comments)
 
             # Populate student's courses
-            degree = student.academicPlan
-            student.courses.set(Course.objects.filter(degree=degree, level=student.level))
+            student.courses.set(courses)
             student.save()
 
+            # Increment degree student count
+            degree = student.academicPlan
+            degree.numberOfStudents = degree.numberOfStudents + 1
+            degree.save()
+
             # Increment each course student count
-            courses = Course.objects.filter(degree=degree, level=student.level)
+            courses = student.courses.all()
             for course in courses:
                 course.numberOfStudents = course.numberOfStudents + 1
                 course.save()
-
-            # Increment degree student count
-            degree.numberOfStudents = degree.numberOfStudents + 1
-            degree.save()
 
             # Success message
             messages.success(request, "Student Added Successfully")

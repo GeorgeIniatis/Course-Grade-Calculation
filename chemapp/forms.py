@@ -519,13 +519,24 @@ class StudentForm(forms.ModelForm):
                                    }
                                ))
 
-    field_order = ['studentID', 'gapYear', 'firstName', 'lastName', 'academicPlan', 'level', 'graduationDate',
-                   'comments']
+    courses = forms.ModelMultipleChoiceField(label='Courses',
+                                             help_text='Press CTRL to select multiple courses',
+                                             queryset=Course.objects.all(),
+                                             widget=forms.SelectMultiple(
+                                                 attrs={
+                                                     'style': 'width:300px',
+                                                     'required': True,
+                                                     'class': 'form-select',
+                                                 }
+                                             ))
+
+    field_order = ['studentID', 'gapYear', 'firstName', 'lastName', 'academicPlan', 'level', 'courses',
+                   'graduationDate', 'comments']
 
     class Meta:
         model = Student
-        fields = {'studentID', 'gapYear', 'firstName', 'lastName', 'academicPlan', 'level', 'graduationDate',
-                  'comments'}
+        fields = {'studentID', 'gapYear', 'firstName', 'lastName', 'academicPlan', 'level', 'courses',
+                  'graduationDate', 'comments'}
 
 
 class EditStudentForm(StudentForm):
