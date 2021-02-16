@@ -189,24 +189,6 @@ def edit_course(request, course_name_slug):
 
 
 @login_required
-def delete_course(request, course_name_slug):
-    course = Course.objects.get(slug=course_name_slug)
-    degree = course.degree
-
-    if request.method == 'POST':
-        course.delete()
-
-        # Reduce degree course count
-        degree.numberOfCourses = degree.numberOfCourses - 1
-        degree.save()
-
-        messages.success(request, 'Course deleted successfully!')
-        return redirect(reverse('chemapp:courses'))
-
-    return render(request, 'chemapp/course.html', context={})
-
-
-@login_required
 def add_course(request):
     addCourseDict = {}
 
@@ -262,7 +244,7 @@ def add_assessments(request, course_name_slug):
 
             # This is used to check for Assessment duplicates
             assessmentNames = []
-            # This is used to check that the Assessment weight sum is equal to 1 in the end
+            # This is used to check that the Assessmet weight sum is equal to 1 in the end
             weightSum = 0
             for form in assessment_formset:
                 weight = form.cleaned_data.get('weight')
@@ -315,56 +297,6 @@ def add_assessments(request, course_name_slug):
     addAssessmentsDict['assessment_formset'] = assessment_formset
 
     return render(request, 'chemapp/add_assessments.html', context=addAssessmentsDict)
-
-
-@login_required
-def edit_assessment(request, course_name_slug, assessment_name_slug):
-    course = Course.objects.get(slug=course_name_slug)
-    assessment = Assessment.objects.get(course=course, slug=assessment_name_slug)
-
-    editAssessmentDict = {}
-    editAssessmentDict['course_name_slug'] = course_name_slug
-    editAssessmentDict['assessment_name_slug'] = assessment_name_slug
-    editAssessmentDict['assessment'] = assessment
-
-    if (request.method == 'POST'):
-        edit_assessment_form = EditAssessmentForm(request.POST)
-
-        if edit_assessment_form.is_valid():
-            marks = edit_assessment_form.cleaned_data.get('totalMarks')
-            dueDate = edit_assessment_form.cleaned_data.get('dueDate')
-            componentNumberNeeded = edit_assessment_form.cleaned_data.get('componentNumberNeeded')
-
-            assessment.totalMarks = marks
-            assessment.dueDate = dueDate
-            assessment.componentNumberNeeded = componentNumberNeeded
-
-            assessment.save()
-
-            messages.success(request, 'Assessment was updated successfully!')
-            return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
-        else:
-            print(edit_assessment_form.errors)
-    else:
-        edit_assessment_form = EditAssessmentForm(instance=assessment)
-
-    editAssessmentDict['edit_assessment_form'] = edit_assessment_form
-
-    return render(request, 'chemapp/edit_assessment.html', context=editAssessmentDict)
-
-
-@login_required
-def delete_assessment(request, course_name_slug, assessment_name_slug):
-    course = Course.objects.get(slug=course_name_slug)
-    assessment = Assessment.objects.get(course=course, slug=assessment_name_slug)
-
-    if request.method == 'POST':
-        assessment.delete()
-
-        messages.success(request, 'Assessment deleted successfully!')
-        return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
-
-    return render(request, 'chemapp/course.html', context={})
 
 
 @login_required
@@ -975,3 +907,89 @@ def upload_assessment_comp_csv(request, course_code, assessment_name):
 
     messages.success(request, "Assessment Components Added Successfully")
     return redirect(reverse('chemapp:courses'))
+
+@login_required
+def staff(request):
+    StaffDict = {}
+    # checking order by
+    staff = Staff.objects.order_by('lastName')
+    StaffDict['staff'] = staff
+
+    return render(request, 'chemapp/staff.html', context=StaffDict)
+
+@login_required
+def add_staff(request):
+    addStaffDict = {}
+
+    if request.method == 'POST':
+        staff_form = StaffForm(request.POST)
+        if staff_form.is_valid():
+            staffID = staff_form.cleaned_data.get('staffID')
+            title = staff_form.cleaned_data.get('title')
+            firstName = staff_form.cleaned_data.get('firstName')
+            lastName = staff_form.cleaned_data.get('lastName')
+            comments = staff_form.cleaned_data.get('comments')
+            # Check if Course has already been added
+            try:
+                staff = Staff.objects.get(staffID=staffID)
+                messages.error(request, 'Staff has already been added!')
+                return redirect(reverse('chemapp:add_staff'))
+            except Staff.DoesNotExist:
+                pass
+
+            staff = staff_form.save()
+            messages.success(request, "Staff Added Successfully")
+            return redirect(reverse('chemapp:staff'))
+        else:
+            print(staff_form.errors)
+    else:
+        staff_form = StaffForm()
+
+    addStaffDict['staff_form'] = staff_form
+    return render(request, 'chemapp/add_staff.html', context=addStaffDict)
+
+def staff_member(request, staffID):
+    staff_memberDict = {}
+    try:
+        staff = Staff.objects.get(staffID=staffID)
+        staff_memberDict['staff'] = staff
+        staff_memberDict['courses'] = {}
+        staff_memberDict['staffID'] = staffID
+
+    except Staff.DoesNotExist:
+        raise Http404("Staff member does not exist")
+    return render(request, 'chemapp/staff_member.html', context=staff_memberDict)
+
+
+@login_required
+def edit_staff(request, staffID):
+    editStaffDict = {}
+    editStaffDict['staffID'] = staffID
+    staff = Staff.objects.get(staffID=staffID)
+
+    if (request.method == 'POST'):
+        edit_staff_form = EditStaffForm(request.POST)
+
+        if edit_staff_form.is_valid():
+            title = edit_staff_form.cleaned_data.get('title')
+            firstName = edit_staff_form.cleaned_data.get('firstName')
+            lastName = edit_staff_form.cleaned_data.get('lastName')
+            comments = edit_staff_form.cleaned_data.get('comments')
+
+            staff.title = title
+            staff.firstName = firstName
+            staff.lastName = lastName
+            staff.comments = comments
+
+            staff.save()
+
+            messages.success(request, 'Staff data was updated successfully!')
+            return redirect(reverse('chemapp:staff_member', kwargs={'staffID': staffID}))
+        else:
+            print(edit_staff_form.errors)
+    else:
+        edit_staff_form = EditStaffForm(instance=staff)
+
+    editStaffDict['edit_staff_form'] = edit_staff_form
+
+    return render(request, 'chemapp/edit_staff.html', context=editStaffDict)

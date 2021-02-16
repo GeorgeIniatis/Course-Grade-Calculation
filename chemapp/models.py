@@ -163,6 +163,31 @@ class Course(models.Model):
         return (str(self.shortHand) + " " + str(self.degree))
 
 
+class Staff(models.Model):
+    staffID = models.PositiveIntegerField(validators=[MaxValueValidator(9999999)],
+                                            unique=True,
+                                            verbose_name="Staff ID")
+
+    title = models.CharField(max_length=128,
+                                 verbose_name="Title",
+                                  default='Dr/Mr/Miss/Mrs',)
+
+    firstName = models.CharField(max_length=128,
+                                 verbose_name="First Name")
+
+    lastName = models.CharField(max_length=128,
+                                verbose_name="Last Name")
+
+    comments = models.TextField(max_length=2000,
+                                blank=True,
+                                help_text='Anything worth mentioning')
+    class Meta:
+        verbose_name_plural = 'Staff'
+
+    def __str__(self):
+        return (str(self.title) + " " + str(self.firstName) + " " + str(self.lastName) + " " + str(self.staffID))
+
+
 class Student(models.Model):
     studentID = models.PositiveIntegerField(validators=[MaxValueValidator(9999999)],
                                             unique=True,

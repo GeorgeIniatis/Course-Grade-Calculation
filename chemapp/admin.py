@@ -8,6 +8,7 @@ class SlugAdmin(admin.ModelAdmin):
 
 admin.site.register(UserProfile)
 admin.site.register(Student)
+admin.site.register(Staff)
 admin.site.register(Degree)
 admin.site.register(Course, SlugAdmin)
 admin.site.register(CourseGrade)

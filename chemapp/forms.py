@@ -319,7 +319,7 @@ class AssessmentForm(forms.ModelForm):
                                             'min': '0',
                                             'type': 'number',
                                             'placeholder': 'Total Marks',
-                                            'style': 'width:200px',
+                                            'style': 'width:140px',
                                             'class': 'form-control',
                                             'required': True,
                                         }
@@ -343,29 +343,6 @@ class AssessmentForm(forms.ModelForm):
     class Meta:
         model = Assessment
         fields = {'assessmentName', 'weight', 'totalMarks', 'componentNumberNeeded', 'dueDate'}
-
-
-class EditAssessmentForm(AssessmentForm):
-    assessmentName = None
-    weight = None
-
-    dueDate = forms.DateTimeField(input_formats=['%Y-%m-%dT%H:%M', ],
-                                  label='Due Date and Time',
-                                  help_text='12/01/2021 10:00',
-                                  widget=forms.DateTimeInput(
-                                      attrs={
-                                          'placeholder': 'Due Date and Time',
-                                          'type': 'datetime-local',
-                                          'style': 'width:200px',
-                                          'class': 'form-control',
-                                          'required': True,
-                                      },
-                                      format='%Y-%m-%dT%H:%M'))
-
-    class Meta:
-        model = Assessment
-        fields = AssessmentForm.Meta.fields
-        exclude = {'assessmentName', 'weight'}
 
 
 class AssessmentComponentForm(forms.ModelForm):
@@ -517,6 +494,80 @@ class StudentForm(forms.ModelForm):
         model = Student
         fields = {'studentID', 'firstName', 'lastName', 'academicPlan', 'level', 'graduationDate', 'comments'}
 
+class StaffForm(forms.ModelForm):
+    staffID = forms.IntegerField(label='staffID',
+                                   help_text='1234567',
+                                   widget=forms.NumberInput(
+                                       attrs={
+                                           'min': '0',
+                                           'max': '9999999',
+                                           'type': 'number',
+                                           'placeholder': 'Staff ID',
+                                           'style': 'width:300px',
+                                           'autofocus': True,
+                                           'class': 'form-control',
+                                           'required': True,
+                                       }
+                                   ))
+
+    title = forms.CharField(label='Title',
+                            help_text='Dr.',
+                            widget=forms.TextInput(
+                                attrs={
+                                    'maxlength': '128',
+                                    'type': 'text',
+                                    'placeholder': 'First Name',
+                                    'style': 'width:100%',
+                                    'class': 'form-control',
+                                    'required': True,
+                                }
+                            ))
+    firstName = forms.CharField(label='First Name',
+                                help_text='Boyd',
+                                widget=forms.TextInput(
+                                    attrs={
+                                        'maxlength': '128',
+                                        'type': 'text',
+                                        'placeholder': 'First Name',
+                                        'style': 'width:100%',
+                                        'class': 'form-control',
+                                        'required': True,
+                                    }
+                                ))
+
+    lastName = forms.CharField(label='Last Name',
+                               help_text='Orr',
+                               widget=forms.TextInput(
+                                   attrs={
+                                       'maxlength': '128',
+                                       'type': 'text',
+                                       'placeholder': 'Last Name',
+                                       'style': 'width:100%',
+                                       'class': 'form-control',
+                                       'required': True,
+                                   }
+                               ))
+    comments = forms.CharField(label='Comments',
+                               required=False,
+                               widget=forms.Textarea(
+                                   attrs={
+                                       'maxlength': '2000',
+                                       'type': 'text',
+                                       'placeholder': 'Comments',
+                                       'class': 'form-control',
+                                       'style': 'width:100%;height:150px',
+                                   }
+                               ))
+    class Meta:
+        model = Staff
+        fields = {'staffID', 'title','firstName', 'lastName', 'comments'}
+
+class EditStaffForm(StaffForm):
+    staffID = None
+    class Meta:
+        model = Staff
+        fields = StaffForm.Meta.fields
+        exclude = {'staffID'}
 
 class AssessmentGradeForm(forms.ModelForm):
     submissionDate = forms.DateTimeField(input_formats=['%Y-%m-%dT%H:%M', ],

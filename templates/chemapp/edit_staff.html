@@ -1,0 +1,77 @@
+{% extends 'chemapp/base.html' %}
+{% load static %}
+
+{% block js_block %}
+<script src="{% static 'js/chemapp-courseInputMask.js' %}"></script>
+{% endblock %}
+
+{% block title_block %}
+Edit a Staff Member
+{% endblock %}
+
+{% block body_block %}
+<div class="container mt-5 mb-5 ">
+  <h2> Edit Staff </h2>
+
+  <form id="edit_staff_form" method="post" action="{% url 'chemapp:edit_staff' staffID=staffID %}" enctype="multipart/form-data">
+
+    {% csrf_token %}
+    <div class="row ">
+      {% for field in edit_staff_form %}
+
+      {% if field.label == 'First Name' %}
+      <div class="col-4 mb-4">
+        {% elif field.label == 'Last Name' %}
+        <div class="col-4">
+          {% elif field.label == 'Title' %}
+          <div class="col-4">
+            {% elif field.label == 'Comments' %}
+            <div class="col-8">
+
+                {% else %}
+                <div class="col-12 mb-4">
+                  {% endif %}
+
+
+
+                  <div class="form-floating">
+                    {{ field }}
+                    <label for="floating{{ field.label }}">{{ field.label }}</label>
+                  </div>
+
+                  <!-- <p  class="form-label">{{ field.label }}</p>
+
+                  {{ field }} -->
+
+                  <div class=" text-start">
+                    <div id="" class="form-text ps-2">{{ field.help_text }}</div>
+                  </div>
+
+
+
+                  {% for error in field.errors %}
+                  <div class="text-danger">
+                    <strong>*{{ error|escape }}</strong>
+                  </div>
+                  {% endfor %}
+                </div>
+
+
+                {% endfor %}
+
+
+                {% for error in form.non_field_errors %}
+                <div class="">
+                  <strong>*{{ error|escape }}</strong>
+                </div>
+                {% endfor %}
+
+
+              </div>
+
+    <button class="btn btn-primary mt-5" type="submit">Save</button>
+  </form>
+
+  </div>
+
+          {% endblock %}

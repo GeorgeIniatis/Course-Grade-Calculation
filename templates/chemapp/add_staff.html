@@ -1,0 +1,83 @@
+{% extends 'chemapp/base.html' %}
+
+{% block links %}
+  <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.css">
+{% endblock %}
+
+{% block title_block %}
+    Add staff
+{% endblock %}
+
+{% block body_block %}
+{{ staff_form.media }}
+<div class="container mt-5 ">
+	<div>
+        <h2 class="mb-4"> Add a Staff Member </h2>
+
+        <form id="add_staff_form" method="post" action="{% url 'chemapp:add_staff' %}" enctype="multipart/form-data">
+
+        {% csrf_token %}
+
+
+      <div class="row ">
+        {% for field in staff_form %}
+
+        {% if field.label == 'First Name' %}
+        <div class="col-4 mb-4">
+          {% elif field.label == 'Last Name' %}
+          <div class="col-4">
+            {% elif field.label == 'Title' %}
+            <div class="col-4">
+              {% elif field.label == 'staffID' %}
+              <div class="col-4 mb-4">
+              {% elif field.label == 'Comments' %}
+              <div class="col-8">
+
+                  {% else %}
+                  <div class="col-12 mb-4">
+                    {% endif %}
+
+
+
+                    <div class="form-floating">
+                      {{ field }}
+                      <label for="floating{{ field.label }}">{{ field.label }}</label>
+                    </div>
+
+                    <!-- <p  class="form-label">{{ field.label }}</p>
+
+                    {{ field }} -->
+
+                    <div class=" text-start">
+                      <div id="" class="form-text ps-2">{{ field.help_text }}</div>
+                    </div>
+
+
+
+                    {% for error in field.errors %}
+                    <div class="text-danger">
+                      <strong>*{{ error|escape }}</strong>
+                    </div>
+                    {% endfor %}
+                  </div>
+
+
+                  {% endfor %}
+
+
+                  {% for error in form.non_field_errors %}
+                  <div class="">
+                    <strong>*{{ error|escape }}</strong>
+                  </div>
+                  {% endfor %}
+
+
+                </div>
+
+   		<button class="btn btn-primary mt-5" type="submit">Save</button>
+		</form>
+
+    </div>
+</div>
+
+{% endblock %}
