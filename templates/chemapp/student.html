@@ -94,6 +94,17 @@
             {% endfor %}
         {% endfor %}
     {% endfor %}
+
+    <!-- Edit Student Button -->
+    <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+        <a class="btn btn-danger mt-3" href="{% url 'chemapp:edit_student' student_id=student_id %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Edit Student</a>
+    </div>
+    <!-- Delete Student Button -->
+    <form id="student_delete_form" method="post" action="{% url 'chemapp:delete_student' student_id=student_id %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary mt-5">Delete Student</button>
+    </form>
+
 </div>
 </div>
 {% endblock %}

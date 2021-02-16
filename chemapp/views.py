@@ -609,6 +609,72 @@ def student(request, student_id):
 
 
 @login_required
+def edit_student(request, student_id):
+    student = Student.objects.get(studentID=student_id)
+
+    editStudentDict = {}
+    editStudentDict['student_id'] = student_id
+    editStudentDict['student'] = student
+
+    if (request.method == 'POST'):
+        edit_student_form = EditStudentForm(request.POST)
+
+        if edit_student_form.is_valid():
+            firstName = edit_student_form.cleaned_data.get('firstName')
+            lastName = edit_student_form.cleaned_data.get('lastName')
+            gapYear = edit_student_form.cleaned_data.get('gapYear')
+            academicPlan = edit_student_form.cleaned_data.get('academicPlan')
+            level = edit_student_form.cleaned_data.get('level')
+            graduationDate = edit_student_form.cleaned_data.get('graduationDate')
+            comments = edit_student_form.cleaned_data.get('comments')
+
+            student.firstName = firstName
+            student.lastName = lastName
+            student.gapYear = gapYear
+            student.academicPlan = academicPlan
+            student.level = level
+            student.graduationDate = graduationDate
+            student.comments = comments
+
+            student.save()
+
+            messages.success(request, 'Student was updated successfully!')
+            return redirect(reverse('chemapp:student', kwargs={'student_id': student_id}))
+        else:
+            print(edit_student_form.errors)
+    else:
+        edit_student_form = EditStudentForm(instance=student)
+
+    editStudentDict['edit_student_form'] = edit_student_form
+
+    return render(request, 'chemapp/edit_student.html', context=editStudentDict)
+
+
+@login_required
+def delete_student(request, student_id):
+    student = Student.objects.get(studentID=student_id)
+    degree = student.academicPlan
+
+    if request.method == 'POST':
+        student.delete()
+
+        # Reduce degree student count
+        degree.numberOfStudents = degree.numberOfStudents - 1
+        degree.save()
+
+        # Reduce each course student count
+        courses = Course.objects.filter(degree=degree, level=student.level)
+        for course in courses:
+            course.numberOfStudents = course.numberOfStudents - 1
+            course.save()
+
+        messages.success(request, 'Student deleted successfully!')
+        return redirect(reverse('chemapp:students'))
+
+    return render(request, 'chemapp/student.html', context={})
+
+
+@login_required
 def add_student(request):
     addStudentDict = {}
 

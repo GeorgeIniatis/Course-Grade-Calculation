@@ -524,7 +524,30 @@ class StudentForm(forms.ModelForm):
 
     class Meta:
         model = Student
-        fields = {'studentID', 'firstName', 'lastName', 'academicPlan', 'level', 'graduationDate', 'comments'}
+        fields = {'studentID', 'gapYear', 'firstName', 'lastName', 'academicPlan', 'level', 'graduationDate',
+                  'comments'}
+
+
+class EditStudentForm(StudentForm):
+    studentID = None
+
+    graduationDate = forms.DateField(input_formats=['%Y-%m-%d'],
+                                     label='Graduation Date',
+                                     help_text='12/01/2021',
+                                     widget=forms.DateInput(
+                                         attrs={
+                                             'placeholder': 'Graduation Date',
+                                             'type': 'date',
+                                             'style': 'width:300px',
+                                             'required': True,
+                                             'class': 'form-control',
+                                         },
+                                         format='%Y-%m-%d'))
+
+    class Meta:
+        model = Student
+        fields = StudentForm.Meta.fields
+        exclude = {'studentID'}
 
 
 class AssessmentGradeForm(forms.ModelForm):
