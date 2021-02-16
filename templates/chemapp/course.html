@@ -33,20 +33,9 @@
                 <p> Total Marks: {{ assessment.totalMarks }} </p>
                 <p> Number of Components Needed: {{ assessment.componentNumberNeeded }} </p>
                 <p> Due Date and Time: {{ assessment.dueDate }} </p>
-
-                <!-- Upload Button -->
                 <div class="d-grid gap-2 d-md-flex justify-content-md-start">
     				<a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_assessment_comp_csv' course_code=course.code  assessment_name=assessment.assessmentName %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Upload CSV File to add {{assessment.assessmentName}} components</a>
   				</div>
-                <!-- Edit Assessment Button -->
-                <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-                    <a class="btn btn-danger mt-3" href="{% url 'chemapp:edit_assessment' course_name_slug=course_name_slug assessment_name_slug=assessment.slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Edit Assessment</a>
-                </div>
-                <!-- Delete Assessment Button -->
-                <form id="assessment_delete_form" method="post" action="{% url 'chemapp:delete_assessment' course_name_slug=course_name_slug assessment_name_slug=assessment.slug %}">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-primary mt-5">Delete Assessment</button>
-                </form>
                 {% for component in components %}
                     <h4> Component: {{ component.description }} </h4>
                     <p> Status: {{ component.status }} </p>
@@ -57,15 +46,9 @@
         {% endif %}
         
 </div>
-    <!-- Edit Course Button -->
     <div class="d-grid gap-2 d-md-flex justify-content-md-start">
         <a class="btn btn-danger mt-3" href="{% url 'chemapp:edit_course' course_name_slug=course_name_slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Edit Course</a>
     </div>
-    <!-- Delete Course Button -->
-    <form id="course_delete_form" method="post" action="{% url 'chemapp:delete_course' course_name_slug=course_name_slug %}">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-primary mt-5">Delete Course</button>
-    </form>
 
 </div>
 {% endblock %}
