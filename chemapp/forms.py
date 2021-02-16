@@ -411,6 +411,15 @@ class AssessmentComponentForm(forms.ModelForm):
         fields = {'required', 'marks', 'description'}
 
 
+class EditAssessmentComponentForm(AssessmentComponentForm):
+    description = None
+
+    class Meta:
+        model = AssessmentComponent
+        fields = AssessmentComponentForm.Meta.fields
+        exclude = {'description'}
+
+
 class StudentForm(forms.ModelForm):
     studentID = forms.IntegerField(label='StudentID',
                                    help_text='1234567',

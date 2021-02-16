@@ -51,6 +51,16 @@
                     <h4> Component: {{ component.description }} </h4>
                     <p> Status: {{ component.status }} </p>
                     <p> Marks: {{ component.marks }} </p>
+                    <!-- Edit Assessment Component Button -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                        <a class="btn btn-danger mt-3" href="{% url 'chemapp:edit_assessmentComponent' course_name_slug=course_name_slug assessment_name_slug=assessment.slug assessment_component_slug=component.slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Edit Assessment Component</a>
+                    </div>
+                    <!-- Delete Assessment Component Button -->
+                    <form id="component_delete_form" method="post" action="{% url 'chemapp:delete_assessmentComponent' course_name_slug=course_name_slug assessment_name_slug=assessment.slug assessment_component_slug=component.slug %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary mt-5">Delete Component</button>
+                    </form>
+                    <br>
                 {% endfor %}
                 <br>
             {% endfor %}

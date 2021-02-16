@@ -391,6 +391,7 @@ def add_assessmentComponents(request, course_name_slug, assessment_name_slug):
                 required = form.cleaned_data.get('required')
                 marks = form.cleaned_data.get('marks')
                 description = form.cleaned_data.get('description')
+                slug = slugify(description)
 
                 if required == True:
                     status = 'Required'
@@ -420,6 +421,7 @@ def add_assessmentComponents(request, course_name_slug, assessment_name_slug):
                                                                     status=status,
                                                                     marks=marks,
                                                                     description=description,
+                                                                    slug=slug,
                                                                     assessment=assessment))
 
             AssessmentComponent.objects.bulk_create(assessmentComponents)
@@ -446,6 +448,57 @@ def add_assessmentComponents(request, course_name_slug, assessment_name_slug):
     addAssessmentComponentsDict['assessmentComponent_formset'] = assessmentComponent_formset
 
     return render(request, 'chemapp/add_assessmentComponents.html', context=addAssessmentComponentsDict)
+
+
+@login_required
+def edit_assessmentComponent(request, course_name_slug, assessment_name_slug, assessment_component_slug):
+    course = Course.objects.get(slug=course_name_slug)
+    assessment = Assessment.objects.get(course=course, slug=assessment_name_slug)
+    component = AssessmentComponent.objects.get(assessment=assessment, slug=assessment_component_slug)
+
+    editComponentDict = {}
+    editComponentDict['course_name_slug'] = course_name_slug
+    editComponentDict['assessment_name_slug'] = assessment_name_slug
+    editComponentDict['assessment_component_slug'] = assessment_component_slug
+    editComponentDict['component'] = component
+
+    if (request.method == 'POST'):
+        edit_component_form = EditAssessmentComponentForm(request.POST)
+
+        if edit_component_form.is_valid():
+            required = edit_component_form.cleaned_data.get('required')
+            marks = edit_component_form.cleaned_data.get('marks')
+
+            component.required = required
+            component.marks = marks
+
+            component.save()
+
+            messages.success(request, 'Assessment Component was updated successfully!')
+            return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
+        else:
+            print(edit_component_form.errors)
+    else:
+        edit_component_form = EditAssessmentComponentForm(instance=component)
+
+    editComponentDict['edit_component_form'] = edit_component_form
+
+    return render(request, 'chemapp/edit_component.html', context=editComponentDict)
+
+
+@login_required
+def delete_assessmentComponent(request, course_name_slug, assessment_name_slug, assessment_component_slug):
+    course = Course.objects.get(slug=course_name_slug)
+    assessment = Assessment.objects.get(course=course, slug=assessment_name_slug)
+    component = AssessmentComponent.objects.get(assessment=assessment, slug=assessment_component_slug)
+
+    if request.method == 'POST':
+        component.delete()
+
+        messages.success(request, 'Assessment Component deleted successfully!')
+        return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
+
+    return render(request, 'chemapp/course.html', context={})
 
 
 def user_login(request):
