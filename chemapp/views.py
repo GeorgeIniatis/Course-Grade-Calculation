@@ -931,6 +931,8 @@ def add_staff(request):
             firstName = staff_form.cleaned_data.get('firstName')
             lastName = staff_form.cleaned_data.get('lastName')
             comments = staff_form.cleaned_data.get('comments')
+            username = firstName + lastName
+            user_object = User.objects.create_user(username, password=str(staffID))
             # Check if Course has already been added
             try:
                 staff = Staff.objects.get(staffID=staffID)
