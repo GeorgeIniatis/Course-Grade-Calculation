@@ -14,7 +14,7 @@ from django.template.defaultfilters import slugify
 import random
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
-from chemapp.utils import user_edit_perm_check, permission_required_context
+from chemapp.utils import user_edit_perm_check, permission_required_context, user_upload_grades_perm_check
 from django.contrib.auth.decorators import permission_required
 
 GRADE_TO_BAND = {22: 'A1', 21: 'A2', 20: 'A3', 19: 'A4', 18: 'A5',
@@ -551,7 +551,7 @@ def add_student(request):
 
 
 @login_required
-@user_edit_perm_check
+@user_upload_grades_perm_check
 def add_grades(request, student_id, course_name_slug, assessment_name_slug):
     student = Student.objects.get(studentID=student_id)
     course = Course.objects.get(slug=course_name_slug)

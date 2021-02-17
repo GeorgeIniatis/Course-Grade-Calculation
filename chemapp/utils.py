@@ -19,6 +19,20 @@ def user_edit_perm_check(func):
 
 
 
+def user_upload_grades_perm_check(func):
+    def wrapper(self, *args, **kwargs):
+        # access a from TestSample
+        #if self.request.user.has_perm('can_edit_course_')
+        perm = kwargs['course_name_slug']
+        if self.user.has_perm("chemapp.can_upload_grades_for"+perm.upper()):
+            return func(self, *args, **kwargs)
+        else:
+            messages.error(self,"You do not have permission to upload  "+perm)
+            return redirect('chemapp:courses')
+    return wrapper
+
+
+
 
 
 def permission_required_context(perm, exceptionContext, login_url=None, raise_exception=False):
