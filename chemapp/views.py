@@ -215,7 +215,7 @@ def add_course(request):
             degree.numberOfCourses = degree.numberOfCourses + 1
             degree.save()
 
-            return redirect(reverse('chemapp:add_assessments', kwargs={'course_name_slug': course_slug}))
+            return redirect(reverse('chemapp:course_lecturer', kwargs={'course_name_slug': course_slug}))
 
         else:
             messages.error(request, 'Course has already been added!')
@@ -321,6 +321,7 @@ def add_assessmentComponents(request, course_name_slug, assessment_name_slug):
             componentDescriptions = []
             for form in assessmentComponent_formset:
                 required = form.cleaned_data.get('required')
+                lecturer = form.cleaned_data.get('lecturers')
                 marks = form.cleaned_data.get('marks')
                 description = form.cleaned_data.get('description')
 
@@ -915,6 +916,7 @@ def staff(request):
     staff = Staff.objects.order_by('lastName')
     StaffDict['staff'] = staff
 
+
     return render(request, 'chemapp/staff.html', context=StaffDict)
 
 @login_required
@@ -952,6 +954,8 @@ def staff_member(request, staffID):
     staff_memberDict = {}
     try:
         staff = Staff.objects.get(staffID=staffID)
+        courses = Course.objects.filter(lecturers__staffID=staffID)
+        staff_memberDict['courses'] = courses
         staff_memberDict['staff'] = staff
         staff_memberDict['courses'] = {}
         staff_memberDict['staffID'] = staffID
@@ -993,3 +997,26 @@ def edit_staff(request, staffID):
     editStaffDict['edit_staff_form'] = edit_staff_form
 
     return render(request, 'chemapp/edit_staff.html', context=editStaffDict)
+
+
+@login_required
+def course_lecturer(request, course_name_slug):
+    CourseLecturerDict = {}
+    CourseLecturerDict['course_name_slug'] = course_name_slug
+    CourseLecturerDict['lecturers'] = Staff.objects.all()
+    course = Course.objects.get(slug=course_name_slug)
+
+    if (request.method == 'POST'):
+        lect = request.POST.getlist('lecturers_list')
+        lecturers_list= []
+        for lecture in lect:
+            lecturers_list.append(Staff.objects.get(staffID=lecture))
+        course.lecturers.add(*lecturers_list)
+        messages.success(request, 'Course was updated successfully!')
+        return redirect(reverse('chemapp:add_assessments', kwargs={'course_name_slug': course_name_slug}))
+    else:
+        course_lecturer_form = CourseLecturerForm(instance=course)
+
+    CourseLecturerDict['course_lecturer_form'] = course_lecturer_form
+
+    return render(request, 'chemapp/course_lecturer.html', context=CourseLecturerDict)

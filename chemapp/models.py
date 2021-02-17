@@ -91,6 +91,29 @@ class Degree(models.Model):
     def __str__(self):
         return self.degreeCode
 
+class Staff(models.Model):
+    staffID = models.PositiveIntegerField(validators=[MaxValueValidator(9999999)],
+                                            unique=True,
+                                            verbose_name="Staff ID")
+
+    title = models.CharField(max_length=128,
+                                 verbose_name="Title",
+                                  default='Dr/Mr/Miss/Mrs',)
+
+    firstName = models.CharField(max_length=128,
+                                 verbose_name="First Name")
+
+    lastName = models.CharField(max_length=128,
+                                verbose_name="Last Name")
+
+    comments = models.TextField(max_length=2000,
+                                blank=True,
+                                help_text='Anything worth mentioning')
+    class Meta:
+        verbose_name_plural = 'Staff'
+
+    def __str__(self):
+        return (str(self.title) + " " + str(self.firstName) + " " + str(self.lastName) + " " + str(self.staffID))
 
 class Course(models.Model):
     # I dont know the format of course codes need to check, format, max length ect
@@ -143,6 +166,8 @@ class Course(models.Model):
     numberOfStudents = models.PositiveIntegerField(default=0,
                                                    verbose_name="Number of Students")
 
+    lecturers = models.ManyToManyField(Staff,verbose_name="Course Lecturers")
+
     slug = models.SlugField(unique=True)
 
     courseColor = ColorField(default='#FF0000')
@@ -162,30 +187,6 @@ class Course(models.Model):
     def __str__(self):
         return (str(self.shortHand) + " " + str(self.degree))
 
-
-class Staff(models.Model):
-    staffID = models.PositiveIntegerField(validators=[MaxValueValidator(9999999)],
-                                            unique=True,
-                                            verbose_name="Staff ID")
-
-    title = models.CharField(max_length=128,
-                                 verbose_name="Title",
-                                  default='Dr/Mr/Miss/Mrs',)
-
-    firstName = models.CharField(max_length=128,
-                                 verbose_name="First Name")
-
-    lastName = models.CharField(max_length=128,
-                                verbose_name="Last Name")
-
-    comments = models.TextField(max_length=2000,
-                                blank=True,
-                                help_text='Anything worth mentioning')
-    class Meta:
-        verbose_name_plural = 'Staff'
-
-    def __str__(self):
-        return (str(self.title) + " " + str(self.firstName) + " " + str(self.lastName) + " " + str(self.staffID))
 
 
 class Student(models.Model):
@@ -361,6 +362,8 @@ class AssessmentComponent(models.Model):
     marks = models.PositiveIntegerField()
 
     description = models.CharField(max_length=100)
+
+    lecturers = models.ManyToManyField(Staff,verbose_name="Course Lecturers")
 
     assessment = models.ForeignKey(Assessment,
                                    on_delete=models.CASCADE)

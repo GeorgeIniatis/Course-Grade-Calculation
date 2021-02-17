@@ -12,8 +12,16 @@
     <p> Staff ID: {{ staff.staffID }} </p>
     <p> Comments: {{ staff.comments }} </p>
 </div>
+<div>
+    <!-- Course Section -->
+    <h2> Courses </h2>
+    {% for course in courses %}
+    <p> Course Code: {{ course.code }} </p>
+    <p> Course Name: {{ course.name }} </p>
+    {% endfor %}
+</div>
 <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-    <a class="btn btn-danger mt-3" href="{% url 'chemapp:edit_staff' staffID=staffID %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Edit Course</a>
+    <a class="btn btn-danger mt-3" href="{% url 'chemapp:edit_staff' staffID=staffID %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Edit Staff Details</a>
 </div>
 </div>
 {% endblock %}

@@ -79,7 +79,7 @@ class DegreeForm(forms.ModelForm):
         fields = {'degreeCode', 'name'}
 
 
-class CourseForm(forms.ModelForm):
+class SuperCourseForm(forms.ModelForm):
     code = forms.CharField(label='Code',
                            help_text='CHEM1006',
                            widget=forms.TextInput(
@@ -248,18 +248,39 @@ class CourseForm(forms.ModelForm):
                                    }
                                ))
 
+    lecturers = forms.ModelChoiceField(label='Lecturers',
+                                    help_text='e.g. Dr. Linnea Soler',
+                                    empty_label="Select a choice",
+                                    queryset=Staff.objects.all(),
+                                    widget=forms.Select(
+                                        attrs={
+                                            'style': 'width:100%',
+                                            'required': True,
+                                            'id': 'floatingDegree',
+                                            'class': 'form-select',
+                                        }
+                                    ))
+
     field_order = ['code', 'degree', 'name', 'shortHand', 'creditsWorth', 'level', 'academicYearTaught',
-                   'semester', 'minimumPassGrade', 'minimumRequirementsForCredit', 'description', 'comments',
+                   'semester', 'minimumPassGrade', 'minimumRequirementsForCredit', 'lecturers','description', 'comments',
                    'courseColor']
 
     class Meta:
         model = Course
         fields = {'code', 'degree', 'creditsWorth', 'name', 'shortHand', 'level', 'academicYearTaught',
                   'semester', 'description', 'comments', 'minimumPassGrade',
+                  'minimumRequirementsForCredit', 'lecturers', 'courseColor'}
+
+class CourseForm(SuperCourseForm):
+    lecturers = None
+    class Meta:
+        model = Course
+        fields = {'code', 'degree', 'creditsWorth', 'name', 'shortHand', 'level', 'academicYearTaught',
+                  'semester', 'description', 'comments', 'minimumPassGrade',
                   'minimumRequirementsForCredit', 'courseColor'}
+        exclude = {'lecturers',}
 
-
-class EditCourseForm(CourseForm):
+class EditCourseForm(SuperCourseForm):
     code = None
     degree = None
 
@@ -268,6 +289,27 @@ class EditCourseForm(CourseForm):
         fields = CourseForm.Meta.fields
         exclude = {'code', 'degree'}
 
+class CourseLecturerForm(SuperCourseForm):
+    code = None
+    degree = None
+    name = None
+    shortHand = None
+    creditsWorth = None
+    level = None
+    academicYearTaught = None
+    semester = None
+    minimumPassGrade = None
+    minimumRequirementsForCredit = None
+    description = None
+    comments = None
+    courseColor = None
+
+    class Meta:
+        model = Course
+        fields = CourseForm.Meta.fields
+        exclude = {'code', 'degree', 'creditsWorth', 'name', 'shortHand', 'level', 'academicYearTaught',
+                  'semester', 'description', 'comments', 'minimumPassGrade',
+                  'minimumRequirementsForCredit', 'courseColor'}
 
 class AssessmentForm(forms.ModelForm):
     assessmentName = forms.CharField(label='Name',
@@ -381,11 +423,25 @@ class AssessmentComponentForm(forms.ModelForm):
                                       }
                                   ))
 
-    field_order = ['required', 'description', 'marks']
+
+    lecturers = forms.ModelChoiceField(label='Lecturers',
+                                help_text='e.g. Dr. Linnea Soler',
+                                empty_label="Select a choice",
+                                queryset=Staff.objects.all(),
+                                widget=forms.Select(
+                                    attrs={
+                                        'style': 'width:100%',
+                                        'required': True,
+                                        'id': 'floatingDegree',
+                                        'class': 'form-select',
+                                    }
+                                ))
+
+    field_order = ['required', 'lecturers','description', 'marks']
 
     class Meta:
         model = AssessmentComponent
-        fields = {'required', 'marks', 'description'}
+        fields = {'required', 'lecturers' , 'marks', 'description'}
 
 
 class StudentForm(forms.ModelForm):
@@ -558,6 +614,9 @@ class StaffForm(forms.ModelForm):
                                        'style': 'width:100%;height:150px',
                                    }
                                ))
+
+    field_order = ['staffID', 'title','firstName', 'lastName','comments']
+
     class Meta:
         model = Staff
         fields = {'staffID', 'title','firstName', 'lastName', 'comments'}
