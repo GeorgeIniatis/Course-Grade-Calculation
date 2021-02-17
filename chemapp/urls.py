@@ -41,6 +41,7 @@ urlpatterns = [
     # Student URLs
     path('students/', views.students, name='students'),
     path('students/add_student/', views.add_student, name='add_student'),
+    path('ajax/filter-courses/', views.ajax_filter_courses, name='ajax_filter_courses'),
     path('students/upload_student_csv/', views.upload_student_csv, name='upload_student_csv'),
     path('students/<student_id>/', views.student, name='student'),
     path('students/<student_id>/edit_student/', views.edit_student, name='edit_student'),

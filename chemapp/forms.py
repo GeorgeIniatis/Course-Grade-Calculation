@@ -521,7 +521,7 @@ class StudentForm(forms.ModelForm):
 
     courses = forms.ModelMultipleChoiceField(label='Courses',
                                              help_text='Press CTRL to select multiple courses',
-                                             queryset=Course.objects.all(),
+                                             queryset=Course.objects.none(),
                                              widget=forms.SelectMultiple(
                                                  attrs={
                                                      'style': 'width:300px',
@@ -537,6 +537,20 @@ class StudentForm(forms.ModelForm):
         model = Student
         fields = {'studentID', 'gapYear', 'firstName', 'lastName', 'academicPlan', 'level', 'courses',
                   'graduationDate', 'comments'}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if 'academicPlan' in self.data:
+            try:
+                degree = int(self.data.get('academicPlan'))
+                self.fields['courses'].queryset = Course.objects.filter(degree=degree).order_by('year')
+            except (ValueError, TypeError):
+                pass
+        elif self.instance.pk:
+            if (self.instance.academicPlan != None):
+                self.fields['courses'].queryset = Course.objects.filter(degree=self.instance.academicPlan).order_by(
+                    'year')
 
 
 class EditStudentForm(StudentForm):

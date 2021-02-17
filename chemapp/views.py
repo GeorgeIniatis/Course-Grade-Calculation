@@ -779,6 +779,12 @@ def add_student(request):
     addStudentDict['student_form'] = student_form
     return render(request, 'chemapp/add_student.html', context=addStudentDict)
 
+@login_required
+def ajax_filter_courses(request):
+    degree = request.GET.get('degree')
+    courses = Course.objects.filter(degree=degree).order_by('year')
+    return render(request, 'chemapp/courses_dropdown_list.html', {'courses': courses})
+
 
 @login_required
 @user_upload_grades_perm_check
