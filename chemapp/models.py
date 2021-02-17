@@ -230,6 +230,7 @@ class Student(models.Model):
     courses = models.ManyToManyField(Course, blank=True)
 
     def save(self, *args, **kwargs):
+        self.anonID = (abs(hash(str(self.studentID))))/self.studentID
         self.status = 'Enrolled' if self.gapYear == False else 'Gap Year'
         super(Student, self).save(*args, **kwargs)
 
