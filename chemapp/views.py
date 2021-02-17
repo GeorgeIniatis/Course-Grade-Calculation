@@ -246,6 +246,8 @@ def add_course(request):
             degree.numberOfCourses = degree.numberOfCourses + 1
             degree.save()
 
+            # Success message
+            messages.success(request, "Course added successfully!")
             return redirect(reverse('chemapp:add_assessments', kwargs={'course_name_slug': course_slug}))
 
         else:
@@ -317,6 +319,8 @@ def add_assessments(request, course_name_slug):
                 Assessment.objects.bulk_create(assessments)
                 assessmentsCreated = Assessment.objects.filter(course=course)
 
+                # Success message
+                messages.success(request, "Assessments added successfully!")
                 assessment_name_slug = assessmentsCreated.first().slug
                 return redirect(reverse('chemapp:add_assessmentComponents',
                                         kwargs={'course_name_slug': course_name_slug,
@@ -452,9 +456,8 @@ def add_assessmentComponents(request, course_name_slug, assessment_name_slug):
                                                     'assessment_name_slug': assessment_name_slug}))
 
             # Success message
-            messages.success(request,
-                             "Added a course along with its corresponding assessments and components successfully")
-            return redirect(reverse('chemapp:courses'))
+            messages.success(request,"Components added successfully!")
+            return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
 
         else:
             print(assessmentComponent_formset.errors)
