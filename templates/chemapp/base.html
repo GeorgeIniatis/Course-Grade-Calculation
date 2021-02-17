@@ -65,6 +65,10 @@
           <li class="nav-item">
             <a class="nav-link" href="{% url 'chemapp:about' %}">About</a>
           </li>
+            <form action="{% url 'chemapp:search_course' %}" method="GET" value="{{request.GET.q}}">
+            <input type="text" name="q" value="{{request.GET.q}}" placeholder="Search"/>
+            <input type="submit" name="submit" value="Search"/>
+            </form>
         </ul>
 
 

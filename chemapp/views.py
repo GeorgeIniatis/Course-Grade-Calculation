@@ -7,10 +7,11 @@ from django.contrib.auth.decorators import login_required
 from chemapp.models import *
 from chemapp.forms import *
 from django.http import Http404
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404,  render
 import csv, io
 from django.forms.formsets import formset_factory
 from django.template.defaultfilters import slugify
+from django.db.models import Q
 import random
 
 GRADE_TO_BAND = {22: 'A1', 21: 'A2', 20: 'A3', 19: 'A4', 18: 'A5',
@@ -1022,3 +1023,30 @@ def course_lecturer(request, course_name_slug):
     CourseLecturerDict['course_lecturer_form'] = course_lecturer_form
 
     return render(request, 'chemapp/course_lecturer.html', context=CourseLecturerDict)
+
+
+def search_course(request):
+    if request.method == 'GET':
+        query= request.GET.get('q')
+
+        submitbutton= request.GET.get('submit')
+
+        if query is not None:
+            course_lookups= Q(name__icontains=query) | Q(code__icontains=query) | Q(shortHand__icontains=query)
+            student_lookups= Q(studentID__icontains=query) | Q(firstName__icontains=query) | Q(lastName__icontains=query)
+            staff_lookups= Q(staffID__icontains=query) | Q(firstName__icontains=query) | Q(lastName__icontains=query)
+
+            course_results= Course.objects.filter(course_lookups).distinct()
+            student_results= Student.objects.filter(student_lookups).distinct()
+            staff_results= Staff.objects.filter(staff_lookups).distinct()
+            results = [course_results,student_results,staff_results]
+            context={'staff_results': staff_results,'course_results': course_results,'student_results': student_results,
+                     'submitbutton': submitbutton}
+
+            return render(request, 'chemapp/search_course.html', context)
+
+        else:
+            return render(request, 'chemapp/search_course.html')
+
+    else:
+        return render(request, 'chemapp/search_course.html')

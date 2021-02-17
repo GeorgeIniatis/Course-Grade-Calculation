@@ -1,6 +1,7 @@
 from django.urls import path
 from chemapp import views
 from django.contrib import admin
+from django.conf.urls import url
 
 admin.autodiscover()
 admin.site.enable_nav_sidebar = False
@@ -35,5 +36,5 @@ urlpatterns = [
     path('students/<student_id>/', views.student, name='student'),
     path('students/<student_id>/<slug:course_name_slug>/<slug:assessment_name_slug>/add_grades/', views.add_grades, name='add_grades'),
     path('students/<student_id>/<slug:course_name_slug>/<slug:assessment_name_slug>/add_final_grade/', views.add_final_grade, name='add_final_grade'),
-
+    path('search/', views.search_course, name='search_course'),
 ]
