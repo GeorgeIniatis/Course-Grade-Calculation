@@ -1,0 +1,19 @@
+{% extends 'chemapp/base.html' %}
+
+{% block title_block %}
+403
+{% endblock %}
+
+{% block body_block %}
+<div class="container mt-5 mb-5 ">
+  {% if exception %}
+    <h1>{{ exception }}</h1>
+  {% else %}
+    <h1>403 Forbidden</h1>
+  {% endif %}
+
+
+</div>
+
+
+{% endblock %}

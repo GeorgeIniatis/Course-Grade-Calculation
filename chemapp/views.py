@@ -12,6 +12,10 @@ import csv, io
 from django.forms.formsets import formset_factory
 from django.template.defaultfilters import slugify
 import random
+from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
+from chemapp.utils import user_edit_perm_check, permission_required_context, user_upload_grades_perm_check
+from django.contrib.auth.decorators import permission_required
 
 GRADE_TO_BAND = {22: 'A1', 21: 'A2', 20: 'A3', 19: 'A4', 18: 'A5',
                  17: 'B1', 16: 'B2', 15: 'B3',
@@ -46,6 +50,7 @@ def degrees(request):
 
 
 @login_required
+@permission_required_context('chemapp.add_degree', 'No permission to add_degree', raise_exception=True)
 def add_degree(request):
     addDegreeDict = {}
 
@@ -141,6 +146,7 @@ def course(request, course_name_slug):
 
 
 @login_required
+@user_edit_perm_check
 def edit_course(request, course_name_slug):
     editCourseDict = {}
     editCourseDict['course_name_slug'] = course_name_slug
@@ -207,6 +213,7 @@ def delete_course(request, course_name_slug):
 
 
 @login_required
+@permission_required_context('chemapp.add_course', 'No permission to add_course', raise_exception=True)
 def add_course(request):
     addCourseDict = {}
 
@@ -228,6 +235,12 @@ def add_course(request):
             course = course_form.save()
             course_slug = course.slug
 
+            content_type = ContentType.objects.get_for_model(Course)
+            Permission.objects.create(codename='can_edit_course' + course_slug, name="can edit course " + course_slug,
+                                      content_type=content_type, )
+            Permission.objects.create(codename='can_upload_grades_for' + course_slug,
+                                      name="can upload grades for " + course_slug, content_type=content_type, )
+
             # Increment degree course count
             degree = course.degree
             degree.numberOfCourses = degree.numberOfCourses + 1
@@ -247,6 +260,7 @@ def add_course(request):
 
 
 @login_required
+@permission_required_context('chemapp.add_assessments', 'No permission to add_assessments', raise_exception=True)
 def add_assessments(request, course_name_slug):
     addAssessmentsDict = {}
     addAssessmentsDict['course_name_slug'] = course_name_slug
@@ -368,6 +382,8 @@ def delete_assessment(request, course_name_slug, assessment_name_slug):
 
 
 @login_required
+@permission_required_context('chemapp.add_assessmentComponents', 'No permission to add_assessmentComponents',
+                             raise_exception=True)
 def add_assessmentComponents(request, course_name_slug, assessment_name_slug):
     AssessmentComponentFormSet = formset_factory(AssessmentComponentForm, extra=1)
     course = Course.objects.get(slug=course_name_slug)
@@ -703,6 +719,7 @@ def delete_student(request, student_id):
 
 
 @login_required
+@permission_required_context('chemapp.add_student', 'No permission to add_student', raise_exception=True)
 def add_student(request):
     addStudentDict = {}
 
@@ -761,6 +778,7 @@ def add_student(request):
 
 
 @login_required
+@user_upload_grades_perm_check
 def add_grades(request, student_id, course_name_slug, assessment_name_slug):
     student = Student.objects.get(studentID=student_id)
     course = Course.objects.get(slug=course_name_slug)
@@ -884,6 +902,7 @@ def add_grades(request, student_id, course_name_slug, assessment_name_slug):
 
 
 @login_required
+@user_edit_perm_check
 def add_final_grade(request, student_id, course_name_slug, assessment_name_slug):
     student = Student.objects.get(studentID=student_id)
     course = Course.objects.get(slug=course_name_slug)
@@ -960,6 +979,7 @@ def add_final_grade(request, student_id, course_name_slug, assessment_name_slug)
 
 
 @login_required
+@permission_required_context('chemapp.add_student', 'No permission to add_student', raise_exception=True)
 def upload_student_csv(request):
     # student_dict = {'boldmessage':'Upload csv file to add students'}
     # return render(request,'chemapp/upload_student_csv.html', context=student_dict)
@@ -998,6 +1018,7 @@ def upload_student_csv(request):
 
 
 @login_required
+@permission_required_context('chemapp.add_degree', 'No permission to add_degree', raise_exception=True)
 def upload_degree_csv(request):
     template = 'chemapp/upload_degree_csv.html'
     data = Degree.objects.all()
@@ -1022,6 +1043,7 @@ def upload_degree_csv(request):
 
 
 @login_required
+@permission_required_context('chemapp.add_course', 'No permission to add_course', raise_exception=True)
 def upload_course_csv(request):
     template = 'chemapp/upload_course_csv.html'
     data = Course.objects.all()
@@ -1061,12 +1083,14 @@ def upload_course_csv(request):
                 comments=column[12],
 
             )
+
     context = {}
     messages.success(request, "Courses Added Successfully")
     return redirect(reverse('chemapp:courses'))
 
 
 @login_required
+@permission_required_context('chemapp.add_assessments', 'No permission to add_assessments', raise_exception=True)
 def upload_assessment_csv(request, course_code):
     template = 'chemapp/upload_assessment_csv.html'
     data = Assessment.objects.all()
@@ -1102,6 +1126,8 @@ def upload_assessment_csv(request, course_code):
 
 
 @login_required
+@permission_required_context('chemapp.add_assessmentComponents', 'No permission to add_assessmentComponents',
+                             raise_exception=True)
 def upload_assessment_comp_csv(request, course_code, assessment_name):
     template = 'chemapp/upload_assessment_comp_csv.html'
     data = AssessmentComponent.objects.all()
