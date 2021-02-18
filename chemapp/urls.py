@@ -15,8 +15,10 @@ urlpatterns = [
 
     # Degree URLs
     path('degrees/', views.degrees, name='degrees'),
-    path('degrees/upload_degree_csv/', views.upload_degree_csv, name='upload_degree_csv'),
     path('degrees/add_degree/', views.add_degree, name='add_degree'),
+    path('degrees/upload_degree_csv/', views.upload_degree_csv, name='upload_degree_csv'),
+    path('degrees/<slug:degree_code_slug>/edit_degree', views.edit_degree, name='edit_degree'),
+    path('degrees/<slug:degree_code_slug>/delete_degree', views.delete_degree, name='delete_degree'),
 
     # Course URLs
     path('courses/', views.courses, name='courses'),

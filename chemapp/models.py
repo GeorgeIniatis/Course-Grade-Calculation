@@ -88,6 +88,12 @@ class Degree(models.Model):
     numberOfStudents = models.PositiveIntegerField(default=0,
                                                    verbose_name="Number of Students")
 
+    slug = models.SlugField(unique=True)
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.degreeCode)
+        super(Degree, self).save(*args, **kwargs)
+
     def __str__(self):
         return self.degreeCode
 

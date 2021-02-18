@@ -1,0 +1,22 @@
+{% extends 'chemapp/base.html' %}
+{% load static %}
+
+{% block title_block %}
+Edit Degree
+{% endblock %}
+
+{% block body_block %}
+<div class="container mt-5 mb-5 ">
+    <h2> Edit Degree</h2>
+
+    <form id="edit_degree_form" method="post" action="{% url 'chemapp:edit_degree' degree_code_slug=degree_code_slug  %}"  enctype="multipart/form-data">
+
+        {% csrf_token %}
+
+        {{ edit_degree_form.as_p }}
+
+        <button type="submit" class="btn btn-primary mt-5">Save</button>
+    </form>
+</div>
+
+{% endblock %}

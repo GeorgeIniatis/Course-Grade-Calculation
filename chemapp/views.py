@@ -67,6 +67,7 @@ def add_degree(request):
             for form in degree_formset:
                 degreeCode = form.cleaned_data.get('degreeCode')
                 name = form.cleaned_data.get('name')
+                slug = slugify(degreeCode)
 
                 if degreeCode in codes:
                     messages.error(request, "Duplicate degree " + degreeCode + " was only added once")
@@ -74,6 +75,7 @@ def add_degree(request):
                     codes.append(degreeCode)
                     degrees.append(Degree(degreeCode=degreeCode,
                                           name=name,
+                                          slug=slug,
                                           numberOfCourses=0,
                                           numberOfStudents=0))
 
@@ -90,6 +92,49 @@ def add_degree(request):
     addDegreeDict['degree_formset'] = degree_formset
 
     return render(request, 'chemapp/add_degree.html', context=addDegreeDict)
+
+
+@login_required
+def edit_degree(request, degree_code_slug):
+    degree = Degree.objects.get(slug=degree_code_slug)
+
+    editDegreeDict = {}
+    editDegreeDict['degree_code_slug'] = degree_code_slug
+    editDegreeDict['degree'] = degree
+
+    if (request.method == 'POST'):
+        edit_degree_form = EditDegreeForm(request.POST)
+
+        if edit_degree_form.is_valid():
+            name = edit_degree_form.cleaned_data.get('name')
+
+            degree.name = name
+
+            degree.save()
+
+            messages.success(request, 'Degree was updated successfully!')
+            return redirect(reverse('chemapp:degrees'))
+        else:
+            print(edit_degree_form.errors)
+    else:
+        edit_degree_form = EditDegreeForm(instance=degree)
+
+    editDegreeDict['edit_degree_form'] = edit_degree_form
+
+    return render(request, 'chemapp/edit_degree.html', context=editDegreeDict)
+
+
+@login_required
+def delete_degree(request, degree_code_slug):
+    degree = Degree.objects.get(slug=degree_code_slug)
+
+    if request.method == 'POST':
+        degree.delete()
+
+        messages.success(request, 'Degree deleted successfully!')
+        return redirect(reverse('chemapp:degrees'))
+
+    return render(request, 'chemapp/degrees.html', context={})
 
 
 @login_required
@@ -143,6 +188,55 @@ def course(request, course_name_slug):
         raise Http404("Course does not exist")
 
     return render(request, 'chemapp/course.html', context=courseDict)
+
+
+@login_required
+@permission_required_context('chemapp.add_course', 'No permission to add_course', raise_exception=True)
+def add_course(request):
+    addCourseDict = {}
+
+    if (request.method == 'POST'):
+        course_form = CourseForm(request.POST)
+
+        if course_form.is_valid():
+            code = course_form.cleaned_data.get('code').upper()
+            degree = course_form.cleaned_data.get('degree')
+
+            # Check if Course has already been added
+            try:
+                course = Course.objects.get(code=code, degree=degree)
+                messages.error(request, 'Course has already been added!')
+                return redirect(reverse('chemapp:add_course'))
+            except Course.DoesNotExist:
+                pass
+
+            course = course_form.save()
+            course_slug = course.slug
+
+            content_type = ContentType.objects.get_for_model(Course)
+            Permission.objects.create(codename='can_edit_course' + course_slug, name="can edit course " + course_slug,
+                                      content_type=content_type, )
+            Permission.objects.create(codename='can_upload_grades_for' + course_slug,
+                                      name="can upload grades for " + course_slug, content_type=content_type, )
+
+            # Increment degree course count
+            degree = course.degree
+            degree.numberOfCourses = degree.numberOfCourses + 1
+            degree.save()
+
+            # Success message
+            messages.success(request, "Course added successfully!")
+            return redirect(reverse('chemapp:add_assessments', kwargs={'course_name_slug': course_slug}))
+
+        else:
+            messages.error(request, 'Course has already been added!')
+            print(course_form.errors)
+    else:
+        course_form = CourseForm()
+
+    addCourseDict['course_form'] = CourseForm()
+
+    return render(request, 'chemapp/add_course.html', context=addCourseDict)
 
 
 @login_required
@@ -210,55 +304,6 @@ def delete_course(request, course_name_slug):
         return redirect(reverse('chemapp:courses'))
 
     return render(request, 'chemapp/course.html', context={})
-
-
-@login_required
-@permission_required_context('chemapp.add_course', 'No permission to add_course', raise_exception=True)
-def add_course(request):
-    addCourseDict = {}
-
-    if (request.method == 'POST'):
-        course_form = CourseForm(request.POST)
-
-        if course_form.is_valid():
-            code = course_form.cleaned_data.get('code').upper()
-            degree = course_form.cleaned_data.get('degree')
-
-            # Check if Course has already been added
-            try:
-                course = Course.objects.get(code=code, degree=degree)
-                messages.error(request, 'Course has already been added!')
-                return redirect(reverse('chemapp:add_course'))
-            except Course.DoesNotExist:
-                pass
-
-            course = course_form.save()
-            course_slug = course.slug
-
-            content_type = ContentType.objects.get_for_model(Course)
-            Permission.objects.create(codename='can_edit_course' + course_slug, name="can edit course " + course_slug,
-                                      content_type=content_type, )
-            Permission.objects.create(codename='can_upload_grades_for' + course_slug,
-                                      name="can upload grades for " + course_slug, content_type=content_type, )
-
-            # Increment degree course count
-            degree = course.degree
-            degree.numberOfCourses = degree.numberOfCourses + 1
-            degree.save()
-
-            # Success message
-            messages.success(request, "Course added successfully!")
-            return redirect(reverse('chemapp:add_assessments', kwargs={'course_name_slug': course_slug}))
-
-        else:
-            messages.error(request, 'Course has already been added!')
-            print(course_form.errors)
-    else:
-        course_form = CourseForm()
-
-    addCourseDict['course_form'] = CourseForm()
-
-    return render(request, 'chemapp/add_course.html', context=addCourseDict)
 
 
 @login_required
@@ -456,7 +501,7 @@ def add_assessmentComponents(request, course_name_slug, assessment_name_slug):
                                                     'assessment_name_slug': assessment_name_slug}))
 
             # Success message
-            messages.success(request,"Components added successfully!")
+            messages.success(request, "Components added successfully!")
             return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
 
         else:
@@ -628,6 +673,65 @@ def student(request, student_id):
 
 
 @login_required
+@permission_required_context('chemapp.add_student', 'No permission to add_student', raise_exception=True)
+def add_student(request):
+    addStudentDict = {}
+
+    if request.method == 'POST':
+        student_form = StudentForm(request.POST)
+        if student_form.is_valid():
+            studentID = student_form.cleaned_data.get('studentID')
+            firstName = student_form.cleaned_data.get('firstName')
+            lastName = student_form.cleaned_data.get('lastName')
+            gapYear = student_form.cleaned_data.get('gapYear')
+            academicPlan = student_form.cleaned_data.get('academicPlan')
+            level = student_form.cleaned_data.get('level')
+            graduationDate = student_form.cleaned_data.get('graduationDate')
+            comments = student_form.cleaned_data.get('comments')
+            courses = student_form.cleaned_data.get('courses')
+
+            if gapYear == False:
+                status = 'Enrolled'
+            else:
+                status = 'Gap Year'
+
+            # Just to test until we have correct equation && 000000 did not allow for more students since it has to be unique
+            anonID = random.randint(0, 99999)
+
+            student = Student.objects.create(studentID=studentID, anonID=anonID, firstName=firstName, lastName=lastName,
+                                             gapYear=gapYear, status=status, academicPlan=academicPlan, level=level,
+                                             graduationDate=graduationDate,
+                                             comments=comments)
+
+            # Populate student's courses
+            student.courses.set(courses)
+            student.save()
+
+            # Increment degree student count
+            degree = student.academicPlan
+            degree.numberOfStudents = degree.numberOfStudents + 1
+            degree.save()
+
+            # Increment each course student count
+            courses = student.courses.all()
+            for course in courses:
+                course.numberOfStudents = course.numberOfStudents + 1
+                course.save()
+
+            # Success message
+            messages.success(request, "Student Added Successfully")
+            return redirect(reverse('chemapp:students'))
+
+        else:
+            print(student_form.errors)
+    else:
+        student_form = StudentForm()
+
+    addStudentDict['student_form'] = student_form
+    return render(request, 'chemapp/add_student.html', context=addStudentDict)
+
+
+@login_required
 def edit_student(request, student_id):
     student = Student.objects.get(studentID=student_id)
 
@@ -720,64 +824,6 @@ def delete_student(request, student_id):
 
     return render(request, 'chemapp/student.html', context={})
 
-
-@login_required
-@permission_required_context('chemapp.add_student', 'No permission to add_student', raise_exception=True)
-def add_student(request):
-    addStudentDict = {}
-
-    if request.method == 'POST':
-        student_form = StudentForm(request.POST)
-        if student_form.is_valid():
-            studentID = student_form.cleaned_data.get('studentID')
-            firstName = student_form.cleaned_data.get('firstName')
-            lastName = student_form.cleaned_data.get('lastName')
-            gapYear = student_form.cleaned_data.get('gapYear')
-            academicPlan = student_form.cleaned_data.get('academicPlan')
-            level = student_form.cleaned_data.get('level')
-            graduationDate = student_form.cleaned_data.get('graduationDate')
-            comments = student_form.cleaned_data.get('comments')
-            courses = student_form.cleaned_data.get('courses')
-
-            if gapYear == False:
-                status = 'Enrolled'
-            else:
-                status = 'Gap Year'
-
-            # Just to test until we have correct equation && 000000 did not allow for more students since it has to be unique
-            anonID = random.randint(0, 99999)
-
-            student = Student.objects.create(studentID=studentID, anonID=anonID, firstName=firstName, lastName=lastName,
-                                             gapYear=gapYear, status=status, academicPlan=academicPlan, level=level,
-                                             graduationDate=graduationDate,
-                                             comments=comments)
-
-            # Populate student's courses
-            student.courses.set(courses)
-            student.save()
-
-            # Increment degree student count
-            degree = student.academicPlan
-            degree.numberOfStudents = degree.numberOfStudents + 1
-            degree.save()
-
-            # Increment each course student count
-            courses = student.courses.all()
-            for course in courses:
-                course.numberOfStudents = course.numberOfStudents + 1
-                course.save()
-
-            # Success message
-            messages.success(request, "Student Added Successfully")
-            return redirect(reverse('chemapp:students'))
-
-        else:
-            print(student_form.errors)
-    else:
-        student_form = StudentForm()
-
-    addStudentDict['student_form'] = student_form
-    return render(request, 'chemapp/add_student.html', context=addStudentDict)
 
 @login_required
 def ajax_filter_courses(request):

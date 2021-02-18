@@ -79,6 +79,15 @@ class DegreeForm(forms.ModelForm):
         fields = {'degreeCode', 'name'}
 
 
+class EditDegreeForm(DegreeForm):
+    degreeCode = None
+
+    class Meta:
+        model = Degree
+        fields = DegreeForm.Meta.fields
+        exclude = {'degreeCode'}
+
+
 class CourseForm(forms.ModelForm):
     code = forms.CharField(label='Code',
                            help_text='CHEM1006',
