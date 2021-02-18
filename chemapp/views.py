@@ -957,6 +957,158 @@ def add_grades(request, student_id, course_name_slug, assessment_name_slug):
 
 
 @login_required
+def edit_grades(request, student_id, course_name_slug, assessment_name_slug):
+    student = Student.objects.get(studentID=student_id)
+    course = Course.objects.get(slug=course_name_slug)
+    assessment = Assessment.objects.get(course=course, slug=assessment_name_slug)
+    components = AssessmentComponent.objects.filter(assessment=assessment)
+
+    assessmentGrade = AssessmentGrade.objects.get(assessment=assessment, student=student)
+
+    editGradesDict = {}
+    editGradesDict['assessment'] = assessment
+    editGradesDict['components'] = components
+    editGradesDict['student_id'] = student_id
+    editGradesDict['course_name_slug'] = course_name_slug
+    editGradesDict['assessment_name_slug'] = assessment_name_slug
+
+    ComponentGradeFormSet = formset_factory(AssessmentComponentGradeForm, extra=0)
+
+    if (request.method == 'POST'):
+        component_grade_formset = ComponentGradeFormSet(request.POST)
+        assessment_grade_form = AssessmentGradeForm(request.POST)
+
+        if assessment_grade_form.is_valid() and component_grade_formset.is_valid():
+            # Dictionary structure
+            # grades = { assessmentComponent:grade,
+            #            assessmentComponent2:grade2 }
+            grades = {}
+            for form in component_grade_formset:
+                grade = form.cleaned_data.get('grade')
+                assessmentComponent = form.cleaned_data.get('assessmentComponent')
+
+                grades[assessmentComponent] = grade
+
+                # Check if required grade is added
+                if assessmentComponent.required == True and grade is None:
+                    messages.error(request, 'Grade for ' + str(assessmentComponent.description) + ' is required!')
+                    return redirect(reverse('chemapp:add_grades', kwargs={'student_id': student_id,
+                                                                          'course_name_slug': course_name_slug,
+                                                                          'assessment_name_slug': assessment_name_slug}))
+                else:
+                    pass
+
+                # Check if supplied grade is more than the available marks
+                if grade is not None and grade > assessmentComponent.marks:
+                    messages.error(request,
+                                   'Grade for ' + str(assessmentComponent.description) + ' exceeds available marks!')
+                    return redirect(reverse('chemapp:add_grades', kwargs={'student_id': student_id,
+                                                                          'course_name_slug': course_name_slug,
+                                                                          'assessment_name_slug': assessment_name_slug}))
+                else:
+                    pass
+
+            # Individually update grades
+            for component, grade in grades.items():
+                assessmentComponentGrade = AssessmentComponentGrade.objects.get(assessmentComponent=component,
+                                                                                student=student)
+                assessmentComponentGrade.grade = grade
+                assessmentComponentGrade.save()
+
+            # Updating assessmentGrade object
+            # Calculating marked grade
+            count = 0
+            grade = 0
+            for component in components:
+                assessmentComponentGrade = AssessmentComponentGrade.objects.get(assessmentComponent=component)
+                if assessmentComponentGrade.grade is not None:
+                    count = count + 1
+                    grade = grade + assessmentComponentGrade.grade
+
+            submissionDate = assessment_grade_form.cleaned_data.get('submissionDate')
+            noDetriment = assessment_grade_form.cleaned_data.get('noDetriment')
+            goodCause = assessment_grade_form.cleaned_data.get('goodCause')
+
+            # Check if submission date and time is after due date
+            if submissionDate > assessment.dueDate:
+                late = True
+            else:
+                late = False
+
+            # Check if the number of components answered match number of components needed
+            if count == assessment.componentNumberNeeded:
+                componentNumberMatch = True
+            else:
+                componentNumberMatch = False
+
+            # Update Assessment Grade
+            assessmentGrade = AssessmentGrade.objects.get(assessment=assessment, student=student)
+
+            assessmentGrade.submissionDate = submissionDate
+            assessmentGrade.noDetriment = noDetriment
+            assessmentGrade.goodCause = goodCause
+            assessmentGrade.markedGrade = grade
+            assessmentGrade.finalGrade = None
+            assessmentGrade.finalGrade22Scale = None
+            assessmentGrade.band = None
+            assessmentGrade.componentNumberAnswered = count
+            assessmentGrade.componentNumberMatch = componentNumberMatch
+            assessmentGrade.late = late
+            assessmentGrade.assessment = assessment
+            assessmentGrade.student = student
+
+            assessmentGrade.save()
+
+            # Success message
+            messages.success(request, 'Grades Updated Successfully')
+            return redirect(reverse('chemapp:student', kwargs={'student_id': student_id, }))
+
+        else:
+            print(assessment_grade_form, component_grade_formset.errors)
+    else:
+        component_grade_formset = ComponentGradeFormSet(initial=[{'assessmentComponent': component,
+                                                                  'description': str(
+                                                                      component.description) + ' (' + str(
+                                                                      component.marks) + ')' + ' ' + str(
+                                                                      component.status),
+                                                                  'grade': AssessmentComponentGrade.objects.get(
+                                                                      assessmentComponent=component,
+                                                                      student=student).grade}
+                                                                 for component in components]
+                                                        )
+        assessment_grade_form = AssessmentGradeForm(instance=assessmentGrade)
+
+    editGradesDict['component_grade_formset'] = component_grade_formset
+    editGradesDict['assessment_grade_form'] = assessment_grade_form
+
+    return render(request, 'chemapp/edit_grades.html', context=editGradesDict)
+
+
+@login_required
+def delete_grades(request, student_id, course_name_slug, assessment_name_slug):
+    student = Student.objects.get(studentID=student_id)
+    course = Course.objects.get(slug=course_name_slug)
+    assessment = Assessment.objects.get(course=course, slug=assessment_name_slug)
+    components = AssessmentComponent.objects.filter(assessment=assessment)
+
+    if request.method == 'POST':
+        # Delete Assessment Component Grades
+        for component in components:
+            assessmentComponentGrade = AssessmentComponentGrade.objects.get(assessmentComponent=component,
+                                                                            student=student)
+            assessmentComponentGrade.delete()
+
+        # Delete Assessment Grade
+        assessmentGrade = AssessmentGrade.objects.get(assessment=assessment, student=student)
+        assessmentGrade.delete()
+
+        messages.success(request, 'Grades deleted successfully!')
+        return redirect(reverse('chemapp:student', kwargs={'student_id': student_id, }))
+
+    return render(request, 'chemapp/student.html', context={})
+
+
+@login_required
 @user_edit_perm_check
 def add_final_grade(request, student_id, course_name_slug, assessment_name_slug):
     student = Student.objects.get(studentID=student_id)

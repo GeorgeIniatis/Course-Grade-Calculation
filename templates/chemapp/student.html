@@ -59,9 +59,9 @@
                         <p> Final Grade (Out of 22): {{ nestedDict.gradeObject.finalGrade22Scale }} </p>
                         <p> Band : {{ nestedDict.gradeObject.band }}</p>
                     {% endif %}
-                    
-                    <!-- Add Final Grade Button -->
+
                     {% if nestedDict.gradeObject.finalGrade is None %}
+                        <!-- Add Final Grade Button -->
                         <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_final_grade' student_id=student_id course_name_slug=course.slug assessment_name_slug=assessment.slug %}">Add final assessment grade</a>
                         <br><br>
                     {% else %}
@@ -82,13 +82,19 @@
                         {% endif %}
                     {% endfor %}
                 {% endfor %}
-                 
-                <!-- Add Grades Button -->
+
                 {% if nestedDict.gradeObject is None %}
+                    <!-- Add Grades Button -->
                     <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_grades' student_id=student_id course_name_slug=course.slug assessment_name_slug=assessment.slug %}">Add grades</a>
                     <br><br>
                 {% else %}
-                <!-- Show Edit Grades Button -->
+                    <!-- Edit Grades Button -->
+                    <a class="btn btn-danger mt-3" href="{% url 'chemapp:edit_grades' student_id=student_id course_name_slug=course.slug assessment_name_slug=assessment.slug %}">Edit grades</a>
+                    <!-- Delete Grades Button -->
+                    <form id="grades_delete_form" method="post" action="{% url 'chemapp:delete_grades' student_id=student_id course_name_slug=course.slug assessment_name_slug=assessment.slug %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary mt-5">Delete Grades</button>
+                    </form>
                 {% endif %}
                 
             {% endfor %}

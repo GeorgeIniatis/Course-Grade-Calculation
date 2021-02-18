@@ -51,6 +51,8 @@ urlpatterns = [
 
     # Student Grades URLs
     path('students/<student_id>/<slug:course_name_slug>/<slug:assessment_name_slug>/add_grades/', views.add_grades, name='add_grades'),
+    path('students/<student_id>/<slug:course_name_slug>/<slug:assessment_name_slug>/edit_grades/', views.edit_grades, name='edit_grades'),
+    path('students/<student_id>/<slug:course_name_slug>/<slug:assessment_name_slug>/delete_grades/', views.delete_grades, name='delete_grades'),
     path('students/<student_id>/<slug:course_name_slug>/<slug:assessment_name_slug>/add_final_grade/', views.add_final_grade, name='add_final_grade'),
 
 ]

@@ -591,7 +591,7 @@ class AssessmentGradeForm(forms.ModelForm):
                                              attrs={
                                                  'style': 'width:300px',
                                                  'placeholder': 'Date and Time submitted',
-                                                 'onfocus': "(this.type='datetime-local')",
+                                                 'type': 'datetime-local',
                                                  'required': True,
                                              },
                                              format='%Y-%m-%dT%H:%M'))
