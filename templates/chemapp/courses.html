@@ -150,20 +150,23 @@ Courses
 
 
 
-
+  <!-- Add Course Button -->
   <div class="d-grid gap-2 d-md-flex justify-content-md-start">
     <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_course' %}"><i class="bi bi-plus"></i> Add a course</a>
   </div>
-	<div class="d-grid gap-2 d-md-flex justify-content-md-start">
-    	<a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_course_csv' %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i> Upload CSV File</a>
-  	</div>
+  <!-- Upload Course Button -->
+  <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+    <a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_course_csv' %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i> Upload CSV File</a>
+  </div>
   {% else %}
   <h4>There are no courses!</h4>
+  <!-- Add Course Button -->
   <div class="d-grid gap-2 d-md-flex justify-content-md-start">
     <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_course' %}"><i class="bi bi-plus"></i> Add a course</a>
   </div>
+  <!-- Upload Course Button -->
   <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-    	<a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_course_csv' %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i> Upload CSV File</a>
+    <a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_course_csv' %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i> Upload CSV File</a>
   </div>
   {% endif %}
 </div>

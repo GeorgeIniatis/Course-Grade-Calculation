@@ -20,16 +20,18 @@
     <p> Description: {{ course.description }} </p>
     <p> Comments: {{ course.comments }} </p>
     <p> Number of Students: {{ course.numberOfStudents }} </p>
-    <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-    	<a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_assessment_csv'  course_code=course.code %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Upload CSV File to add Assessments</a>
-  	</div>
+
     <h2> Assessments and Components</h2>
         {% if not assessments %}
            <p> No assessments have been yet set for this course! </p>
             <!-- Add Assessment Button -->
             <div class="d-grid gap-2 d-md-flex justify-content-md-start">
                 <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_assessments' course_name_slug=course_name_slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Add Assessments</a>
+            <!-- Upload Assessments Button -->
             </div>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+    	        <a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_assessment_csv'  course_code=course.code %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Upload CSV File to add Assessments</a>
+  	        </div>
             <br>
         {% else %}
             {% for assessment,components in assessments.items %}
