@@ -65,11 +65,17 @@
                         <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_final_grade' student_id=student_id course_name_slug=course.slug assessment_name_slug=assessment.slug %}">Add final assessment grade</a>
                         <br><br>
                     {% else %}
-                    <!-- Show Edit Final Grade Button -->
+                        <!-- Edit Final Grade Button -->
+                        <a class="btn btn-danger mt-3" href="{% url 'chemapp:edit_final_grade' student_id=student_id course_name_slug=course.slug assessment_name_slug=assessment.slug %}">Edit final grade</a>
+                         <!-- Delete Final Grade Button -->
+                        <form id="final_grade_delete_form" method="post" action="{% url 'chemapp:delete_final_grade' student_id=student_id course_name_slug=course.slug assessment_name_slug=assessment.slug %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary mt-5">Delete Final Grade</button>
+                        </form>
                     {% endif %}
                     
                 {% endif %}
-                <!-- Assesment Component Section -->
+                <!-- Assessment Component Section -->
                 {% for componentDict in nestedDict.componentList %}
                     {% for component,grade in componentDict.items %}
                         <h4> Component: {{ component.description }} </h4>

@@ -1059,6 +1059,13 @@ def edit_grades(request, student_id, course_name_slug, assessment_name_slug):
 
             assessmentGrade.save()
 
+            # Delete Course Grade if possible
+            try:
+                courseGrade = CourseGrade.objects.get(course=course, student=student)
+                courseGrade.delete()
+            except CourseGrade.DoesNotExist:
+                pass
+
             # Success message
             messages.success(request, 'Grades Updated Successfully')
             return redirect(reverse('chemapp:student', kwargs={'student_id': student_id, }))
@@ -1101,6 +1108,13 @@ def delete_grades(request, student_id, course_name_slug, assessment_name_slug):
         # Delete Assessment Grade
         assessmentGrade = AssessmentGrade.objects.get(assessment=assessment, student=student)
         assessmentGrade.delete()
+
+        # Delete Course Grade if possible
+        try:
+            courseGrade = CourseGrade.objects.get(course=course, student=student)
+            courseGrade.delete()
+        except CourseGrade.DoesNotExist:
+            pass
 
         messages.success(request, 'Grades deleted successfully!')
         return redirect(reverse('chemapp:student', kwargs={'student_id': student_id, }))
@@ -1183,6 +1197,117 @@ def add_final_grade(request, student_id, course_name_slug, assessment_name_slug)
 
     addfinalGradeDict['final_grade_form'] = final_grade_form
     return render(request, 'chemapp/add_final_grade.html', context=addfinalGradeDict)
+
+
+@login_required
+def edit_final_grade(request, student_id, course_name_slug, assessment_name_slug):
+    student = Student.objects.get(studentID=student_id)
+    course = Course.objects.get(slug=course_name_slug)
+    assessment = Assessment.objects.get(course=course, slug=assessment_name_slug)
+    assessmentGrade = AssessmentGrade.objects.get(assessment=assessment, student=student)
+
+    addfinalGradeDict = {}
+    addfinalGradeDict['assessment'] = assessment
+    addfinalGradeDict['assessmentGrade'] = assessmentGrade
+    addfinalGradeDict['student_id'] = student_id
+    addfinalGradeDict['course_name_slug'] = course_name_slug
+    addfinalGradeDict['assessment_name_slug'] = assessment_name_slug
+
+    if (request.method == 'POST'):
+        final_grade_form = FinalAssessmentGradeForm(request.POST)
+
+        if final_grade_form.is_valid():
+            finalGrade = final_grade_form.cleaned_data.get('finalGrade')
+            finalGrade22Scale = round((finalGrade * 22) / assessmentGrade.assessment.totalMarks)
+            band = GRADE_TO_BAND[finalGrade22Scale]
+
+            assessmentGrade.finalGrade = finalGrade
+            assessmentGrade.finalGrade22Scale = finalGrade22Scale
+            assessmentGrade.band = band
+            assessmentGrade.save()
+
+            # Delete Course Grade if possible in order to update later
+            try:
+                courseGrade = CourseGrade.objects.get(course=course, student=student)
+                courseGrade.delete()
+            except CourseGrade.DoesNotExist:
+                pass
+
+            # Check if Course Grade can be calculated
+            canCourseGradeBeCalculated = True
+            assessments = Assessment.objects.filter(course=course)
+            assessmentGrades = []
+            for assessment in assessments:
+                try:
+                    assessmentGradeObject = AssessmentGrade.objects.get(assessment=assessment, student=student)
+
+                    if (assessmentGradeObject.finalGrade is None):
+                        canCourseGradeBeCalculated = False
+                    else:
+                        assessmentGrades.append(assessmentGradeObject)
+
+                except AssessmentGrade.DoesNotExist:
+                    canCourseGradeBeCalculated = False
+
+            if canCourseGradeBeCalculated == False:
+                # Success message
+                # Final assessment grade updated but course grade cannot be calculated
+                messages.success(request, 'Final Grade Updated Successfully')
+                return redirect(reverse('chemapp:student', kwargs={'student_id': student_id, }))
+            else:
+                courseGrade = 0
+                for assessmentGrade in assessmentGrades:
+                    weight = assessmentGrade.assessment.weight
+                    weightedGrade = weight * assessmentGrade.finalGrade22Scale
+                    courseGrade = courseGrade + weightedGrade
+
+                courseGrade = round(courseGrade)
+                band = GRADE_TO_BAND[courseGrade]
+
+                courseGradeObject = CourseGrade.objects.create(course=course, student=student, grade=courseGrade,
+                                                               band=band)
+
+                # Success message
+                # Final assessment grade updated and course grade calculated
+                messages.success(request, 'Final Grade Updated Successfully and Course Grade Calculated!')
+                return redirect(reverse('chemapp:student', kwargs={'student_id': student_id, }))
+
+        else:
+            print(final_grade_form.errors)
+
+    else:
+        final_grade_form = FinalAssessmentGradeForm(instance=assessmentGrade)
+
+    addfinalGradeDict['final_grade_form'] = final_grade_form
+    return render(request, 'chemapp/edit_final_grade.html', context=addfinalGradeDict)
+
+
+@login_required
+def delete_final_grade(request, student_id, course_name_slug, assessment_name_slug):
+    student = Student.objects.get(studentID=student_id)
+    course = Course.objects.get(slug=course_name_slug)
+    assessment = Assessment.objects.get(course=course, slug=assessment_name_slug)
+    assessmentGrade = AssessmentGrade.objects.get(assessment=assessment, student=student)
+
+    if request.method == 'POST':
+        # Delete Final Assessment Grade by updating Assessment Grade
+        assessmentGrade.finalGrade = None
+        assessmentGrade.finalGrade22Scale = None
+        assessmentGrade.band = None
+
+        assessmentGrade.save()
+
+        # Delete Course Grade if possible
+        try:
+            courseGrade = CourseGrade.objects.get(course=course, student=student)
+            courseGrade.delete()
+        except CourseGrade.DoesNotExist:
+            pass
+
+        messages.success(request, 'Final Grade deleted successfully!')
+        return redirect(reverse('chemapp:student', kwargs={'student_id': student_id, }))
+
+    return render(request, 'chemapp/student.html', context={})
 
 
 @login_required

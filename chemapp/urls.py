@@ -54,5 +54,6 @@ urlpatterns = [
     path('students/<student_id>/<slug:course_name_slug>/<slug:assessment_name_slug>/edit_grades/', views.edit_grades, name='edit_grades'),
     path('students/<student_id>/<slug:course_name_slug>/<slug:assessment_name_slug>/delete_grades/', views.delete_grades, name='delete_grades'),
     path('students/<student_id>/<slug:course_name_slug>/<slug:assessment_name_slug>/add_final_grade/', views.add_final_grade, name='add_final_grade'),
-
+    path('students/<student_id>/<slug:course_name_slug>/<slug:assessment_name_slug>/edit_final_grade/', views.edit_final_grade, name='edit_final_grade'),
+    path('students/<student_id>/<slug:course_name_slug>/<slug:assessment_name_slug>/delete_final_grade/', views.delete_final_grade, name='delete_final_grade'),
 ]
