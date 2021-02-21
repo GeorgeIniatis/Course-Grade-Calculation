@@ -55,22 +55,18 @@
     </tbody>
   </table>
 
-        <!-- Add Degree Button -->
         <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-            <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_degree' %}"><i class="bi bi-plus"></i> Add a degree</a>
-        </div>
-        <!-- Upload Degree Button -->
-        <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-    	    <a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_degree_csv' %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>  Upload CSV File</a>
+          <!-- Add Degree Button -->
+           <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_degree' %}"><i class="bi bi-plus"></i> Add a degree</a>
+           <!-- Upload Degree Button -->
+    	     <a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_degree_csv' %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>  Upload CSV File</a>
   	    </div>
     {% else %}
         <h4>There are no degrees!</h4>
-        <!-- Add Degree Button -->
         <div>
-            <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_degree' %}"><i class="bi bi-plus"></i> Add a degree</a>
-        </div>
-        <!-- Upload Degree Button -->
-        <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+          <!-- Add Degree Button -->
+          <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_degree' %}"><i class="bi bi-plus"></i> Add a degree</a>
+          <!-- Upload Degree Button -->
     	    <a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_degree_csv' %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>  Upload CSV File</a>
   	    </div>
     {% endif %}
