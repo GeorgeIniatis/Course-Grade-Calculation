@@ -1389,6 +1389,7 @@ def upload_course_csv(request):
     csv_file = request.FILES['file']
     if not csv_file.name.endswith('.csv'):
         messages.error(request, 'THIS IS NOT A CSV FILE')
+        return redirect('chemapp:upload_course_csv')
 
     data_set = csv_file.read().decode('UTF-8')
     io_string = io.StringIO(data_set)
