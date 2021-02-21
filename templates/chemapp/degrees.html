@@ -7,24 +7,53 @@
 {% block body_block %}
 
 <div class="container ">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   <h2> Degrees </h2>
     {% if degrees %}
 
-        {% for degree in degrees %}
-            <b> {{ degree.name }} {{ degree.degreeCode }} </b>
-            <p> &emsp;Number of courses: {{degree.numberOfCourses}} </p>
-            <p> &emsp;Number of students enrolled: {{degree.numberOfStudents}} </p>
-            <!-- Edit Degree Button -->
-            <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-                <a class="btn btn-danger mt-3" href="{% url 'chemapp:edit_degree' degree_code_slug=degree.slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Edit Degree</a>
-            </div>
-            <!-- Delete Degree Button -->
-            <form id="course_delete_form" method="post" action="{% url 'chemapp:delete_degree' degree_code_slug=degree.slug %}">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-primary mt-5">Delete Degree</button>
-            </form>
-            <br>
-        {% endfor %}
+    <table class="table table-hover">
+    <thead>
+      <tr>
+        <th scope="col-1">Code</th>
+        <th scope="col-1">Name</th>
+        <th scope="col-1">Num. Courses</th>
+        <th scope="col-1">Num. Students</th>
+        <th scope="col-2">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for degree in degrees %}
+      <tr>
+        <th scope="row"> {{ degree.name }} {{ degree.degreeCode }} </th>
+        <td>{{degree.name}}</td>
+        <td>{{degree.numberOfCourses}}</td>
+        <td>{{degree.numberOfStudents}}</td>
+        <td><div class="d-grid gap-2 d-md-flex justify-content-md-start">
+            <a class="btn btn-warning " href="{% url 'chemapp:edit_degree' degree_code_slug=degree.slug %}"><i class="bi bi-pencil-square"></i> Edit</a>
+
+        <!-- Delete Degree Button -->
+        <form id="course_delete_form" method="post" action="{% url 'chemapp:delete_degree' degree_code_slug=degree.slug %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger "><i class="bi bi-trash"></i></button>
+        </form>
+        </div></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 
         <!-- Add Degree Button -->
         <div class="d-grid gap-2 d-md-flex justify-content-md-start">
