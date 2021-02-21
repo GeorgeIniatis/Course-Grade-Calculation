@@ -95,6 +95,7 @@ def add_degree(request):
 
 
 @login_required
+@permission_required_context('chemapp.edit_degree', 'No permission to edit_degree', raise_exception=True)
 def edit_degree(request, degree_code_slug):
     degree = Degree.objects.get(slug=degree_code_slug)
 
@@ -125,6 +126,7 @@ def edit_degree(request, degree_code_slug):
 
 
 @login_required
+@permission_required_context('chemapp.delete_degree', 'No permission to delete_degree', raise_exception=True)
 def delete_degree(request, degree_code_slug):
     degree = Degree.objects.get(slug=degree_code_slug)
 
