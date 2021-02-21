@@ -41,15 +41,35 @@
         <td>{{degree.name}}</td>
         <td>{{degree.numberOfCourses}}</td>
         <td>{{degree.numberOfStudents}}</td>
-        <td><div class="d-grid gap-2 d-md-flex justify-content-md-start">
+        <td>
+          <div class="d-grid gap-2 d-md-flex justify-content-md-start">
             <a class="btn btn-warning " href="{% url 'chemapp:edit_degree' degree_code_slug=degree.slug %}"><i class="bi bi-pencil-square"></i> Edit</a>
+            <a type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#{{ degree.name }}{{ degree.degreeCode }}"><i class="bi bi-trash"></i></a>
+          </div>
 
-        <!-- Delete Degree Button -->
-        <form id="course_delete_form" method="post" action="{% url 'chemapp:delete_degree' degree_code_slug=degree.slug %}">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-danger "><i class="bi bi-trash"></i></button>
-        </form>
-        </div></td>
+
+            <!-- Modal -->
+            <div class="modal fade" id="{{ degree.name }}{{ degree.degreeCode }}" tabindex="-1" aria-labelledby="{{ degree.name }}{{ degree.degreeCode }}Label" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title text-dark" id="logoutModalLabel">Are you sure?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">Cancel</button>
+                    <form id="course_delete_form" method="post" action="{% url 'chemapp:delete_degree' degree_code_slug=degree.slug %}">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+          </div>
+        </td>
       </tr>
       {% endfor %}
     </tbody>
