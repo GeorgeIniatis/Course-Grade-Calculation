@@ -116,13 +116,14 @@
       </div>
     </div>
 
-    <table class="table table-hover">
+
+    <table class="table table-hover mt-5">
       <thead>
         <tr>
           <th scope="col">Description</th>
           <th scope="col">Status</th>
           <th scope="col">Marks</th>
-          <th scope="col">Actions</th>
+          <th scope="col" class="text-end">Actions</th>
 
         </tr>
       </thead>
@@ -132,8 +133,8 @@
           <th scope="row">{{ component.description }} </th>
           <td>{{ component.status }}</td>
           <td>{{ component.marks }}</td>
-          <td>
-            <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+          <td class="text-end">
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
               <a class="btn btn-warning " href="{% url 'chemapp:edit_assessmentComponent' course_name_slug=course_name_slug assessment_name_slug=assessment.slug assessment_component_slug=component.slug %}"><i class="bi bi-pencil-square"></i> Edit</a>
               <a type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#{{component.slug}}"><i class="bi bi-trash"></i></a>
             </div>

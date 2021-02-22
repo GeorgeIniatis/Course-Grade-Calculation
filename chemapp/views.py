@@ -1327,6 +1327,7 @@ def upload_student_csv(request):
     csv_file = request.FILES['file']
     if not csv_file.name.endswith('.csv'):
         messages.error(request, 'THIS IS NOT A CSV FILE')
+        return redirect(reverse('chemapp:students'))
 
     data_set = csv_file.read().decode('UTF-8')
     io_string = io.StringIO(data_set)
@@ -1363,7 +1364,7 @@ def upload_degree_csv(request):
     csv_file = request.FILES['file']
     if not csv_file.name.endswith('.csv'):
         messages.error(request, 'THIS IS NOT A CSV FILE')
-        return redirect('chemapp:upload_degree_csv')
+        return redirect(reverse('chemapp:degrees'))
 
     data_set = csv_file.read().decode('UTF-8')
     io_string = io.StringIO(data_set)
@@ -1438,6 +1439,7 @@ def upload_assessment_csv(request, course_code):
     csv_file = request.FILES['file']
     if not csv_file.name.endswith('.csv'):
         messages.error(request, 'THIS IS NOT A CSV FILE')
+        return redirect(reverse('chemapp:courses'))
 
     data_set = csv_file.read().decode('UTF-8')
     io_string = io.StringIO(data_set)
@@ -1476,6 +1478,7 @@ def upload_assessment_comp_csv(request, course_code, assessment_name):
     csv_file = request.FILES['file']
     if not csv_file.name.endswith('.csv'):
         messages.error(request, 'THIS IS NOT A CSV FILE')
+        return redirect(reverse('chemapp:courses'))
 
     data_set = csv_file.read().decode('UTF-8')
     io_string = io.StringIO(data_set)
