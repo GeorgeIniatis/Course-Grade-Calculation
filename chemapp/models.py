@@ -88,6 +88,12 @@ class Degree(models.Model):
     numberOfStudents = models.PositiveIntegerField(default=0,
                                                    verbose_name="Number of Students")
 
+    slug = models.SlugField(unique=True)
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.degreeCode)
+        super(Degree, self).save(*args, **kwargs)
+
     def __str__(self):
         return self.degreeCode
 
@@ -340,11 +346,14 @@ class AssessmentComponent(models.Model):
     assessment = models.ForeignKey(Assessment,
                                    on_delete=models.CASCADE)
 
+    slug = models.SlugField()
+
     class Meta:
         unique_together = ('description', 'assessment')
 
     def save(self, *args, **kwargs):
         self.status = 'Required' if self.required == True else 'Optional'
+        self.slug = slugify(self.description)
         super(AssessmentComponent, self).save(*args, **kwargs)
 
     def __str__(self):

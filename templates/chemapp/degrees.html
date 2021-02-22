@@ -7,29 +7,96 @@
 {% block body_block %}
 
 <div class="container ">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   <h2> Degrees </h2>
     {% if degrees %}
 
-        {% for degree in degrees %}
-            <b> {{ degree.name }} {{ degree.degreeCode }} </b>
-            <p> &emsp;Number of courses: {{degree.numberOfCourses}} </p>
-            <p> &emsp;Number of students enrolled: {{degree.numberOfStudents}} </p>
-        {% endfor %}
+    <table class="table table-hover">
+    <thead>
+      <tr>
+        <th scope="col">Code</th>
+        <th scope="col">Name</th>
+        <th scope="col">Num. Courses</th>
+        <th scope="col">Num. Students</th>
+        <th scope="col" class="text-end">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for degree in degrees %}
+      <tr>
+        <th scope="row">{{ degree.degreeCode }} </th>
+        <td>{{degree.name}}</td>
+        <td>{{degree.numberOfCourses}}</td>
+        <td>{{degree.numberOfStudents}}</td>
+        <td>
+          <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            {% if perms.chemapp.change_degree %}
+            <a class="btn btn-warning " href="{% url 'chemapp:edit_degree' degree_code_slug=degree.slug %}"><i class="bi bi-pencil-square"></i> Edit</a>
+            {% endif %}
+            {% if perms.chemapp.delete_degree %}
+            <a type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#{{ degree.name }}{{ degree.degreeCode }}"><i class="bi bi-trash"></i></a>
+            {% endif %}
+          </div>
 
+          {% if perms.chemapp.delete_degree %}
+            <!-- Modal -->
+            <div class="modal fade" id="{{ degree.name }}{{ degree.degreeCode }}" tabindex="-1" aria-labelledby="{{ degree.name }}{{ degree.degreeCode }}Label" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title text-dark" id="logoutModalLabel">Are you sure?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">Cancel</button>
+                    <form id="course_delete_form" method="post" action="{% url 'chemapp:delete_degree' degree_code_slug=degree.slug %}">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+
+
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+        {% if perms.chemapp.add_degree %}
         <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-            <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_degree' %}"><i class="bi bi-plus"></i> Add a degree</a>
-        </div>
-        <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-    	<a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_degree_csv' %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>  Upload CSV File</a>
-  	</div>
+          <!-- Add Degree Button -->
+           <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_degree' %}"><i class="bi bi-plus"></i> Add a degree</a>
+           <!-- Upload Degree Button -->
+    	     <a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_degree_csv' %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>  Upload CSV File</a>
+  	    </div>
+        {% endif %}
     {% else %}
         <h4>There are no degrees!</h4>
+        {% if perms.chemapp.add_degree %}
         <div>
-            <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_degree' %}"><i class="bi bi-plus"></i> Add a degree</a>
-        </div>
-        <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-    	<a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_degree_csv' %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>  Upload CSV File</a>
-  	</div>
+          <!-- Add Degree Button -->
+          <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_degree' %}"><i class="bi bi-plus"></i> Add a degree</a>
+          <!-- Upload Degree Button -->
+    	    <a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_degree_csv' %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>  Upload CSV File</a>
+  	    </div>
+        {% endif %}
     {% endif %}
 </div>
 {% endblock %}

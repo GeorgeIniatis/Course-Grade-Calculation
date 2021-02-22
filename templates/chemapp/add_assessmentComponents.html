@@ -17,6 +17,9 @@ Add Assessment Components
   <p> Total Marks: {{ assessment.totalMarks }}</p>
   <p> Component Number Needed: {{ assessment.componentNumberNeeded }} </p>
 
+  <button id="check_all" type="button">Check all required</button>
+  <br><br>
+
   <form id="add_assessmentComponent_form" method="post" action="{% url 'chemapp:add_assessmentComponents' course_name_slug=course_name_slug assessment_name_slug=assessment_name_slug  %}" enctype="multipart/form-data">
 
     {% csrf_token %}

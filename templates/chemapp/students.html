@@ -127,11 +127,12 @@
     </div>
   </div>
 
-  <!----the buttons---->
 
+    <!-- Add Student Button -->
    <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-    	<a class="btn btn-danger mt-3" href="{% url 'chemapp:add_student' %}"><i class="bi bi-plus"></i> Add a Student Manually</a>
+    	<a class="btn btn-danger mt-3" href="{% url 'chemapp:add_student' %}"><i class="bi bi-plus"></i> Add a student</a>
   	</div>
+    <!-- Upload Student Button -->
   	<div class="d-grid gap-2 d-md-flex justify-content-md-start">
     	<a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_student_csv' %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i> Upload CSV File</a>
   	</div>
