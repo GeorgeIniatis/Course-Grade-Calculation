@@ -8,8 +8,5 @@ Mask Usage
 */
 $(document).ready(function(){
 	$.ajaxSetup({ cache: false });
-    $("#id_academicYearTaught").mask('00-00');
-    $("#id_minimumPassGrade").mask('S0');
-    $("#id_creditsWorth").mask('099');
-    $("#id_minimumRequirementsForCredit").mask('0.09');
+    $("#id_studentID").mask('0000000');
 });
