@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block js_block %}
-<script src="{% static 'js/chemapp-filterCourses.js' %}"></script>
+<script src="{% static 'js/chemapp-filterCoursesAddStudentPage.js' %}"></script>
 <script src="{% static 'js/chemapp-selectCoursesOverride.js' %}"></script>
 <script src="{% static 'js/chemapp-studentInputMask.js' %}"></script>
 {% endblock %}
@@ -21,7 +21,7 @@
 	<div>
         <h2 class="mb-4"> Add a Student </h2>
 
-        <form id="add_student_form" method="post" filter_courses_url = "{% url 'chemapp:ajax_filter_courses' %}"action="{% url 'chemapp:add_student' %}" enctype="multipart/form-data">
+        <form id="add_student_form" method="post" filter_courses_url = "{% url 'chemapp:ajax_filter_courses' %}" action="{% url 'chemapp:add_student' %}" enctype="multipart/form-data">
 
         {% csrf_token %}
 
