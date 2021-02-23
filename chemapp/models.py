@@ -166,7 +166,7 @@ class Course(models.Model):
         super(Course, self).save(*args, **kwargs)
 
     def __str__(self):
-        return (str(self.shortHand) + " " + str(self.degree))
+        return (str(self.name) + " (" + str(self.degree) + ")")
 
 
 class Student(models.Model):

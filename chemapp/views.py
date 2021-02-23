@@ -750,12 +750,6 @@ def edit_student(request, student_id):
             degree.numberOfStudents = degree.numberOfStudents - 1
             degree.save()
 
-            # Reduce each course student count
-            courses = student.courses.all()
-            for course in courses:
-                course.numberOfStudents = course.numberOfStudents - 1
-                course.save()
-
             firstName = edit_student_form.cleaned_data.get('firstName')
             lastName = edit_student_form.cleaned_data.get('lastName')
             gapYear = edit_student_form.cleaned_data.get('gapYear')
@@ -764,6 +758,25 @@ def edit_student(request, student_id):
             graduationDate = edit_student_form.cleaned_data.get('graduationDate')
             comments = edit_student_form.cleaned_data.get('comments')
             courses = edit_student_form.cleaned_data.get('courses')
+
+            # These two for loops are to prevent having to reset all courses when updating
+            # Course being removed
+            for course in student.courses.all():
+                if course not in courses:
+                    # Reduce course student count
+                    course.numberOfStudents = course.numberOfStudents - 1
+                    course.save()
+                    # Remove course association with student
+                    student.courses.remove(course)
+
+            # Course being added
+            for course in courses:
+                if course not in student.courses.all():
+                    # Increase course student count
+                    course.numberOfStudents = course.numberOfStudents + 1
+                    course.save()
+                    # Associate course with student
+                    student.courses.add(course)
 
             student.firstName = firstName
             student.lastName = lastName
@@ -775,21 +788,11 @@ def edit_student(request, student_id):
 
             student.save()
 
-            # Populate student's courses
-            student.courses.set(courses)
-            student.save()
-
             student = Student.objects.get(studentID=student_id)
             # Increment degree student count
             degree = student.academicPlan
             degree.numberOfStudents = degree.numberOfStudents + 1
             degree.save()
-
-            # Increment each course student count
-            courses = student.courses.all()
-            for course in courses:
-                course.numberOfStudents = course.numberOfStudents + 1
-                course.save()
 
             messages.success(request, 'Student was updated successfully!')
             return redirect(reverse('chemapp:student', kwargs={'student_id': student_id}))
