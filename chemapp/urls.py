@@ -30,6 +30,7 @@ urlpatterns = [
 
     # Assessment URLs
     path('courses/<course_code>/upload_assessment_csv/', views.upload_assessment_csv, name='upload_assessment_csv'), #Change course code to course slug
+    path('courses/<course_code>/upload_grades_csv/', views.upload_grades_csv, name='upload_grades_csv'), #Change course code to course slug
     path('courses/<slug:course_name_slug>/add_assessments/', views.add_assessments, name='add_assessments'),
     path('courses/<slug:course_name_slug>/<slug:assessment_name_slug>/edit_assessment/', views.edit_assessment, name='edit_assessment'),
     path('courses/<slug:course_name_slug>/<slug:assessment_name_slug>/delete_assessment/', views.delete_assessment, name='delete_assessment'),

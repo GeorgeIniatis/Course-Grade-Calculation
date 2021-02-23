@@ -1445,14 +1445,14 @@ def upload_assessment_csv(request, course_code):
     io_string = io.StringIO(data_set)
     next(io_string)
     for column in csv.reader(io_string, delimiter=',', quotechar="|"):
-        weightsum = weightsum + int(column[2])
+        weightsum = weightsum + float(column[2])
         _, created = Assessment.objects.update_or_create(
-            weight=column[2],
+            weight=float(column[2]),
             totalMarks=column[1],
             assessmentName=column[0],
             dueDate=column[3],
             course=Course.objects.get(code=course_code),
-            componentNumberNeeded=column[4],
+            componentNumberNeeded=int(column[4]),
         )
     if weightsum != 1:
         messages.error(request, 'The sum of the Assessment Weights must be equal to 1')
@@ -1501,3 +1501,33 @@ def upload_assessment_comp_csv(request, course_code, assessment_name):
 
     messages.success(request, "Assessment Components Added Successfully")
     return redirect(reverse('chemapp:courses'))
+
+
+
+@login_required
+@permission_required_context('chemapp.add_student', 'No permission to add_student', raise_exception=True)
+def upload_grades_csv(request, assessment_name):
+    template = 'chemapp/upload_student_csv.html'
+    data = AssessmentComponentGrade.objects.all()
+
+    if request.method == "GET":
+        return render(request, template, prompt)
+
+    csv_file = request.FILES['file']
+    if not csv_file.name.endswith('.csv'):
+        messages.error(request, 'THIS IS NOT A CSV FILE')
+        return redirect(reverse('chemapp:courses'))
+
+    data_set = csv_file.read().decode('UTF-8')
+    io_string = io.StringIO(data_set)
+    next(io_string)
+    for column in csv.reader(io_string, delimiter=',', quotechar="|"):
+        _, created = AssessmentComponentGrade.objects.update_or_create(
+            student=Student.objects.get(studentID=column[0]),
+            assessmentComponent=AssessmentComponent.objects.get(assessment=assessment_name),
+            grade=column[1],
+        )
+
+    context = {}
+    messages.success(request, "Grades Added Successfully")
+    return redirect(reverse('chemapp:students'))
