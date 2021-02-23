@@ -1448,7 +1448,7 @@ def upload_assessment_csv(request, course_code):
     io_string = io.StringIO(data_set)
     next(io_string)
     for column in csv.reader(io_string, delimiter=',', quotechar="|"):
-        weightsum = weightsum + int(column[2])
+        weightsum = weightsum + float(column[2])
         _, created = Assessment.objects.update_or_create(
             weight=column[2],
             totalMarks=column[1],
