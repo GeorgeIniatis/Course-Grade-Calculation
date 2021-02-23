@@ -29,13 +29,13 @@ GRADE_TO_BAND = {22: 'A1', 21: 'A2', 20: 'A3', 19: 'A4', 18: 'A5',
 
 @login_required
 def home(request):
-    context_dict = {'boldmessage': 'This is the home page'}
+    context_dict = {'boldmessage': 'Home'}
     return render(request, 'chemapp/home.html', context=context_dict)
 
 
 @login_required
 def about(request):
-    context_dict = {'boldmessage': 'This is the about page'}
+    context_dict = {'boldmessage': 'About'}
     return render(request, 'chemapp/about.html', context=context_dict)
 
 
