@@ -1509,24 +1509,30 @@ def upload_assessment_comp_csv(request, course_code, assessment_name):
 def upload_grades_csv(request, course_code, assessment_name):
     template = 'chemapp/upload_grades_csv.html'
     data = AssessmentComponentGrade.objects.all()
-
+    course = Course.objects.get(code=course_code)
+    assessment = Assessment.objects.get(assessmentName=assessment_name, course=course)
+    component=AssessmentComponent.objects.get(assessment=assessment)
+    
     if request.method == "GET":
         return render(request, template)
 
     csv_file = request.FILES['file']
     if not csv_file.name.endswith('.csv'):
         messages.error(request, 'THIS IS NOT A CSV FILE')
-        return redirect(reverse('chemapp:home'))
+        return redirect(reverse('chemapp:courses'))
 
     data_set = csv_file.read().decode('UTF-8')
     io_string = io.StringIO(data_set)
     next(io_string)
     for column in csv.reader(io_string, delimiter=',', quotechar="|"):
-        _, created = AssessmentComponentGrade.objects.update_or_create(
-            student=Student.objects.get(studentID=column[0]),
-            assessmentComponent=AssessmentComponent.objects.get(description = column[1]),
-            grade=column[2],
-        )
+    	if int(column[2]) > component.marks:
+    		messages.error(request, 'Student with ID number: %s has been awarded a grade higher than %s which is the highest mark available' %(column[0],component.marks))
+    		return redirect(reverse('chemapp:courses'))
+    	_, created = AssessmentComponentGrade.objects.update_or_create(
+    	    student=Student.objects.get(studentID=column[0]),
+    	    assessmentComponent=AssessmentComponent.objects.get(description = column[1]),
+    	    grade=column[2],
+    	)
 
     messages.success(request,"Grades Added Successfully")
-    return redirect(reverse('chemapp:home'))
+    return redirect(reverse('chemapp:courses'))
