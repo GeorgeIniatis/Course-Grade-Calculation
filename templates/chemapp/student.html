@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block body_block %}
-<div class="container mt-5 ">
+<div class="container">
 <div>
     <!-- Student Section -->
     <h2> {{ student.firstName }} {{ student.lastName }} </h2>
@@ -16,10 +16,40 @@
     <p> Graduation Date: {{ student.graduationDate }} </p>
     <p> Status: {{ student.status }} </p>
     <p> Comments: {{ student.comments }} </p>
-    
+
+
+
+
+
+
+    <div class=" mb-3 d-grid gap-2 d-md-flex justify-content-md-start">
+      <a class="btn btn-warning " href="{% url 'chemapp:edit_student' student_id=student_id %}"><i class="bi bi-pencil-square"></i> Edit</a>
+      <a type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#A{{ student.studentID }}"><i class="bi bi-trash"></i></a>
+    </div>
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="A{{ student.studentID }}" tabindex="-1" aria-labelledby="A{{ student.studentID }}Label" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title text-dark" id="A{{ student.studentID }}Label">Are you sure?</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-success" data-bs-dismiss="modal">Cancel</button>
+            <form id="course_delete_form" method="post" action="{% url 'chemapp:delete_student' student_id=student_id %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <h2> Courses and Assessments </h2>
     {% for course,nestedDict in courses.items %}
-        
+
         <!-- Course Section -->
         <h4> Course: {{ course.name }} </h4>
         <!-- Course Grade Section -->
@@ -43,7 +73,7 @@
                 <p> Total Marks: {{ assessment.totalMarks }} </p>
                 <p> Number of Components Needed: {{ assessment.componentNumberNeeded }} </p>
                 <p> Due Date and Time: {{ assessment.dueDate }} </p>
-                
+
                 <!-- Assessment Grade Section -->
                 {% if nestedDict.gradeObject is None %}
                     <p> Assessment Grade has not been calculated yet </p>
@@ -73,7 +103,7 @@
                             <button type="submit" class="btn btn-primary mt-5">Delete Final Grade</button>
                         </form>
                     {% endif %}
-                    
+
                 {% endif %}
                 <!-- Assessment Component Section -->
                 {% for componentDict in nestedDict.componentList %}
@@ -102,20 +132,12 @@
                         <button type="submit" class="btn btn-primary mt-5">Delete Grades</button>
                     </form>
                 {% endif %}
-                
+
             {% endfor %}
         {% endfor %}
     {% endfor %}
 
-    <!-- Edit Student Button -->
-    <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-        <a class="btn btn-danger mt-3" href="{% url 'chemapp:edit_student' student_id=student_id %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Edit Student</a>
-    </div>
-    <!-- Delete Student Button -->
-    <form id="student_delete_form" method="post" action="{% url 'chemapp:delete_student' student_id=student_id %}">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-primary mt-5">Delete Student</button>
-    </form>
+
 
 </div>
 </div>
