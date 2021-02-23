@@ -30,7 +30,6 @@ urlpatterns = [
 
     # Assessment URLs
     path('courses/<course_code>/upload_assessment_csv/', views.upload_assessment_csv, name='upload_assessment_csv'), #Change course code to course slug
-    path('courses/<course_code>/upload_grades_csv/', views.upload_grades_csv, name='upload_grades_csv'), #Change course code to course slug
     path('courses/<slug:course_name_slug>/add_assessments/', views.add_assessments, name='add_assessments'),
     path('courses/<slug:course_name_slug>/<slug:assessment_name_slug>/edit_assessment/', views.edit_assessment, name='edit_assessment'),
     path('courses/<slug:course_name_slug>/<slug:assessment_name_slug>/delete_assessment/', views.delete_assessment, name='delete_assessment'),
@@ -40,7 +39,8 @@ urlpatterns = [
     path('courses/<slug:course_name_slug>/<slug:assessment_name_slug>/<slug:assessment_component_slug>/edit_component/', views.edit_assessmentComponent, name='edit_assessmentComponent'),
     path('courses/<slug:course_name_slug>/<slug:assessment_name_slug>/<slug:assessment_component_slug>/delete_component/', views.delete_assessmentComponent, name='delete_assessmentComponent'),
     path('courses/<course_code>/<assessment_name>/upload_assessment_comp_csv/', views.upload_assessment_comp_csv, name='upload_assessment_comp_csv'), #Change course code to course slug
-
+ 	path('courses/<course_code>/<assessment_name>/upload_grades_csv/', views.upload_grades_csv, name='upload_grades_csv'), #Change course code to course slug
+    
     # Student URLs
     path('students/', views.students, name='students'),
     path('students/add_student/', views.add_student, name='add_student'),
