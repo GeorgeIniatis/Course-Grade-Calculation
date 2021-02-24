@@ -1342,12 +1342,13 @@ def upload_student_csv(request):
             degree.save()
         _, created = Student.objects.update_or_create(
             studentID=column[0],
-            firstName=column[1],
-            lastName=column[2],
-            academicPlan=Degree.objects.get(degreeCode=column[3]),
-            level=column[4],
-            anonID=column[5],
-            graduationDate=column[6],
+            defaults={'firstName':column[1],
+            'lastName':column[2],
+            'academicPlan':Degree.objects.get(degreeCode=column[3]),
+            'level':column[4],
+            'graduationDate':column[6],
+            'anonID':column[5],
+            }
         )
 
     context = {}
