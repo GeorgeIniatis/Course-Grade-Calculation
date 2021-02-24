@@ -27,6 +27,7 @@ urlpatterns = [
     path('courses/<slug:course_name_slug>/', views.course, name='course'),
     path('courses/<slug:course_name_slug>/edit_course/', views.edit_course, name='edit_course'),
     path('courses/<slug:course_name_slug>/delete_course/', views.delete_course, name='delete_course'),
+    path('courses/<slug:course_name_slug>/upload_student_csv/', views.upload_student_csv, name='upload_student_csv'),
 
     # Assessment URLs
     path('courses/<course_code>/upload_assessment_csv/', views.upload_assessment_csv, name='upload_assessment_csv'), #Change course code to course slug
@@ -44,7 +45,7 @@ urlpatterns = [
     path('students/', views.students, name='students'),
     path('students/add_student/', views.add_student, name='add_student'),
     path('ajax/filter-courses/', views.ajax_filter_courses, name='ajax_filter_courses'),
-    path('students/upload_student_csv/', views.upload_student_csv, name='upload_student_csv'),
+    #path('students/upload_student_csv/', views.upload_student_csv, name='upload_student_csv'),
     path('students/<student_id>/', views.student, name='student'),
     path('students/<student_id>/edit_student/', views.edit_student, name='edit_student'),
     path('students/<student_id>/delete_student/', views.delete_student, name='delete_student'),

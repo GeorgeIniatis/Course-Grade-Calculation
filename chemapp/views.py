@@ -1317,28 +1317,31 @@ def delete_final_grade(request, student_id, course_name_slug, assessment_name_sl
 
 @login_required
 @permission_required_context('chemapp.add_student', 'No permission to add_student', raise_exception=True)
-def upload_student_csv(request):
+def upload_student_csv(request,course_name_slug):
     # student_dict = {'boldmessage':'Upload csv file to add students'}
     # return render(request,'chemapp/upload_student_csv.html', context=student_dict)
     template = 'chemapp/upload_student_csv.html'
     data = Student.objects.all()
-
-    prompt = {'Order': 'studentID,firstName,lastName,academicPlan,anonID,currentYear', 'students': data}
+    uploadStudents={}
+    uploadStudents['course_name_slug']=course_name_slug
+    course = Course.objects.get(slug=course_name_slug)
     if request.method == "GET":
-        return render(request, template, prompt)
+        return render(request, template)
 
     csv_file = request.FILES['file']
     if not csv_file.name.endswith('.csv'):
         messages.error(request, 'THIS IS NOT A CSV FILE')
-        return redirect(reverse('chemapp:students'))
-
+        return render(request, 'chemapp/upload_student_csv.html', context=uploadStudents)
+    
     data_set = csv_file.read().decode('UTF-8')
     io_string = io.StringIO(data_set)
     next(io_string)
     for column in csv.reader(io_string, delimiter=',', quotechar="|"):
         if not Student.objects.filter(studentID=column[0]).exists():
             degree = Degree.objects.get(degreeCode=column[3])
-            degree.numberOfStudents = degree.numberOfStudents + 1
+            degree.numberOfStudents += 1
+            course.numberOfStudents+=1
+            course.save()
             degree.save()
         _, created = Student.objects.update_or_create(
             studentID=column[0],
@@ -1350,11 +1353,13 @@ def upload_student_csv(request):
             'anonID':column[5],
             }
         )
-
+        student=Student.objects.get(studentID=column[0])
+        student.courses.add(course)
+        student.save()
+		
     context = {}
     messages.success(request, "Student Added Successfully")
-    return redirect(reverse('chemapp:students'))
-
+    return render(request, 'chemapp/upload_student_csv.html', context=uploadStudents)
 
 @login_required
 @permission_required_context('chemapp.add_degree', 'No permission to add_degree', raise_exception=True)
