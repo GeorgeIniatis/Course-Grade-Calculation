@@ -16,6 +16,8 @@ from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from chemapp.utils import user_edit_perm_check, permission_required_context, user_upload_grades_perm_check
 from django.contrib.auth.decorators import permission_required
+from datetime import datetime
+import pytz
 
 GRADE_TO_BAND = {22: 'A1', 21: 'A2', 20: 'A3', 19: 'A4', 18: 'A5',
                  17: 'B1', 16: 'B2', 15: 'B3',
@@ -1476,12 +1478,17 @@ def upload_assessment_csv(request, course_name_slug):
         return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
 
     for exam in exams:
+        # Converts date string to datetime object
+        dueDateString = exam[3]
+        dueDate = datetime.strptime(dueDateString, '%d/%m/%Y %H:%M') # Unaware datetime object
+        dueDate = dueDate.replace(tzinfo=pytz.UTC) # Aware datetime object
+
         _, created = Assessment.objects.update_or_create(
             assessmentName=exam[0],
             course=Course.objects.get(slug=course_name_slug),
             defaults={'totalMarks': exam[1],
                       'componentNumberNeeded': exam[4],
-                      'dueDate': exam[3],
+                      'dueDate': dueDate,
                       'weight': exam[2],
                       }
         )
