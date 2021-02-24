@@ -1458,7 +1458,7 @@ def upload_assessment_csv(request, course_code):
     for column in csv.reader(io_string, delimiter=',', quotechar="|"):
         weightsum += float(column[2])
         if column[0] in examNames:
-            messages.error(request, 'Duplicate Course Detected')
+            messages.error(request, 'Duplicate Assessment Detected')
             return redirect(reverse('chemapp:courses'))
 
         examNames.append(column[0])
