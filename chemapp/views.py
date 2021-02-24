@@ -1340,9 +1340,10 @@ def upload_student_csv(request,course_name_slug):
         if not Student.objects.filter(studentID=column[0]).exists():
             degree = Degree.objects.get(degreeCode=column[3])
             degree.numberOfStudents += 1
+            degree.save()
+        if not Student.objects.filter(studentID=column[0], courses=course).exists():
             course.numberOfStudents+=1
             course.save()
-            degree.save()
         _, created = Student.objects.update_or_create(
             studentID=column[0],
             defaults={'firstName':column[1],
