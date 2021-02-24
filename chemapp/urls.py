@@ -1,6 +1,7 @@
 from django.urls import path
 from chemapp import views
 from django.contrib import admin
+from django.conf.urls import url
 
 admin.autodiscover()
 admin.site.enable_nav_sidebar = False

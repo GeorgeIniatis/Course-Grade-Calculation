@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from chemapp.models import *
 from chemapp.forms import *
 from django.http import Http404
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404,  render
 import csv, io
 from django.forms.formsets import formset_factory
 from django.template.defaultfilters import slugify
@@ -229,7 +229,7 @@ def add_course(request):
 
             # Success message
             messages.success(request, "Course added successfully!")
-            return redirect(reverse('chemapp:add_assessments', kwargs={'course_name_slug': course_slug}))
+            return redirect(reverse('chemapp:course_lecturer', kwargs={'course_name_slug': course_slug}))
 
         else:
             messages.error(request, 'Course has already been added!')
@@ -457,6 +457,7 @@ def add_assessmentComponents(request, course_name_slug, assessment_name_slug):
             componentDescriptions = []
             for form in assessmentComponent_formset:
                 required = form.cleaned_data.get('required')
+                lecturer = form.cleaned_data.get('lecturers')
                 marks = form.cleaned_data.get('marks')
                 description = form.cleaned_data.get('description')
                 slug = slugify(description)
@@ -1513,6 +1514,7 @@ def staff(request):
     staff = Staff.objects.order_by('lastName')
     StaffDict['staff'] = staff
 
+
     return render(request, 'chemapp/staff.html', context=StaffDict)
 
 @login_required
@@ -1527,6 +1529,8 @@ def add_staff(request):
             firstName = staff_form.cleaned_data.get('firstName')
             lastName = staff_form.cleaned_data.get('lastName')
             comments = staff_form.cleaned_data.get('comments')
+            username = firstName + lastName
+            user_object = User.objects.create_user(username, password=str(staffID))
             # Check if Course has already been added
             try:
                 staff = Staff.objects.get(staffID=staffID)
@@ -1550,6 +1554,8 @@ def staff_member(request, staffID):
     staff_memberDict = {}
     try:
         staff = Staff.objects.get(staffID=staffID)
+        courses = Course.objects.filter(lecturers__staffID=staffID)
+        staff_memberDict['courses'] = courses
         staff_memberDict['staff'] = staff
         staff_memberDict['courses'] = {}
         staff_memberDict['staffID'] = staffID

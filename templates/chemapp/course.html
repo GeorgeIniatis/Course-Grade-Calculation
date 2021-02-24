@@ -24,6 +24,7 @@
     <p> Description: {{ course.description }} </p>
     <p> Comments: {{ course.comments }} </p>
     <p> Number of Students: {{ course.numberOfStudents }} </p>
+<<<<<<< HEAD
 
 
 
@@ -187,6 +188,37 @@
 
   {% endif %}
 
+=======
+    <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+    	<a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_assessment_csv'  course_code=course.code %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Upload CSV File to add Assessments</a>
+  	</div>
+    <h2> Assessments and Components</h2>
+        {% if not assessments %}
+           <p> No assessments have been yet set for this course! </p>
+        {% else %}
+            {% for assessment,components in assessments.items %}
+                <h4> {{ assessment.assessmentName }} </h4>
+                <p> Weight: {{ assessment.weight }} </p>
+                <p> Total Marks: {{ assessment.totalMarks }} </p>
+                <p> Number of Components Needed: {{ assessment.componentNumberNeeded }} </p>
+                <p> Due Date and Time: {{ assessment.dueDate }} </p>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+    				<a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_assessment_comp_csv' course_code=course.code  assessment_name=assessment.assessmentName %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Upload CSV File to add {{assessment.assessmentName}} components</a>
+  				</div>
+                {% for component in components %}
+                    <h4> Component: {{ component.description }} </h4>
+                    <p> Status: {{ component.status }} </p>
+                    <p> Marks: {{ component.marks }} </p>
+                {% endfor %}
+                <br>
+            {% endfor %}
+        {% endif %}
+        
+</div>
+    <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+        <a class="btn btn-danger mt-3" href="{% url 'chemapp:edit_course' course_name_slug=course_name_slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Edit Course</a>
+    </div>
+>>>>>>> origin/stafftable
 
 </div>
 {% endblock %}
