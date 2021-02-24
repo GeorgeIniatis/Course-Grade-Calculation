@@ -1447,23 +1447,41 @@ def upload_assessment_csv(request, course_code):
     data_set = csv_file.read().decode('UTF-8')
     io_string = io.StringIO(data_set)
     next(io_string)
+
+    exams = []
+    examNames = []
+
+    #weight has to be equal to 1
+    # cannot have duplicate names
     for column in csv.reader(io_string, delimiter=',', quotechar="|"):
-        weightsum = weightsum + float(column[2])
-        _, created = Assessment.objects.update_or_create(
-            weight=column[2],
-            totalMarks=column[1],
-            assessmentName=column[0],
-            dueDate=column[3],
-            course=Course.objects.get(code=course_code),
-            componentNumberNeeded=column[4],
-        )
+        weightsum += float(column[2])
+        if column[0] in examNames:
+            messages.error(request, 'Duplicate Course Detected')
+            return redirect(reverse('chemapp:courses'))
+            
+        examNames.append(column[0])
+        exams.append(column)
+
+    print(exams)
     if weightsum != 1:
         messages.error(request, 'The sum of the Assessment Weights must be equal to 1')
         return redirect(reverse('chemapp:courses'))
 
+    for exam in exams:
+        _, created = Assessment.objects.update_or_create(
+                weight=exam[2],
+                totalMarks=exam[1],
+                assessmentName=exam[0],
+                dueDate=exam[3],
+                course=Course.objects.get(code=course_code),
+                componentNumberNeeded=exam[4],
+            )
+
+
     else:
         messages.success(request, "Assessment Added Successfully")
         return redirect(reverse('chemapp:courses'))
+
 
 
 @login_required
