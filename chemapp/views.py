@@ -1462,7 +1462,6 @@ def upload_assessment_csv(request, course_code):
         examNames.append(column[0])
         exams.append(column)
 
-    print(exams)
     if weightsum != 1:
         messages.error(request, 'The sum of the Assessment Weights must be equal to 1')
         return redirect(reverse('chemapp:courses'))
@@ -1474,6 +1473,7 @@ def upload_assessment_csv(request, course_code):
                 defaults={'totalMarks': exam[1],
                           'componentNumberNeeded':exam[4],
                           'dueDate':exam[3],
+                          'weight':column[2],
                           }
                 )
 
