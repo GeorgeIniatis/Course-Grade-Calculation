@@ -1410,17 +1410,18 @@ def upload_course_csv(request):
             _, created = Course.objects.update_or_create(
                 code=column[0],
                 degree=Degree.objects.get(degreeCode=column[1]),
-                creditsWorth=column[2],
-                name=column[3],
-                shortHand=column[4],
-                level=column[5],
-                year=column[6],
-                academicYearTaught=column[7],
-                semester=column[8],
-                minimumPassGrade=column[9],
-                minimumRequirementsForCredit=column[10],
-                description=column[11],
-                comments=column[12],
+                defaults={'creditsWorth':column[2],
+                'name':column[3],
+                'shortHand':column[4],
+                'level':column[5],
+                'year':column[6],
+                'academicYearTaught':column[7],
+                'semester':column[8],
+                'minimumPassGrade':column[9],
+                'minimumRequirementsForCredit':column[10],
+                'description':column[11],
+                'comments':column[12],
+                }
 
             )
 
@@ -1473,7 +1474,7 @@ def upload_assessment_csv(request, course_code):
                 defaults={'totalMarks': exam[1],
                           'componentNumberNeeded':exam[4],
                           'dueDate':exam[3],
-                          'weight':column[2],
+                          'weight':exam[2],
                           }
                 )
 
