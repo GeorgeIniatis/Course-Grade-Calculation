@@ -1458,7 +1458,7 @@ def upload_assessment_csv(request, course_code):
         if column[0] in examNames:
             messages.error(request, 'Duplicate Course Detected')
             return redirect(reverse('chemapp:courses'))
-            
+
         examNames.append(column[0])
         exams.append(column)
 
@@ -1469,13 +1469,13 @@ def upload_assessment_csv(request, course_code):
 
     for exam in exams:
         _, created = Assessment.objects.update_or_create(
-                weight=exam[2],
-                totalMarks=exam[1],
                 assessmentName=exam[0],
-                dueDate=exam[3],
                 course=Course.objects.get(code=course_code),
-                componentNumberNeeded=exam[4],
-            )
+                defaults={'totalMarks': exam[1],
+                          'componentNumberNeeded':exam[4],
+                          'dueDate':exam[3],
+                          }
+                )
 
 
     else:
