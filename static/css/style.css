@@ -43,3 +43,7 @@ body{
 .color-box-course{
   width:300px !important;
 }
+
+.bg-secondary-light{
+  background-color: #b5deff;
+}

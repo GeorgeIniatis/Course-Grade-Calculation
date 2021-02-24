@@ -69,9 +69,12 @@
 
 
 
-
+        <form action="{% url 'chemapp:search_course' %}" method="GET" value="{{request.GET.q}}">
+        <input type="text" name="q" value="{{request.GET.q}}" placeholder="Search"/>
+        <input type="submit" name="submit" value="Search"/>
+        </form>
         <form class="d-flex">
-          <button class="btn text-white" type="submit">Welcome, {{request.user.username}}</button>
+          <a class="btn text-white pe-none" type="submit">Welcome, {{request.user.username}}</a>
           <a type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#logoutModal"><i class="bi bi-box-arrow-right"></i> Logout</a>
         </form>
 

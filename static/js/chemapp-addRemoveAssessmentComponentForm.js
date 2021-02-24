@@ -4,4 +4,9 @@ $(document).ready(function(){
         addText: 'Add',
         deleteText: 'Remove'
     });
+
+    $('#check_all').click(function(){
+        $('input:checkbox').prop('checked',true);
+    });
+
 });

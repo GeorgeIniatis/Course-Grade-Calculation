@@ -79,6 +79,15 @@ class DegreeForm(forms.ModelForm):
         fields = {'degreeCode', 'name'}
 
 
+class EditDegreeForm(DegreeForm):
+    degreeCode = None
+
+    class Meta:
+        model = Degree
+        fields = DegreeForm.Meta.fields
+        exclude = {'degreeCode'}
+
+
 class CourseForm(forms.ModelForm):
     code = forms.CharField(label='Code',
                            help_text='CHEM1006',
@@ -388,6 +397,15 @@ class AssessmentComponentForm(forms.ModelForm):
         fields = {'required', 'marks', 'description'}
 
 
+class EditAssessmentComponentForm(AssessmentComponentForm):
+    description = None
+
+    class Meta:
+        model = AssessmentComponent
+        fields = AssessmentComponentForm.Meta.fields
+        exclude = {'description'}
+
+
 class StudentForm(forms.ModelForm):
     studentID = forms.IntegerField(label='StudentID',
                                    help_text='1234567',
@@ -487,12 +505,59 @@ class StudentForm(forms.ModelForm):
                                    }
                                ))
 
+    courses = forms.ModelMultipleChoiceField(label='Courses',
+                                             queryset=Course.objects.none(),
+                                             widget=forms.SelectMultiple(
+                                                 attrs={
+                                                     'style': 'width:300px;height:150px',
+                                                     'required': True,
+                                                     'class': 'form-select',
+                                                 }
+                                             ))
+
     field_order = ['studentID', 'gapYear', 'firstName', 'lastName', 'academicPlan', 'level', 'graduationDate',
-                   'comments']
+                   'courses', 'comments']
 
     class Meta:
         model = Student
-        fields = {'studentID', 'firstName', 'lastName', 'academicPlan', 'level', 'graduationDate', 'comments'}
+        fields = {'studentID', 'gapYear', 'firstName', 'lastName', 'academicPlan', 'level', 'courses',
+                  'graduationDate', 'comments'}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if 'academicPlan' in self.data:
+            try:
+                degree = int(self.data.get('academicPlan'))
+                self.fields['courses'].queryset = Course.objects.filter(degree=degree).order_by('year')
+            except (ValueError, TypeError):
+                pass
+        elif self.instance.pk:
+            if (self.instance.academicPlan != None):
+                self.fields['courses'].queryset = Course.objects.filter(degree=self.instance.academicPlan).order_by(
+                    'year')
+
+
+class EditStudentForm(StudentForm):
+    studentID = None
+
+    graduationDate = forms.DateField(input_formats=['%Y-%m-%d'],
+                                     label='Graduation Date',
+                                     help_text='12/01/2021',
+                                     widget=forms.DateInput(
+                                         attrs={
+                                             'placeholder': 'Graduation Date',
+                                             'type': 'date',
+                                             'style': 'width:300px',
+                                             'required': True,
+                                             'class': 'form-control',
+                                         },
+                                         format='%Y-%m-%d'))
+
+    class Meta:
+        model = Student
+        fields = StudentForm.Meta.fields
+        exclude = {'studentID'}
 
 class StaffForm(forms.ModelForm):
     staffID = forms.IntegerField(label='staffID',
@@ -576,7 +641,7 @@ class AssessmentGradeForm(forms.ModelForm):
                                              attrs={
                                                  'style': 'width:300px',
                                                  'placeholder': 'Date and Time submitted',
-                                                 'onfocus': "(this.type='datetime-local')",
+                                                 'type': 'datetime-local',
                                                  'required': True,
                                              },
                                              format='%Y-%m-%dT%H:%M'))

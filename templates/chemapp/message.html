@@ -1,18 +1,3 @@
-<!-- <div class=" mt-5 notification ">
-  <div class="container mt-5 justify-content-center">
-
-{% for message in messages %}
-  <div class="toast  bg-{% if message.tags == 'error' %}danger{% else %}{{message.tags}}{% endif %}" role="alert" aria-live="assertive" aria-atomic="true" data-delay="500000">
-
-    <div class="toast-body">
-      {{message|safe}}
-    </div>
-    </div>
-
-{% endfor %}
-</div>
-</div> -->
-
 
 <div aria-live="polite" aria-atomic="true" class="bg-dark position-relative bd-example-toasts">
   <div class="toast-container position-absolute p-3 top-0 start-50 translate-middle-x mt-5" id="toastPlacement">
