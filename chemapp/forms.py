@@ -27,6 +27,14 @@ SEMESTER_CHOICES = [
     ('Both', 'Both'),
 ]
 
+STAFF_TITTLES = [
+    ('', 'Select a choice'),
+    ('Dr', 'Dr'),
+    ('Mr', 'Mr'),
+    ('Miss', 'Miss'),
+    ('Mrs', 'Mrs'),
+]
+
 
 class UserForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput())
@@ -645,7 +653,7 @@ class EditStudentForm(StudentForm):
 
 
 class StaffForm(forms.ModelForm):
-    staffID = forms.IntegerField(label='staffID',
+    staffID = forms.IntegerField(label='Staff ID',
                                  help_text='1234567',
                                  widget=forms.NumberInput(
                                      attrs={
@@ -660,18 +668,17 @@ class StaffForm(forms.ModelForm):
                                      }
                                  ))
 
-    title = forms.CharField(label='Title',
-                            help_text='Dr.',
-                            widget=forms.TextInput(
-                                attrs={
-                                    'maxlength': '128',
-                                    'type': 'text',
-                                    'placeholder': 'First Name',
-                                    'style': 'width:100%',
-                                    'class': 'form-control',
-                                    'required': True,
-                                }
-                            ))
+    title = forms.ChoiceField(label='Title',
+                              help_text='Dr',
+                              choices=STAFF_TITTLES,
+                              widget=forms.Select(
+                                  attrs={
+                                      'style': 'width:300px',
+                                      'required': True,
+                                      'class': 'form-select',
+                                  }
+                              ))
+
     firstName = forms.CharField(label='First Name',
                                 help_text='Boyd',
                                 widget=forms.TextInput(
