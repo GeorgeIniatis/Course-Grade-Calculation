@@ -29,6 +29,8 @@
 
 
     <div class=" mb-3 d-grid gap-2 d-md-flex justify-content-md-start">
+      <a type= "button" class="btn btn-danger "  href="{% url 'chemapp:course_students' course_name_slug=course_name_slug %}"> Students enrolled in this class</a>
+      <a class="btn btn-danger " href="c><i class="pe-1 bi bi-file-earmark-arrow-up"></i> Upload CSV File to add students to this course</a>
       <a class="btn btn-warning " href="{% url 'chemapp:edit_course' course_name_slug=course_name_slug %}"><i class="bi bi-pencil-square"></i> Edit</a>
       <a type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#{{course_name_slug}}"><i class="bi bi-trash"></i></a>
     </div>
@@ -78,7 +80,7 @@
     <!-- Add Assessment Button -->
     <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_assessments' course_name_slug=course_name_slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Add Assessments</a>
     <!-- Upload Assessments Button -->
-    <a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_assessment_csv'  course_code=course.code %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Upload CSV File to add Assessments</a>
+    <a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_assessment_csv'  course_name_slug=course_name_slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Upload CSV File to add Assessments</a>
   </div>
   {% else %}
 
@@ -94,16 +96,16 @@
 
     <div class=" mb-3 d-grid gap-2 d-md-flex justify-content-md-start">
       <a class="btn btn-warning " href="{% url 'chemapp:edit_assessment' course_name_slug=course_name_slug assessment_name_slug=assessment.slug %}"><i class="bi bi-pencil-square"></i> Edit</a>
-      <a type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#{{assessment.slug}}"><i class="bi bi-trash"></i></a>
+      <a type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#A{{assessment.slug}}"><i class="bi bi-trash"></i></a>
     </div>
 
 
     <!-- Modal -->
-    <div class="modal fade" id="{{assessment.slug}}" tabindex="-1" aria-labelledby="{{assessment.slug}}Label" aria-hidden="true">
+    <div class="modal fade" id="A{{assessment.slug}}" tabindex="-1" aria-labelledby="A{{assessment.slug}}Label" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title text-dark" id="{{assessment.slug}}Label">Are you sure?</h5>
+            <h5 class="modal-title text-dark" id="A{{assessment.slug}}Label">Are you sure?</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-footer">
@@ -137,15 +139,17 @@
           <td class="text-end">
             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
               <a class="btn btn-warning " href="{% url 'chemapp:edit_assessmentComponent' course_name_slug=course_name_slug assessment_name_slug=assessment.slug assessment_component_slug=component.slug %}"><i class="bi bi-pencil-square"></i> Edit</a>
-              <a type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#{{component.slug}}"><i class="bi bi-trash"></i></a>
+              <a type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#A{{component.slug}}"><i class="bi bi-trash"></i></a>
+              <!-- Upload Button to add grades for component-->
+              <a class="btn btn-danger btn-sm mt-3 " href="{% url 'chemapp:upload_grades_csv' course_name_slug=course_name_slug assessment_name_slug=assessment.slug assessment_component_slug=component.slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i> Upload CSV File to add grades</a>
             </div>
 
             <!-- Modal -->
-            <div class="modal fade" id="{{component.slug}}" tabindex="-1" aria-labelledby="{{component.slug}}Label" aria-hidden="true">
+            <div class="modal fade" id="A{{component.slug}}" tabindex="-1" aria-labelledby="A{{component.slug}}Label" aria-hidden="true">
               <div class="modal-dialog">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h5 class="modal-title text-dark" id="{{component.slug}}Label">Are you sure?</h5>
+                    <h5 class="modal-title text-dark" id="A{{component.slug}}Label">Are you sure?</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
                   <div class="modal-footer">
@@ -171,7 +175,7 @@
       <!-- Add Assessment Components Button -->
       <a class="btn btn-danger btn-sm mt-3" href="{% url 'chemapp:add_assessmentComponents' course_name_slug=course_name_slug assessment_name_slug=assessment.slug %}"><i class="bi bi-plus"></i></i>Add Components</a>
       <!-- Upload Button -->
-      <a class="btn btn-danger btn-sm mt-3" href="{% url 'chemapp:upload_assessment_comp_csv' course_code=course.code  assessment_name=assessment.assessmentName %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Upload CSV File to add {{assessment.assessmentName}} components</a>
+      <a class="btn btn-danger btn-sm mt-3" href="{% url 'chemapp:upload_assessment_comp_csv' course_name_slug=course_name_slug assessment_name_slug=assessment.slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Upload CSV File to add {{assessment.assessmentName}} components</a>
     </div>
     </div>
   {% endfor %}
@@ -183,7 +187,7 @@
     <!-- Add Assessment Button -->
     <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_assessments' course_name_slug=course_name_slug %}"><i class="bi bi-plus"></i></i>Add Assessments</a>
     <!-- Upload Assessments Button -->
-    <a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_assessment_csv'  course_code=course.code %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Upload CSV File to add Assessments</a>
+    <a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_assessment_csv'  course_name_slug=course_name_slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Upload CSV File to add Assessments</a>
   </div>
 
   {% endif %}

@@ -1,0 +1,42 @@
+{% extends 'chemapp/base.html' %}
+{% load render_table from django_tables2 %}
+
+
+{% block title_block %}
+Students
+{% endblock %}
+
+{% block js_block %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+{% endblock %}
+
+{% block body_block %}
+
+
+
+<div class="container ">
+
+<table class="table table-hover">
+    <thead>
+      <tr>
+        <th scope="col">Student ID</th>
+        <th scope="col">First Name</th>
+        <th scope="col">Last Name</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for student in students %}
+      <tr>
+        <th scope="row"><a href="{% url 'chemapp:student' student_id=student.studentID %}"><button>{{ student.studentID }}</button></a> </th>
+        <td>{{student.firstName}}</td>
+        <td>{{student.lastName}}</td>
+        <td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+</div>
+{% endblock %}

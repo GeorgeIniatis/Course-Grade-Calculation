@@ -47,17 +47,17 @@
             <a class="btn btn-warning " href="{% url 'chemapp:edit_degree' degree_code_slug=degree.slug %}"><i class="bi bi-pencil-square"></i> Edit</a>
             {% endif %}
             {% if perms.chemapp.delete_degree %}
-            <a type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#{{ degree.name }}{{ degree.degreeCode }}"><i class="bi bi-trash"></i></a>
+            <a type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#A{{ degree.name }}{{ degree.degreeCode }}"><i class="bi bi-trash"></i></a>
             {% endif %}
           </div>
 
           {% if perms.chemapp.delete_degree %}
             <!-- Modal -->
-            <div class="modal fade" id="{{ degree.name }}{{ degree.degreeCode }}" tabindex="-1" aria-labelledby="{{ degree.name }}{{ degree.degreeCode }}Label" aria-hidden="true">
+            <div class="modal fade" id="A{{ degree.name }}{{ degree.degreeCode }}" tabindex="-1" aria-labelledby="A{{ degree.name }}{{ degree.degreeCode }}Label" aria-hidden="true">
               <div class="modal-dialog">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h5 class="modal-title text-dark" id="logoutModalLabel">Are you sure?</h5>
+                    <h5 class="modal-title text-dark" id="A{{ degree.name }}{{ degree.degreeCode }}Label">Are you sure?</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
                   <div class="modal-footer">
@@ -80,21 +80,21 @@
     </tbody>
   </table>
         {% if perms.chemapp.add_degree %}
-        <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+        <div class="mt-3 d-grid gap-2 d-md-flex justify-content-md-start">
           <!-- Add Degree Button -->
-           <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_degree' %}"><i class="bi bi-plus"></i> Add a degree</a>
+           <a class="btn btn-danger " href="{% url 'chemapp:add_degree' %}"><i class="bi bi-plus"></i> Add a degree</a>
            <!-- Upload Degree Button -->
-    	     <a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_degree_csv' %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>  Upload CSV File</a>
+    	     <a class="btn btn-danger " href="{% url 'chemapp:upload_degree_csv' %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>  Upload CSV File</a>
   	    </div>
         {% endif %}
     {% else %}
         <h4>There are no degrees!</h4>
         {% if perms.chemapp.add_degree %}
-        <div>
+        <div class="mt-3 d-grid gap-2 d-md-flex justify-content-md-start">
           <!-- Add Degree Button -->
-          <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_degree' %}"><i class="bi bi-plus"></i> Add a degree</a>
+          <a class="btn btn-danger " href="{% url 'chemapp:add_degree' %}"><i class="bi bi-plus"></i> Add a degree</a>
           <!-- Upload Degree Button -->
-    	    <a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_degree_csv' %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>  Upload CSV File</a>
+    	    <a class="btn btn-danger " href="{% url 'chemapp:upload_degree_csv' %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>  Upload CSV File</a>
   	    </div>
         {% endif %}
     {% endif %}
