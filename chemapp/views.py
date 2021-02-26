@@ -7,10 +7,11 @@ from django.contrib.auth.decorators import login_required
 from chemapp.models import *
 from chemapp.forms import *
 from django.http import Http404
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404,  render
 import csv, io
 from django.forms.formsets import formset_factory
 from django.template.defaultfilters import slugify
+from django.db.models import Q
 import random
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
@@ -231,7 +232,7 @@ def add_course(request):
 
             # Success message
             messages.success(request, "Course added successfully!")
-            return redirect(reverse('chemapp:add_assessments', kwargs={'course_name_slug': course_slug}))
+            return redirect(reverse('chemapp:course_lecturer', kwargs={'course_name_slug': course_slug}))
 
         else:
             messages.error(request, 'Course has already been added!')
@@ -341,7 +342,7 @@ def add_assessments(request, course_name_slug):
 
             # This is used to check for Assessment duplicates
             assessmentNames = []
-            # This is used to check that the Assessment weight sum is equal to 1 in the end
+            # This is used to check that the Assessmet weight sum is equal to 1 in the end
             weightSum = 0
             for form in assessment_formset:
                 weight = form.cleaned_data.get('weight')
@@ -472,6 +473,7 @@ def add_assessmentComponents(request, course_name_slug, assessment_name_slug):
             componentDescriptions = []
             for form in assessmentComponent_formset:
                 required = form.cleaned_data.get('required')
+                lecturer = form.cleaned_data.get('lecturers')
                 marks = form.cleaned_data.get('marks')
                 description = form.cleaned_data.get('description')
                 slug = slugify(description)
@@ -1589,4 +1591,142 @@ def upload_grades_csv(request, course_code, assessment_name):
     messages.success(request, "Grades Added Successfully")
     return redirect(reverse('chemapp:courses'))
 
+@login_required
+def staff(request):
+    StaffDict = {}
+    # checking order by
+    staff = Staff.objects.order_by('lastName')
+    StaffDict['staff'] = staff
 
+
+    return render(request, 'chemapp/staff.html', context=StaffDict)
+
+@login_required
+def add_staff(request):
+    addStaffDict = {}
+
+    if request.method == 'POST':
+        staff_form = StaffForm(request.POST)
+        if staff_form.is_valid():
+            staffID = staff_form.cleaned_data.get('staffID')
+            title = staff_form.cleaned_data.get('title')
+            firstName = staff_form.cleaned_data.get('firstName')
+            lastName = staff_form.cleaned_data.get('lastName')
+            comments = staff_form.cleaned_data.get('comments')
+            username = firstName + lastName
+            user_object = User.objects.create_user(username, password=str(staffID))
+            # Check if Course has already been added
+            try:
+                staff = Staff.objects.get(staffID=staffID)
+                messages.error(request, 'Staff has already been added!')
+                return redirect(reverse('chemapp:add_staff'))
+            except Staff.DoesNotExist:
+                pass
+
+            staff = staff_form.save()
+            messages.success(request, "Staff Added Successfully")
+            return redirect(reverse('chemapp:staff'))
+        else:
+            print(staff_form.errors)
+    else:
+        staff_form = StaffForm()
+
+    addStaffDict['staff_form'] = staff_form
+    return render(request, 'chemapp/add_staff.html', context=addStaffDict)
+
+def staff_member(request, staffID):
+    staff_memberDict = {}
+    try:
+        staff = Staff.objects.get(staffID=staffID)
+        courses = Course.objects.filter(lecturers__staffID=staffID)
+        staff_memberDict['courses'] = courses
+        staff_memberDict['staff'] = staff
+        staff_memberDict['courses'] = {}
+        staff_memberDict['staffID'] = staffID
+
+    except Staff.DoesNotExist:
+        raise Http404("Staff member does not exist")
+    return render(request, 'chemapp/staff_member.html', context=staff_memberDict)
+
+
+@login_required
+def edit_staff(request, staffID):
+    editStaffDict = {}
+    editStaffDict['staffID'] = staffID
+    staff = Staff.objects.get(staffID=staffID)
+
+    if (request.method == 'POST'):
+        edit_staff_form = EditStaffForm(request.POST)
+
+        if edit_staff_form.is_valid():
+            title = edit_staff_form.cleaned_data.get('title')
+            firstName = edit_staff_form.cleaned_data.get('firstName')
+            lastName = edit_staff_form.cleaned_data.get('lastName')
+            comments = edit_staff_form.cleaned_data.get('comments')
+
+            staff.title = title
+            staff.firstName = firstName
+            staff.lastName = lastName
+            staff.comments = comments
+
+            staff.save()
+
+            messages.success(request, 'Staff data was updated successfully!')
+            return redirect(reverse('chemapp:staff_member', kwargs={'staffID': staffID}))
+        else:
+            print(edit_staff_form.errors)
+    else:
+        edit_staff_form = EditStaffForm(instance=staff)
+
+    editStaffDict['edit_staff_form'] = edit_staff_form
+
+    return render(request, 'chemapp/edit_staff.html', context=editStaffDict)
+
+@login_required
+def course_lecturer(request, course_name_slug):
+    CourseLecturerDict = {}
+    CourseLecturerDict['course_name_slug'] = course_name_slug
+    CourseLecturerDict['lecturers'] = Staff.objects.all()
+    course = Course.objects.get(slug=course_name_slug)
+
+    if (request.method == 'POST'):
+        lect = request.POST.getlist('lecturers_list')
+        lecturers_list= []
+        for lecture in lect:
+            lecturers_list.append(Staff.objects.get(staffID=lecture))
+        course.lecturers.add(*lecturers_list)
+        messages.success(request, 'Course was updated successfully!')
+        return redirect(reverse('chemapp:add_assessments', kwargs={'course_name_slug': course_name_slug}))
+    else:
+        course_lecturer_form = CourseLecturerForm(instance=course)
+
+    CourseLecturerDict['course_lecturer_form'] = course_lecturer_form
+
+    return render(request, 'chemapp/course_lecturer.html', context=CourseLecturerDict)
+
+
+def search_course(request):
+    if request.method == 'GET':
+        query= request.GET.get('q')
+
+        submitbutton= request.GET.get('submit')
+
+        if query is not None:
+            course_lookups= Q(name__icontains=query) | Q(code__icontains=query) | Q(shortHand__icontains=query)
+            student_lookups= Q(studentID__icontains=query) | Q(firstName__icontains=query) | Q(lastName__icontains=query)
+            staff_lookups= Q(staffID__icontains=query) | Q(firstName__icontains=query) | Q(lastName__icontains=query)
+
+            course_results= Course.objects.filter(course_lookups).distinct()
+            student_results= Student.objects.filter(student_lookups).distinct()
+            staff_results= Staff.objects.filter(staff_lookups).distinct()
+            results = [course_results,student_results,staff_results]
+            context={'staff_results': staff_results,'course_results': course_results,'student_results': student_results,
+                     'submitbutton': submitbutton}
+
+            return render(request, 'chemapp/search_course.html', context)
+
+        else:
+            return render(request, 'chemapp/search_course.html')
+
+    else:
+        return render(request, 'chemapp/search_course.html')

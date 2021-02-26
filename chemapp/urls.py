@@ -1,6 +1,7 @@
 from django.urls import path
 from chemapp import views
 from django.contrib import admin
+from django.conf.urls import url
 
 admin.autodiscover()
 admin.site.enable_nav_sidebar = False
@@ -23,6 +24,7 @@ urlpatterns = [
     # Course URLs
     path('courses/', views.courses, name='courses'),
     path('courses/add_course/',views.add_course, name='add_course'),
+    path('courses/add_course/<slug:course_name_slug>/',views.course_lecturer, name='course_lecturer'),
     path('courses/upload_course_csv/', views.upload_course_csv, name='upload_course_csv'),
     path('courses/<slug:course_name_slug>/', views.course, name='course'),
     path('courses/<slug:course_name_slug>/edit_course/', views.edit_course, name='edit_course'),
@@ -60,4 +62,13 @@ urlpatterns = [
     path('students/<student_id>/<slug:course_name_slug>/<slug:assessment_name_slug>/add_final_grade/', views.add_final_grade, name='add_final_grade'),
     path('students/<student_id>/<slug:course_name_slug>/<slug:assessment_name_slug>/edit_final_grade/', views.edit_final_grade, name='edit_final_grade'),
     path('students/<student_id>/<slug:course_name_slug>/<slug:assessment_name_slug>/delete_final_grade/', views.delete_final_grade, name='delete_final_grade'),
+
+    # Staff URLs
+    path('staff/', views.staff, name='staff'),
+    path('staff/add_staff/', views.add_staff, name='add_staff'),
+    path('staff/<staffID>/', views.staff_member, name='staff_member'),
+    path('staff/<staffID>/edit_staff/', views.edit_staff, name='edit_staff'),
+
+    # Search URLs
+    path('search/', views.search_course, name='search_course'),
 ]

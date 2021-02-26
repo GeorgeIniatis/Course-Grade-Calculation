@@ -1,0 +1,43 @@
+{% extends 'chemapp/base.html' %}
+
+{% block title_block %}
+    Search Page
+{% endblock %}
+
+{% block body_block %}
+<div class="container mt-5 ">
+<h1>Search Page</h1>
+
+<br/>
+
+
+
+{% if submitbutton == 'Search' and request.GET.q != '' %}
+
+<br><br>
+<h1>Results for <b>{{ request.GET.q }}</b></h1>
+<br/><br/>
+<div class="col-3 d-grid gap-2 mt-3"  >
+  <h2>Courses:</h2>
+  {% for result in course_results %}
+  <a class="btn text-start  pb-5" style="background-color:{{result.courseColor}}" href="{% url 'chemapp:course' course_name_slug=result.slug %}" role="button">
+    <h2>{{ result.code }}</h2>
+    {{ result.name }}
+  </a>
+{% endfor %}
+<h2>Staff: </h2>
+{% for result in staff_results %}
+  <a href="{% url 'chemapp:staff_member' staffID=result.staffID %}">
+    <button>{{result.title}} {{result.firstName}} {{result.lastName}}</button>
+  </a>
+{% endfor %}
+<h2>Students: </h2>
+{% for result in student_results %}
+<a href="{% url 'chemapp:student' student_id=result.studentID %}">
+  <button>{{result.firstName}} {{result.lastName}}</button>
+</a>
+{% endfor %}
+</div>
+{% endif %}
+</div>
+{% endblock %}
