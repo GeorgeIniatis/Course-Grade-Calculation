@@ -194,6 +194,17 @@ def course(request, course_name_slug):
 
 
 @login_required
+def course_students(request, course_name_slug):
+    courseStudentsDict = {}
+    courseStudentsDict['course_name_slug'] = course_name_slug
+    course = Course.objects.get(slug=course_name_slug)
+    students = Student.objects.filter(courses=course)
+    courseStudentsDict['students'] = students
+
+    return render(request, 'chemapp/course_students.html', context=courseStudentsDict)
+
+
+@login_required
 @permission_required_context('chemapp.add_course', 'No permission to add_course', raise_exception=True)
 def add_course(request):
     addCourseDict = {}
@@ -229,7 +240,7 @@ def add_course(request):
 
             # Success message
             messages.success(request, "Course added successfully!")
-            return redirect(reverse('chemapp:course_lecturer', kwargs={'course_name_slug': course_slug}))
+            return redirect(reverse('chemapp:add_lecturers', kwargs={'course_name_slug': course_slug}))
 
         else:
             messages.error(request, 'Course has already been added!')
@@ -243,14 +254,26 @@ def add_course(request):
 
 
 @login_required
-def course_students(request, course_name_slug):
-    courseStudentsDict = {}
-    courseStudentsDict['course_name_slug'] = course_name_slug
+def add_lecturers(request, course_name_slug):
+    CourseLecturerDict = {}
+    CourseLecturerDict['course_name_slug'] = course_name_slug
+    CourseLecturerDict['lecturers'] = Staff.objects.all()
     course = Course.objects.get(slug=course_name_slug)
-    students = Student.objects.filter(courses=course)
-    courseStudentsDict['students'] = students
 
-    return render(request, 'chemapp/course_students.html', context=courseStudentsDict)
+    if (request.method == 'POST'):
+        lect = request.POST.getlist('lecturers_list')
+        lecturers_list = []
+        for lecture in lect:
+            lecturers_list.append(Staff.objects.get(staffID=lecture))
+        course.lecturers.add(*lecturers_list)
+        messages.success(request, 'Course was updated successfully!')
+        return redirect(reverse('chemapp:add_assessments', kwargs={'course_name_slug': course_name_slug}))
+    else:
+        course_lecturer_form = CourseLecturerForm(instance=course)
+
+    CourseLecturerDict['course_lecturer_form'] = course_lecturer_form
+
+    return render(request, 'chemapp/add_lecturers.html', context=CourseLecturerDict)
 
 
 @login_required
@@ -1678,29 +1701,6 @@ def edit_staff(request, staffID):
     editStaffDict['edit_staff_form'] = edit_staff_form
 
     return render(request, 'chemapp/edit_staff.html', context=editStaffDict)
-
-
-@login_required
-def course_lecturer(request, course_name_slug):
-    CourseLecturerDict = {}
-    CourseLecturerDict['course_name_slug'] = course_name_slug
-    CourseLecturerDict['lecturers'] = Staff.objects.all()
-    course = Course.objects.get(slug=course_name_slug)
-
-    if (request.method == 'POST'):
-        lect = request.POST.getlist('lecturers_list')
-        lecturers_list = []
-        for lecture in lect:
-            lecturers_list.append(Staff.objects.get(staffID=lecture))
-        course.lecturers.add(*lecturers_list)
-        messages.success(request, 'Course was updated successfully!')
-        return redirect(reverse('chemapp:add_assessments', kwargs={'course_name_slug': course_name_slug}))
-    else:
-        course_lecturer_form = CourseLecturerForm(instance=course)
-
-    CourseLecturerDict['course_lecturer_form'] = course_lecturer_form
-
-    return render(request, 'chemapp/course_lecturer.html', context=CourseLecturerDict)
 
 
 def search_course(request):
