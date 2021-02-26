@@ -1,13 +1,11 @@
-from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.urls import reverse
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from chemapp.models import *
 from chemapp.forms import *
-from django.http import Http404
-from django.shortcuts import get_object_or_404,  render
 import csv, io
 from django.forms.formsets import formset_factory
 from django.template.defaultfilters import slugify
@@ -19,7 +17,6 @@ from chemapp.utils import user_edit_perm_check, permission_required_context, use
 from django.contrib.auth.decorators import permission_required
 from datetime import datetime
 import pytz
-
 
 GRADE_TO_BAND = {22: 'A1', 21: 'A2', 20: 'A3', 19: 'A4', 18: 'A5',
                  17: 'B1', 16: 'B2', 15: 'B3',
@@ -245,18 +242,16 @@ def add_course(request):
     return render(request, 'chemapp/add_course.html', context=addCourseDict)
 
 
-
-
 @login_required
-def course_students(request,course_name_slug):
+def course_students(request, course_name_slug):
     courseStudentsDict = {}
     courseStudentsDict['course_name_slug'] = course_name_slug
-    course=Course.objects.get(slug=course_name_slug)
-    students=Student.objects.filter(courses=course)
+    course = Course.objects.get(slug=course_name_slug)
+    students = Student.objects.filter(courses=course)
     courseStudentsDict['students'] = students
-    
 
     return render(request, 'chemapp/course_students.html', context=courseStudentsDict)
+
 
 @login_required
 @user_edit_perm_check
@@ -1496,8 +1491,8 @@ def upload_assessment_csv(request, course_name_slug):
     for exam in exams:
         # Converts date string to datetime object
         dueDateString = exam[3]
-        dueDate = datetime.strptime(dueDateString, '%d/%m/%Y %H:%M') # Unaware datetime object
-        dueDate = dueDate.replace(tzinfo=pytz.UTC) # Aware datetime object
+        dueDate = datetime.strptime(dueDateString, '%d/%m/%Y %H:%M')  # Unaware datetime object
+        dueDate = dueDate.replace(tzinfo=pytz.UTC)  # Aware datetime object
 
         _, created = Assessment.objects.update_or_create(
             assessmentName=exam[0],
@@ -1591,6 +1586,7 @@ def upload_grades_csv(request, course_code, assessment_name):
     messages.success(request, "Grades Added Successfully")
     return redirect(reverse('chemapp:courses'))
 
+
 @login_required
 def staff(request):
     StaffDict = {}
@@ -1598,8 +1594,8 @@ def staff(request):
     staff = Staff.objects.order_by('lastName')
     StaffDict['staff'] = staff
 
-
     return render(request, 'chemapp/staff.html', context=StaffDict)
+
 
 @login_required
 def add_staff(request):
@@ -1633,6 +1629,7 @@ def add_staff(request):
 
     addStaffDict['staff_form'] = staff_form
     return render(request, 'chemapp/add_staff.html', context=addStaffDict)
+
 
 def staff_member(request, staffID):
     staff_memberDict = {}
@@ -1682,6 +1679,7 @@ def edit_staff(request, staffID):
 
     return render(request, 'chemapp/edit_staff.html', context=editStaffDict)
 
+
 @login_required
 def course_lecturer(request, course_name_slug):
     CourseLecturerDict = {}
@@ -1691,7 +1689,7 @@ def course_lecturer(request, course_name_slug):
 
     if (request.method == 'POST'):
         lect = request.POST.getlist('lecturers_list')
-        lecturers_list= []
+        lecturers_list = []
         for lecture in lect:
             lecturers_list.append(Staff.objects.get(staffID=lecture))
         course.lecturers.add(*lecturers_list)
@@ -1707,21 +1705,23 @@ def course_lecturer(request, course_name_slug):
 
 def search_course(request):
     if request.method == 'GET':
-        query= request.GET.get('q')
+        query = request.GET.get('q')
 
-        submitbutton= request.GET.get('submit')
+        submitbutton = request.GET.get('submit')
 
         if query is not None:
-            course_lookups= Q(name__icontains=query) | Q(code__icontains=query) | Q(shortHand__icontains=query)
-            student_lookups= Q(studentID__icontains=query) | Q(firstName__icontains=query) | Q(lastName__icontains=query)
-            staff_lookups= Q(staffID__icontains=query) | Q(firstName__icontains=query) | Q(lastName__icontains=query)
+            course_lookups = Q(name__icontains=query) | Q(code__icontains=query) | Q(shortHand__icontains=query)
+            student_lookups = Q(studentID__icontains=query) | Q(firstName__icontains=query) | Q(
+                lastName__icontains=query)
+            staff_lookups = Q(staffID__icontains=query) | Q(firstName__icontains=query) | Q(lastName__icontains=query)
 
-            course_results= Course.objects.filter(course_lookups).distinct()
-            student_results= Student.objects.filter(student_lookups).distinct()
-            staff_results= Staff.objects.filter(staff_lookups).distinct()
-            results = [course_results,student_results,staff_results]
-            context={'staff_results': staff_results,'course_results': course_results,'student_results': student_results,
-                     'submitbutton': submitbutton}
+            course_results = Course.objects.filter(course_lookups).distinct()
+            student_results = Student.objects.filter(student_lookups).distinct()
+            staff_results = Staff.objects.filter(staff_lookups).distinct()
+            results = [course_results, student_results, staff_results]
+            context = {'staff_results': staff_results, 'course_results': course_results,
+                       'student_results': student_results,
+                       'submitbutton': submitbutton}
 
             return render(request, 'chemapp/search_course.html', context)
 

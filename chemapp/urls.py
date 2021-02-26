@@ -24,7 +24,7 @@ urlpatterns = [
     # Course URLs
     path('courses/', views.courses, name='courses'),
     path('courses/add_course/',views.add_course, name='add_course'),
-    path('courses/add_course/<slug:course_name_slug>/',views.course_lecturer, name='course_lecturer'),
+    path('courses/add_course/<slug:course_name_slug>/',views.course_lecturer, name='course_lecturer'), # Change this one
     path('courses/upload_course_csv/', views.upload_course_csv, name='upload_course_csv'),
     path('courses/<slug:course_name_slug>/', views.course, name='course'),
     path('courses/<slug:course_name_slug>/edit_course/', views.edit_course, name='edit_course'),
@@ -32,7 +32,6 @@ urlpatterns = [
     path('courses/<slug:course_name_slug>/upload_student_csv/', views.upload_student_csv, name='upload_student_csv'),
 	path('courses/<slug:course_name_slug>/course_students/', views.course_students, name='course_students'),
 
-	
     # Assessment URLs
     path('courses/<slug:course_name_slug>/add_assessments/', views.add_assessments, name='add_assessments'),
     path('courses/<slug:course_name_slug>/upload_assessment_csv/', views.upload_assessment_csv, name='upload_assessment_csv'),

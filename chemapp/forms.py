@@ -88,7 +88,6 @@ class EditDegreeForm(DegreeForm):
         exclude = {'degreeCode'}
 
 
-
 class SuperCourseForm(forms.ModelForm):
     code = forms.CharField(label='Code',
                            help_text='CHEM1006',
@@ -259,20 +258,21 @@ class SuperCourseForm(forms.ModelForm):
                                ))
 
     lecturers = forms.ModelChoiceField(label='Lecturers',
-                                    help_text='e.g. Dr. Linnea Soler',
-                                    empty_label="Select a choice",
-                                    queryset=Staff.objects.all(),
-                                    widget=forms.Select(
-                                        attrs={
-                                            'style': 'width:100%',
-                                            'required': True,
-                                            'id': 'floatingDegree',
-                                            'class': 'form-select',
-                                        }
-                                    ))
+                                       help_text='e.g. Dr. Linnea Soler',
+                                       empty_label="Select a choice",
+                                       queryset=Staff.objects.all(),
+                                       widget=forms.Select(
+                                           attrs={
+                                               'style': 'width:100%',
+                                               'required': True,
+                                               'id': 'floatingDegree',
+                                               'class': 'form-select',
+                                           }
+                                       ))
 
     field_order = ['code', 'degree', 'name', 'shortHand', 'creditsWorth', 'level', 'academicYearTaught',
-                   'semester', 'minimumPassGrade', 'minimumRequirementsForCredit', 'lecturers','description', 'comments',
+                   'semester', 'minimumPassGrade', 'minimumRequirementsForCredit', 'lecturers', 'description',
+                   'comments',
                    'courseColor']
 
     class Meta:
@@ -281,14 +281,17 @@ class SuperCourseForm(forms.ModelForm):
                   'semester', 'description', 'comments', 'minimumPassGrade',
                   'minimumRequirementsForCredit', 'lecturers', 'courseColor'}
 
+
 class CourseForm(SuperCourseForm):
     lecturers = None
+
     class Meta:
         model = Course
         fields = {'code', 'degree', 'creditsWorth', 'name', 'shortHand', 'level', 'academicYearTaught',
                   'semester', 'description', 'comments', 'minimumPassGrade',
                   'minimumRequirementsForCredit', 'courseColor'}
-        exclude = {'lecturers',}
+        exclude = {'lecturers', }
+
 
 class EditCourseForm(SuperCourseForm):
     code = None
@@ -298,6 +301,7 @@ class EditCourseForm(SuperCourseForm):
         model = Course
         fields = CourseForm.Meta.fields
         exclude = {'code', 'degree'}
+
 
 class CourseLecturerForm(SuperCourseForm):
     code = None
@@ -318,8 +322,9 @@ class CourseLecturerForm(SuperCourseForm):
         model = Course
         fields = CourseForm.Meta.fields
         exclude = {'code', 'degree', 'creditsWorth', 'name', 'shortHand', 'level', 'academicYearTaught',
-                  'semester', 'description', 'comments', 'minimumPassGrade',
-                  'minimumRequirementsForCredit', 'courseColor'}
+                   'semester', 'description', 'comments', 'minimumPassGrade',
+                   'minimumRequirementsForCredit', 'courseColor'}
+
 
 class AssessmentForm(forms.ModelForm):
     assessmentName = forms.CharField(label='Name',
@@ -397,6 +402,29 @@ class AssessmentForm(forms.ModelForm):
         fields = {'assessmentName', 'weight', 'totalMarks', 'componentNumberNeeded', 'dueDate'}
 
 
+class EditAssessmentForm(AssessmentForm):
+    assessmentName = None
+    weight = None
+
+    dueDate = forms.DateTimeField(input_formats=['%Y-%m-%dT%H:%M', ],
+                                  label='Due Date and Time',
+                                  help_text='12/01/2021 10:00',
+                                  widget=forms.DateTimeInput(
+                                      attrs={
+                                          'placeholder': 'Due Date and Time',
+                                          'type': 'datetime-local',
+                                          'style': 'width:200px',
+                                          'class': 'form-control',
+                                          'required': True,
+                                      },
+                                      format='%Y-%m-%dT%H:%M'))
+
+    class Meta:
+        model = Assessment
+        fields = AssessmentForm.Meta.fields
+        exclude = {'assessmentName', 'weight'}
+
+
 class AssessmentComponentForm(forms.ModelForm):
     required = forms.BooleanField(label='Required',
                                   required=False,
@@ -433,25 +461,24 @@ class AssessmentComponentForm(forms.ModelForm):
                                       }
                                   ))
 
-
     lecturers = forms.ModelChoiceField(label='Lecturers',
-                                help_text='e.g. Dr. Linnea Soler',
-                                empty_label="Select a choice",
-                                queryset=Staff.objects.all(),
-                                widget=forms.Select(
-                                    attrs={
-                                        'style': 'width:100%',
-                                        'required': True,
-                                        'id': 'floatingDegree',
-                                        'class': 'form-select',
-                                    }
-                                ))
+                                       help_text='e.g. Dr. Linnea Soler',
+                                       empty_label="Select a choice",
+                                       queryset=Staff.objects.all(),
+                                       widget=forms.Select(
+                                           attrs={
+                                               'style': 'width:100%',
+                                               'required': True,
+                                               'id': 'floatingDegree',
+                                               'class': 'form-select',
+                                           }
+                                       ))
 
-    field_order = ['required', 'lecturers','description', 'marks']
+    field_order = ['required', 'lecturers', 'description', 'marks']
 
     class Meta:
         model = AssessmentComponent
-        fields = {'required', 'lecturers' , 'marks', 'description'}
+        fields = {'required', 'lecturers', 'marks', 'description'}
 
 
 class EditAssessmentComponentForm(AssessmentComponentForm):
@@ -616,21 +643,22 @@ class EditStudentForm(StudentForm):
         fields = StudentForm.Meta.fields
         exclude = {'studentID'}
 
+
 class StaffForm(forms.ModelForm):
     staffID = forms.IntegerField(label='staffID',
-                                   help_text='1234567',
-                                   widget=forms.NumberInput(
-                                       attrs={
-                                           'min': '0',
-                                           'max': '9999999',
-                                           'type': 'number',
-                                           'placeholder': 'Staff ID',
-                                           'style': 'width:300px',
-                                           'autofocus': True,
-                                           'class': 'form-control',
-                                           'required': True,
-                                       }
-                                   ))
+                                 help_text='1234567',
+                                 widget=forms.NumberInput(
+                                     attrs={
+                                         'min': '0',
+                                         'max': '9999999',
+                                         'type': 'number',
+                                         'placeholder': 'Staff ID',
+                                         'style': 'width:300px',
+                                         'autofocus': True,
+                                         'class': 'form-control',
+                                         'required': True,
+                                     }
+                                 ))
 
     title = forms.CharField(label='Title',
                             help_text='Dr.',
@@ -681,18 +709,21 @@ class StaffForm(forms.ModelForm):
                                    }
                                ))
 
-    field_order = ['staffID', 'title','firstName', 'lastName','comments']
+    field_order = ['staffID', 'title', 'firstName', 'lastName', 'comments']
 
     class Meta:
         model = Staff
-        fields = {'staffID', 'title','firstName', 'lastName', 'comments'}
+        fields = {'staffID', 'title', 'firstName', 'lastName', 'comments'}
+
 
 class EditStaffForm(StaffForm):
     staffID = None
+
     class Meta:
         model = Staff
         fields = StaffForm.Meta.fields
         exclude = {'staffID'}
+
 
 class AssessmentGradeForm(forms.ModelForm):
     submissionDate = forms.DateTimeField(input_formats=['%Y-%m-%dT%H:%M', ],
