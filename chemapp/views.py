@@ -19,6 +19,7 @@ from django.contrib.auth.decorators import permission_required
 from datetime import datetime
 import pytz
 
+
 GRADE_TO_BAND = {22: 'A1', 21: 'A2', 20: 'A3', 19: 'A4', 18: 'A5',
                  17: 'B1', 16: 'B2', 15: 'B3',
                  14: 'C1', 13: 'C2', 12: 'C3',
@@ -242,6 +243,19 @@ def add_course(request):
 
     return render(request, 'chemapp/add_course.html', context=addCourseDict)
 
+
+
+
+@login_required
+def course_students(request,course_name_slug):
+    courseStudentsDict = {}
+    courseStudentsDict['course_name_slug'] = course_name_slug
+    course=Course.objects.get(slug=course_name_slug)
+    students=Student.objects.filter(courses=course)
+    courseStudentsDict['students'] = students
+    
+
+    return render(request, 'chemapp/course_students.html', context=courseStudentsDict)
 
 @login_required
 @user_edit_perm_check
@@ -1574,3 +1588,5 @@ def upload_grades_csv(request, course_code, assessment_name):
 
     messages.success(request, "Grades Added Successfully")
     return redirect(reverse('chemapp:courses'))
+
+
