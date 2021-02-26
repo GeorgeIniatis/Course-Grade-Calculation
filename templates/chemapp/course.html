@@ -29,7 +29,7 @@
 
     <div class=" mb-3 d-grid gap-2 d-md-flex justify-content-md-start">
       <a type= "button" class="btn btn-danger "  href="{% url 'chemapp:course_students' course_name_slug=course_name_slug %}"> Students enrolled in this class</a>
-      <a class="btn btn-danger " href="{% url 'chemapp:upload_student_csv' course_name_slug=course_name_slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i> Upload CSV File to add students to this course</a>
+      <a class="btn btn-danger " href="c><i class="pe-1 bi bi-file-earmark-arrow-up"></i> Upload CSV File to add students to this course</a>
       <a class="btn btn-warning " href="{% url 'chemapp:edit_course' course_name_slug=course_name_slug %}"><i class="bi bi-pencil-square"></i> Edit</a>
       <a type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#{{course_name_slug}}"><i class="bi bi-trash"></i></a>
     </div>
