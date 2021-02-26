@@ -733,8 +733,7 @@ def add_student(request):
             else:
                 status = 'Gap Year'
 
-            # Just to test until we have correct equation && 000000 did not allow for more students since it has to be unique
-            anonID = random.randint(0, 99999)
+            anonID = (abs(hash(str(studentID)))) / studentID
 
             student = Student.objects.create(studentID=studentID, anonID=anonID, firstName=firstName, lastName=lastName,
                                              gapYear=gapYear, status=status, academicPlan=academicPlan, level=level,
