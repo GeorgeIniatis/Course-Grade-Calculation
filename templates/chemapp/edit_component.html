@@ -6,7 +6,7 @@ Edit Component
 {% endblock %}
 
 {% block body_block %}
-<div class="container mt-5 mb-5 ">
+<div class="container mb-5 ">
     <h2> Edit Component "{{ component.description }}" </h2>
 
     <form id="edit_component_form" method="post" action="{% url 'chemapp:edit_assessmentComponent' course_name_slug=course_name_slug assessment_name_slug=assessment_name_slug assessment_component_slug=assessment_component_slug %}"  enctype="multipart/form-data">

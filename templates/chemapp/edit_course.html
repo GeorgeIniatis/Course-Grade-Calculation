@@ -10,7 +10,7 @@ Edit a Course
 {% endblock %}
 
 {% block body_block %}
-<div class="container mt-5 mb-5 ">
+<div class="container mb-5 ">
   <h2> Edit Course </h2>
 
   <form id="edit_course_form" method="post" action="{% url 'chemapp:edit_course' course_name_slug=course_name_slug %}" enctype="multipart/form-data">
