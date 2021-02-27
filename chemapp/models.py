@@ -5,21 +5,20 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from datetime import datetime
 from colorfield.fields import ColorField
 
-LEVEL_CHOICES = [
+COURSE_LEVEL_CHOICES = [
     ('1', 'Level 1'),
     ('2', 'Level 2'),
-    ('3', 'Level 3'),
-    ('3-M', 'Level 3 MSci'),
-    ('3-CS', 'Level 3 Chemical Studies'),
-    ('4-M', 'Level 4 MSci'),
-    ('4-H-CHEM', 'Level 4 Variation 1'),
-    ('4-H-CMC', 'Level 4 Variation 2'),
-    ('4-H-C&M', 'Level 4 Variation 3'),
-    ('5-M', 'Level 5 Variation 1'),
-    ('5-M-CHEM', 'Level 5 Variation 2'),
-    ('5-M-CMC', 'Level 5 Variation 3'),
-    ('5-M-C&M', 'Level 5 Variation 4'),
-    ('5-M-CP', 'Level 5 Variation 5'),
+    ('3', 'Honours'),
+    ('4', 'Postgraduate'),
+]
+
+STUDENT_LEVEL_CHOICES = [
+    ('1', 'Level 1'),
+    ('2', 'Level 2'),
+    ('3', 'Honours Level 3'),
+    ('4', 'Honours Level 4'),
+    ('5', 'Honours Level 5'),
+    ('6', 'Postgraduate'),
 ]
 
 SEMESTER_CHOICES = [
@@ -144,9 +143,8 @@ class Course(models.Model):
                                  help_text='eg.BIOCHEM3')
 
     level = models.CharField(max_length=20,
-                             choices=LEVEL_CHOICES)
+                             choices=COURSE_LEVEL_CHOICES)
 
-    year = models.PositiveIntegerField()
 
     academicYearTaught = models.CharField(max_length=5,
                                           verbose_name="Academic Year Taught",
@@ -189,7 +187,6 @@ class Course(models.Model):
         self.shortHand = self.shortHand.upper()
         self.minimumPassGrade = self.minimumPassGrade.upper()
         self.minimumPassGrade22Scale = BAND_TO_GRADE[self.minimumPassGrade]
-        self.year = int(self.level[0])
         self.slug = slugify(str(self.code) + "-" + str(self.degree))
         super(Course, self).save(*args, **kwargs)
 
@@ -223,7 +220,7 @@ class Student(models.Model):
                                      verbose_name="Academic Plan/Degree")
 
     level = models.CharField(max_length=20,
-                             choices=LEVEL_CHOICES)
+                             choices=STUDENT_LEVEL_CHOICES)
 
     graduationDate = models.DateField(blank=True,
                                       verbose_name="Graduation Date")

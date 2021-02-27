@@ -145,24 +145,23 @@ def courses(request):
     coursesDict = {}
     courses = Course.objects.all()
 
-    yearDict = {}
+    levelDict = {}
 
     for course in courses:
-        year = course.year
         slug = course.slug
         code = course.code
         color = course.courseColor
         level = course.level
         name = course.name
 
-        if year not in yearDict.values():
-            yearDict[year] = year
+        if level not in levelDict.values():
+            levelDict[level] = level
 
-        courseList = [year, slug, code, color, level, name]
+        courseList = [level, slug, code, color, name]
 
         coursesDict[course] = courseList
 
-    return render(request, 'chemapp/courses.html', {'courses': coursesDict, 'years': yearDict})
+    return render(request, 'chemapp/courses.html', {'courses': coursesDict, 'levels': levelDict})
 
 
 # Dictionary structure

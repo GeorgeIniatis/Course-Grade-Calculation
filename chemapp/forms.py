@@ -2,22 +2,20 @@ from django import forms
 from chemapp.models import *
 from django.contrib.auth.models import User
 
-LEVEL_CHOICES = [
-    ('', 'Select a choice'),
+COURSE_LEVEL_CHOICES = [
     ('1', 'Level 1'),
     ('2', 'Level 2'),
-    ('3', 'Level 3'),
-    ('3-M', 'Level 3 MSci'),
-    ('3-CS', 'Level 3 Chemical Studies'),
-    ('4-M', 'Level 4 MSci'),
-    ('4-H-CHEM', 'Level 4 Variation 1'),
-    ('4-H-CMC', 'Level 4 Variation 2'),
-    ('4-H-C&M', 'Level 4 Variation 3'),
-    ('5-M', 'Level 5 Variation 1'),
-    ('5-M-CHEM', 'Level 5 Variation 2'),
-    ('5-M-CMC', 'Level 5 Variation 3'),
-    ('5-M-C&M', 'Level 5 Variation 4'),
-    ('5-M-CP', 'Level 5 Variation 5'),
+    ('3', 'Honours'),
+    ('4', 'Postgraduate'),
+]
+
+STUDENT_LEVEL_CHOICES = [
+    ('1', 'Level 1'),
+    ('2', 'Level 2'),
+    ('3', 'Honours Level 3'),
+    ('4', 'Honours Level 4'),
+    ('5', 'Honours Level 5'),
+    ('6', 'Postgraduate'),
 ]
 
 SEMESTER_CHOICES = [
@@ -169,7 +167,7 @@ class SuperCourseForm(forms.ModelForm):
 
     level = forms.ChoiceField(label='Level',
                               help_text='Level 1',
-                              choices=LEVEL_CHOICES,
+                              choices=COURSE_LEVEL_CHOICES,
                               widget=forms.Select(
                                   attrs={
                                       'style': 'width:300px',
@@ -553,7 +551,7 @@ class StudentForm(forms.ModelForm):
                                           ))
 
     level = forms.ChoiceField(label='Level',
-                              choices=LEVEL_CHOICES,
+                              choices=STUDENT_LEVEL_CHOICES,
                               widget=forms.Select(
                                   attrs={
                                       'style': 'width:300px',
