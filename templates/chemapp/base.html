@@ -78,6 +78,7 @@
         </form>
         <form class="d-flex">
           <a type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#logoutModal"><i class="bi bi-box-arrow-right"></i> Logout</a>
+          <a type="button" class="btn text-white " data-bs-toggle="modal" data-bs-target="#HelpModal"><i class="bi bi-info-circle"></i> </a>
         </form>
 
         <!-- Modal -->
@@ -91,6 +92,55 @@
               <div class="modal-footer">
                 <button type="button" class="btn btn-success" data-bs-dismiss="modal">Stay logged in</button>
                 <a class="btn btn-danger" href="{% url 'chemapp:logout' %}">Logout</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+        <div class="modal fade" id="HelpModal" tabindex="-1" aria-labelledby="HelpModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title text-dark" id="HelpLabel">Welcome to my self proclaimed fabulous tutorial!</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+
+              <div class="modal-body text-dark">
+                <p>
+                  Welcome to a small tutorial on how to utilize all the features our site has to offer. I will try and cover all aspects of the
+                  site but if you have any questions feel free to @fraser on teams with any questions!
+                </p>
+                <p>
+                  <b>Permissions:</b><br/>
+                  Admin accounts are the only acocunts that can edit permissions, they can do this by logging in as admin and following the link on navbar "Admin Page" and entering the users view,
+                  selecting a user and scrolling down to permissions and moving whichever permissions you would like them have over.<br/><br/>
+                </p>
+                <p>
+                  <b>There are 4 main permissions for each Model:</b>
+                  <p class="ms-3 "><i>add , change , delete , view</i><br><br>
+                  These permissions are site wide, for instance if a user has permission to delete degree, they can delete any degree, so these 4 base permissions should be kept to admin accounts only.</p>
+                <p>
+                  <br/><b>Courses are the only model with unique permissions:</b>
+                  <p class="ms-3 "><i>edit "CODE-DEGREE" , upload "CODE-DEGREE"</i><br><br>
+                  If you search the course code in the permissions section you can find these permissions to edit and upload grades.</p><br>
+                </p>
+                <p>
+                  <b>Data Flow</b><br/>
+                    <p class="ms-5"><b>Step 1:</b> Add a Degree, either manually or via CSV upload. There is a template for you to copy paste on the upload page.</p>
+                    <p class="ms-5"><b>Step 2:</b> Add Course</p>
+                    <p class="ms-5"><b>Step 3:</b> Add Assessments to courses</p>
+                    <p class="ms-5"><b>Step 4:</b> Add questions to assessments</p>
+                    <p class="ms-5"><b>Step 5:</b> Add students to course, you can either upload a list of students on the course page, or manually add a student 1 by 1 on the students page if they do not have any courses yet.</p>
+                    <p class="ms-5"><b>Step 4:</b> The Last step is to upload grades for each question using the upload button on the exam section on the course page</p>
+                    <p>Most of these uploads can be done manually or via CSV upload. There is a template for you to copy paste on the upload page.</p>
+                </p>
+              </div>
+
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal">Close</button>
               </div>
             </div>
           </div>
