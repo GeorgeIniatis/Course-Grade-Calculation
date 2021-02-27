@@ -150,14 +150,15 @@ def courses(request):
     for course in courses:
         year = course.year
         slug = course.slug
-        name = course.name
+        code = course.code
         color = course.courseColor
         level = course.level
+        name = course.name
 
         if year not in yearDict.values():
             yearDict[year] = year
 
-        courseList = [year, slug, name, color, level]
+        courseList = [year, slug, code, color, level,name]
 
         coursesDict[course] = courseList
 

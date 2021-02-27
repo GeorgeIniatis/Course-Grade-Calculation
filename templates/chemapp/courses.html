@@ -21,14 +21,14 @@ Courses
   </div>
   <!-- Sectionfor year 1 courses -->
   <div class="collapse " id="undergrad-year-1">
-    <div class="row align-items-start pt-3">
+    <div class="row align-items-start pt-3 ">
       {% for key,value in courses.items %}
       {% if value.0 == 1 %}
 
-      <div class="col-3 d-grid gap-2 mt-3"  >
+      <div class="col d-grid gap-2 mt-3 pb-auto "  >
         <a class="btn text-start  pb-5" style="background-color:{{value.3}}" href="{{ value.1 }}" role="button">
-          <h2>{{ key }}</h2>
-          {{ value.2 }}
+          <h2>{{ value.2 }}</h2>
+          <p class="text-uppercase">{{ value.1 }}<br>{{ value.5 }}</p>
         </a>
       </div>
       {% endif %}
@@ -54,8 +54,8 @@ Courses
 
       <div class="col-3 d-grid gap-2 mt-3"  >
         <a class="btn text-start  pb-5" style="background-color:{{value.3}}" href="{{ value.1 }}" role="button">
-          <h2>{{ key }}</h2>
-          {{ value.2 }}
+          <h2>{{ value.2 }}</h2>
+          <p class="text-uppercase">{{ value.1 }}<br>{{ value.5 }}</p>
         </a>
       </div>
       {% endif %}
@@ -82,8 +82,8 @@ Courses
 
       <div class="col-3 d-grid gap-2 mt-3"  >
         <a class="btn text-start  pb-5" style="background-color:{{value.3}}" href="{{ value.1 }}" role="button">
-          <h2>{{ key }}</h2>
-          {{ value.2 }}
+          <h2>{{ value.2 }}</h2>
+          <p class="text-uppercase">{{ value.1 }}<br>{{ value.5 }}</p>
         </a>
       </div>
       {% endif %}
@@ -110,8 +110,8 @@ Courses
 
       <div class="col-3 d-grid gap-2 mt-3"  >
         <a class="btn text-start  pb-5" style="background-color:{{value.3}}" href="{{ value.1 }}" role="button">
-          <h2>{{ key }}</h2>
-          {{ value.2 }}
+          <h2>{{ value.2 }}</h2>
+          <p class="text-uppercase">{{ value.1 }}<br>{{ value.5 }}</p>
         </a>
       </div>
       {% endif %}
@@ -138,8 +138,8 @@ Courses
 
       <div class="col-3 d-grid gap-2 mt-3"  >
         <a class="btn text-start  pb-5" style="background-color:{{value.3}}" href="{{ value.1 }}" role="button">
-          <h2>{{ key }}</h2>
-          {{ value.2 }}
+          <h2>{{ value.2 }}</h2>
+          <p class="text-uppercase">{{ value.1 }}<br>{{ value.5 }}</p>
         </a>
       </div>
       {% endif %}
