@@ -8,6 +8,10 @@ Grades Upload
 
 <div class="container">
   <h2> Upload CSV files to add Grades</h2>
+  <p>Format for Grades CSV - the heading of the columns are required</p>
+  <div class="alert alert-secondary" role="alert">
+    idk the format @Sonali help
+  </div>
     <form class="mt-5"action="" method="POST" enctype="multipart/form-data">
       {% csrf_token %}
       <input  type="file" id="file1" name="file"><br/>

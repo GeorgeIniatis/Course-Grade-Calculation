@@ -9,6 +9,14 @@
 
 <div class="container">
   <h2> Upload csv files to add Assessments</h2>
+  <p>Format for Assessments CSV - the heading of the columns are required</p>
+  <div class="alert alert-secondary" role="alert">
+    name,total,weight,date,ncomponents<br>
+    Exam,20,0.25,09/09/2022 23:09,4<br>
+    Exam1,15,0.25,09/09/2022 23:09,4<br>
+    Exam2,15,0.25,09/09/2022 23:09,4<br>
+    Exam3,15,0.25,09/09/2022 23:09,4
+  </div>
     <form class="mt-5" action="" method="POST" enctype="multipart/form-data">
       {% csrf_token %}
       <input  type="file" id="file1" name="file"><br/>
