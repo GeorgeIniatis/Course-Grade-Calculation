@@ -288,8 +288,6 @@ class Assessment(models.Model):
 
     slug = models.SlugField()
 
-    componentsAdded = models.BooleanField(default=False)
-
     # Example
     # If an exam has 3 required question and the student needs to answer 1 more from 4 optional questions
     # the componentNumberNeeded would be 4 in this case

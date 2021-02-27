@@ -241,7 +241,7 @@ def add_course(request):
 
             # Success message
             messages.success(request, "Course added successfully!")
-            return redirect(reverse('chemapp:add_lecturers', kwargs={'course_name_slug': course_slug}))
+            return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_slug}))
 
         else:
             messages.error(request, 'Course has already been added!')
@@ -267,8 +267,8 @@ def add_lecturers(request, course_name_slug):
         for lecture in lect:
             lecturers_list.append(Staff.objects.get(staffID=lecture))
         course.lecturers.add(*lecturers_list)
-        messages.success(request, 'Course was updated successfully!')
-        return redirect(reverse('chemapp:add_assessments', kwargs={'course_name_slug': course_name_slug}))
+        messages.success(request, 'Lecturers added successfully!')
+        return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
     else:
         course_lecturer_form = CourseLecturerForm(instance=course)
 
@@ -404,10 +404,7 @@ def add_assessments(request, course_name_slug):
 
                 # Success message
                 messages.success(request, "Assessments added successfully!")
-                assessment_name_slug = assessmentsCreated.first().slug
-                return redirect(reverse('chemapp:add_assessmentComponents',
-                                        kwargs={'course_name_slug': course_name_slug,
-                                                'assessment_name_slug': assessment_name_slug}))
+                return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
         else:
             print(assessment_formset.errors)
     else:
@@ -529,15 +526,6 @@ def add_assessmentComponents(request, course_name_slug, assessment_name_slug):
                                                                     assessment=assessment))
 
             AssessmentComponent.objects.bulk_create(assessmentComponents)
-            assessment.componentsAdded = True
-            assessment.save()
-
-            for assessment in allAssessments:
-                if assessment.componentsAdded == False:
-                    assessment_name_slug = assessment.slug
-                    return redirect(reverse('chemapp:add_assessmentComponents',
-                                            kwargs={'course_name_slug': course_name_slug,
-                                                    'assessment_name_slug': assessment_name_slug}))
 
             # Success message
             messages.success(request, "Components added successfully!")
@@ -1458,7 +1446,8 @@ def upload_course_csv(request):
 
                 print("helllooo")
 
-                Permission.objects.create(codename='can_edit_course' + course_slug, name="can edit course " + course_slug,
+                Permission.objects.create(codename='can_edit_course' + course_slug,
+                                          name="can edit course " + course_slug,
                                           content_type=content_type, )
                 Permission.objects.create(codename='can_upload_grades_for' + course_slug,
                                           name="can upload grades for " + course_slug, content_type=content_type, )
