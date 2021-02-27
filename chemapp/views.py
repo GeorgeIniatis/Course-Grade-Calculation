@@ -1451,6 +1451,18 @@ def upload_course_csv(request):
                 degree = Degree.objects.get(degreeCode=column[1])
                 degree.numberOfCourses = degree.numberOfCourses + 1
                 degree.save()
+
+                content_type = ContentType.objects.get_for_model(Course)
+
+                course_slug = column[0] + "-" + column[1]
+
+                print("helllooo")
+
+                Permission.objects.create(codename='can_edit_course' + course_slug, name="can edit course " + course_slug,
+                                          content_type=content_type, )
+                Permission.objects.create(codename='can_upload_grades_for' + course_slug,
+                                          name="can upload grades for " + course_slug, content_type=content_type, )
+
             _, created = Course.objects.update_or_create(
                 code=column[0],
                 degree=Degree.objects.get(degreeCode=column[1]),
