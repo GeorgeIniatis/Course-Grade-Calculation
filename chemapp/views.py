@@ -158,7 +158,7 @@ def courses(request):
         if year not in yearDict.values():
             yearDict[year] = year
 
-        courseList = [year, slug, code, color, level,name]
+        courseList = [year, slug, code, color, level, name]
 
         coursesDict[course] = courseList
 
@@ -1573,12 +1573,13 @@ def upload_assessment_comp_csv(request, course_name_slug, assessment_name_slug):
 
 @login_required
 @permission_required_context('chemapp.add_assessmentComponents', 'No permission to add_grades', raise_exception=True)
-def upload_grades_csv(request, course_code, assessment_name):
+def upload_grades_csv(request, course_name_slug, assessment_name_slug, assessment_component_slug):
     template = 'chemapp/upload_grades_csv.html'
     data = AssessmentComponentGrade.objects.all()
-    course = Course.objects.get(code=course_code)
-    assessment = Assessment.objects.get(assessmentName=assessment_name, course=course)
-    component = AssessmentComponent.objects.get(assessment=assessment)
+
+    course = Course.objects.get(slug=course_name_slug)
+    assessment = Assessment.objects.get(slug=assessment_name_slug, course=course)
+    component = AssessmentComponent.objects.get(slug=assessment_component_slug, assessment=assessment)
 
     if request.method == "GET":
         return render(request, template)
