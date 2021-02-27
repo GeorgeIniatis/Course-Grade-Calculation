@@ -29,8 +29,8 @@
 
 
     <div class=" mb-3 d-grid gap-2 d-md-flex justify-content-md-start">
-      <a type= "button" class="btn btn-danger "  href="{% url 'chemapp:course_students' course_name_slug=course_name_slug %}"> Students enrolled in this class</a>
-      <a class="btn btn-danger " href="c"><i class="pe-1 bi bi-file-earmark-arrow-up"></i> Upload CSV File to add students to this course</a>
+      <a type= "button" class="btn btn-info "  href="{% url 'chemapp:course_students' course_name_slug=course_name_slug %}"> View enrolled Students</a>
+      <a class="btn btn-primary " href="c"><i class="pe-1 bi bi-file-earmark-arrow-up"></i> Upload CSV File to add students to this course</a>
       <a class="btn btn-warning " href="{% url 'chemapp:edit_course' course_name_slug=course_name_slug %}"><i class="bi bi-pencil-square"></i> Edit</a>
       <a type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#{{course_name_slug}}"><i class="bi bi-trash"></i></a>
     </div>
@@ -78,9 +78,9 @@
   <p> No assessments have been yet set for this course! </p>
   <div class="d-grid gap-2 d-md-flex justify-content-md-start">
     <!-- Add Assessment Button -->
-    <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_assessments' course_name_slug=course_name_slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Add Assessments</a>
+    <a class="btn btn-success mt-3" href="{% url 'chemapp:add_assessments' course_name_slug=course_name_slug %}"><i class="bi bi-plus"></i>Add Assessments</a>
     <!-- Upload Assessments Button -->
-    <a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_assessment_csv'  course_name_slug=course_name_slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Upload CSV File to add Assessments</a>
+    <a class="btn btn-primary mt-3" href="{% url 'chemapp:upload_assessment_csv'  course_name_slug=course_name_slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Upload CSV File to add Assessments</a>
   </div>
   {% else %}
 
