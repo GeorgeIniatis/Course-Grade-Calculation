@@ -138,10 +138,9 @@
           <td>{{ component.marks }}</td>
           <td class="text-end">
             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-              <a class="btn btn-warning " href="{% url 'chemapp:edit_assessmentComponent' course_name_slug=course_name_slug assessment_name_slug=assessment.slug assessment_component_slug=component.slug %}"><i class="bi bi-pencil-square"></i> Edit</a>
-              <a type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#A{{component.slug}}"><i class="bi bi-trash"></i></a>
-              <!-- Upload Button to add grades for component-->
-              <a class="btn btn-danger btn-sm mt-3 " href="{% url 'chemapp:upload_grades_csv' course_name_slug=course_name_slug assessment_name_slug=assessment.slug assessment_component_slug=component.slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i> Upload CSV File to add grades</a>
+              <a class="btn btn-warning btn-sm " href="{% url 'chemapp:edit_assessmentComponent' course_name_slug=course_name_slug assessment_name_slug=assessment.slug assessment_component_slug=component.slug %}"><i class="bi bi-pencil-square"></i> Edit</a>
+              <a type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#A{{component.slug}}"><i class="bi bi-trash"></i></a>
+              <a class="btn btn-primary btn-sm  " href="{% url 'chemapp:upload_grades_csv' course_name_slug=course_name_slug assessment_name_slug=assessment.slug assessment_component_slug=component.slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i> Upload CSV File to add grades</a>
             </div>
 
             <!-- Modal -->
@@ -171,11 +170,11 @@
 
 
 
-    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end pt-3 ">
       <!-- Add Assessment Components Button -->
-      <a class="btn btn-danger btn-sm mt-3" href="{% url 'chemapp:add_assessmentComponents' course_name_slug=course_name_slug assessment_name_slug=assessment.slug %}"><i class="bi bi-plus"></i></i>Add Components</a>
+      <a class="btn btn-success btn-sm " href="{% url 'chemapp:add_assessmentComponents' course_name_slug=course_name_slug assessment_name_slug=assessment.slug %}"><i class="bi bi-plus"></i></i>Add Components</a>
       <!-- Upload Button -->
-      <a class="btn btn-danger btn-sm mt-3" href="{% url 'chemapp:upload_assessment_comp_csv' course_name_slug=course_name_slug assessment_name_slug=assessment.slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Upload CSV File to add {{assessment.assessmentName}} components</a>
+      <a class="btn btn-primary btn-sm" href="{% url 'chemapp:upload_assessment_comp_csv' course_name_slug=course_name_slug assessment_name_slug=assessment.slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Upload CSV File to add {{assessment.assessmentName}} components</a>
     </div>
     </div>
   {% endfor %}
