@@ -74,7 +74,6 @@ class UserProfile(models.Model):
 
 
 class Degree(models.Model):
-    # Input mask?
     degreeCode = models.CharField(max_length=30,
                                   unique=True,
                                   help_text='eg.4H-CMC')
@@ -124,8 +123,6 @@ class Staff(models.Model):
 
 
 class Course(models.Model):
-    # I dont know the format of course codes need to check, format, max length ect
-    # Input mask?
     code = models.CharField(max_length=30,
                             help_text='eg. CHEM1005')
 
@@ -144,7 +141,6 @@ class Course(models.Model):
 
     level = models.CharField(max_length=20,
                              choices=COURSE_LEVEL_CHOICES)
-
 
     academicYearTaught = models.CharField(max_length=5,
                                           verbose_name="Academic Year Taught",

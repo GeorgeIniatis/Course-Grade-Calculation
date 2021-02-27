@@ -3,6 +3,7 @@ from chemapp.models import *
 from django.contrib.auth.models import User
 
 COURSE_LEVEL_CHOICES = [
+    ('', 'Select a choice'),
     ('1', 'Level 1'),
     ('2', 'Level 2'),
     ('3', 'Honours'),
@@ -10,6 +11,7 @@ COURSE_LEVEL_CHOICES = [
 ]
 
 STUDENT_LEVEL_CHOICES = [
+    ('', 'Select a choice'),
     ('1', 'Level 1'),
     ('2', 'Level 2'),
     ('3', 'Honours Level 3'),
@@ -50,12 +52,12 @@ class UserProfileForm(forms.ModelForm):
 
 class DegreeForm(forms.ModelForm):
     degreeCode = forms.CharField(label='Degree Code',
-                                 help_text='4A-ABC',
+                                 help_text='F123-4567',
                                  widget=forms.TextInput(
                                      attrs={
                                          'maxlength': '30',
                                          'type': 'text',
-                                         'style': 'width:300px',
+                                         'style': 'width:300px;text-transform:uppercase',
                                          'placeholder': 'Degree Code',
                                          'id': 'degreeCode',
                                          'required': True,
@@ -73,7 +75,7 @@ class DegreeForm(forms.ModelForm):
                                    'placeholder': 'Name',
                                    'required': True,
                                    'autofocus': True,
-                                   'id': 'degreeCode',
+                                   'id': 'degreeName',
                                    'class': 'form-control'
                                }
                            ))
@@ -96,7 +98,7 @@ class EditDegreeForm(DegreeForm):
 
 class SuperCourseForm(forms.ModelForm):
     code = forms.CharField(label='Code',
-                           help_text='CHEM1006',
+                           help_text='CHEM_1006',
                            widget=forms.TextInput(
                                attrs={
                                    'maxlength': '30',
@@ -619,13 +621,13 @@ class StudentForm(forms.ModelForm):
         if 'academicPlan' in self.data:
             try:
                 degree = int(self.data.get('academicPlan'))
-                self.fields['courses'].queryset = Course.objects.filter(degree=degree).order_by('year')
+                self.fields['courses'].queryset = Course.objects.filter(degree=degree).order_by('level')
             except (ValueError, TypeError):
                 pass
         elif self.instance.pk:
             if (self.instance.academicPlan != None):
                 self.fields['courses'].queryset = Course.objects.filter(degree=self.instance.academicPlan).order_by(
-                    'year')
+                    'level')
 
 
 class EditStudentForm(StudentForm):

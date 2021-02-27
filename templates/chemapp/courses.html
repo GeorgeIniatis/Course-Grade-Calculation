@@ -25,7 +25,7 @@ Courses
       {% for key,value in courses.items %}
       {% if value.0 == '1' %}
 
-      <div class="col d-grid gap-2 mt-3 pb-auto "  >
+      <div class="col-3 d-grid gap-2 mt-3"  >
         <a class="btn text-start  pb-5" style="background-color:{{value.3}}" href="{{ value.1 }}" role="button">
           <h2>{{ value.2 }}</h2>
           <p class="text-uppercase">{{ value.1 }}<br>{{ value.4 }}</p>

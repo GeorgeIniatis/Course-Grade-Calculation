@@ -66,7 +66,7 @@ def add_degree(request):
             # This is used to check for Degree duplicates
             codes = []
             for form in degree_formset:
-                degreeCode = form.cleaned_data.get('degreeCode')
+                degreeCode = form.cleaned_data.get('degreeCode').upper()
                 name = form.cleaned_data.get('name')
                 slug = slugify(degreeCode)
 
@@ -856,7 +856,7 @@ def delete_student(request, student_id):
 @login_required
 def ajax_filter_courses(request):
     degree = request.GET.get('degree')
-    courses = Course.objects.filter(degree=degree).order_by('year')
+    courses = Course.objects.filter(degree=degree).order_by('level')
     return render(request, 'chemapp/courses_dropdown_list.html', {'courses': courses})
 
 
