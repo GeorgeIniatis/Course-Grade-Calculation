@@ -69,14 +69,15 @@
         </ul>
 
 
-
-        <form action="{% url 'chemapp:search_course' %}" method="GET" value="{{request.GET.q}}">
-        <input type="text" name="q" value="{{request.GET.q}}" placeholder="Search"/>
-        <input type="submit" name="submit" value="Search"/>
-        </form>
         <form class="d-flex">
           <a class="btn text-white pe-none" type="submit">Welcome, {{request.user.username}}</a>
-          <a type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#logoutModal"><i class="bi bi-box-arrow-right"></i> Logout</a>
+        </form>
+        <form class="d-flex " action="{% url 'chemapp:search_site' %}" method="GET" value="{{request.GET.q}}">
+          <input class="form-control me-2" type="Search" name="q" value="{{request.GET.q}}" placeholder="Search"/>
+          <input class="btn btn-outline-light me-2"type="submit" name="submit" value="Search"/>
+        </form>
+        <form class="d-flex">
+          <a type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#logoutModal"><i class="bi bi-box-arrow-right"></i> Logout</a>
         </form>
 
         <!-- Modal -->

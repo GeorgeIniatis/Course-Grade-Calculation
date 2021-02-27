@@ -69,5 +69,5 @@ urlpatterns = [
     path('staff/<staffID>/edit_staff/', views.edit_staff, name='edit_staff'),
 
     # Search URLs
-    path('search/', views.search_course, name='search_course'),
+    path('search/', views.search_site, name='search_site'),
 ]

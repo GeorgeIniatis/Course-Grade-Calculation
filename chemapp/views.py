@@ -1702,7 +1702,7 @@ def edit_staff(request, staffID):
     return render(request, 'chemapp/edit_staff.html', context=editStaffDict)
 
 
-def search_course(request):
+def search_site(request):
     if request.method == 'GET':
         query = request.GET.get('q')
 
@@ -1722,10 +1722,10 @@ def search_course(request):
                        'student_results': student_results,
                        'submitbutton': submitbutton}
 
-            return render(request, 'chemapp/search_course.html', context)
+            return render(request, 'chemapp/search_site.html', context)
 
         else:
-            return render(request, 'chemapp/search_course.html')
+            return render(request, 'chemapp/search_site.html')
 
     else:
-        return render(request, 'chemapp/search_course.html')
+        return render(request, 'chemapp/search_site.html')
