@@ -349,11 +349,13 @@ def delete_course(request, course_name_slug):
 @login_required
 @permission_required_context('chemapp.add_assessments', 'No permission to add_assessments', raise_exception=True)
 def add_assessments(request, course_name_slug):
-    addAssessmentsDict = {}
-    addAssessmentsDict['course_name_slug'] = course_name_slug
-
     AssessmentFormSet = formset_factory(AssessmentForm, extra=1)
     course = Course.objects.get(slug=course_name_slug)
+    existingAssessments = Assessment.objects.filter(course=course)
+
+    addAssessmentsDict = {}
+    addAssessmentsDict['course_name_slug'] = course_name_slug
+    addAssessmentsDict['existingAssessments'] = existingAssessments
 
     if (request.method == 'POST'):
         assessment_formset = AssessmentFormSet(request.POST)
@@ -363,8 +365,12 @@ def add_assessments(request, course_name_slug):
 
             # This is used to check for Assessment duplicates
             assessmentNames = []
-            # This is used to check that the Assessmet weight sum is equal to 1 in the end
+            # This is used to check that the Assessment weight sum is equal to 1 in the end
             weightSum = 0
+            # Calculates current weight Sum with existing Assessments
+            for assessment in existingAssessments:
+                weightSum += assessment.weight
+
             for form in assessment_formset:
                 weight = form.cleaned_data.get('weight')
                 weightSum += weight
