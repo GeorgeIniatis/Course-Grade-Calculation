@@ -22,7 +22,6 @@ STUDENT_LEVEL_CHOICES = [
 ]
 
 SEMESTER_CHOICES = [
-    ('', 'Semester'),
     ('1', 'Semester 1'),
     ('2', 'Semester 2'),
     ('Both', 'Both'),
@@ -34,7 +33,7 @@ GRADE_TO_BAND = {22: 'A1', 21: 'A2', 20: 'A3', 19: 'A4', 18: 'A5',
                  11: 'D1', 10: 'D2', 9: 'D3',
                  8: 'E1', 7: 'E2', 6: 'E3',
                  5: 'F1', 4: 'F2', 3: 'F3',
-                 2: 'G1', 1: 'G2', 0: 'G3',
+                 2: 'G1', 1: 'G2', 0: 'H',
                  }
 
 BAND_TO_GRADE = {'A1': 22, 'A2': 21, 'A3': 20, 'A4': 19, 'A5': 18,
@@ -43,7 +42,7 @@ BAND_TO_GRADE = {'A1': 22, 'A2': 21, 'A3': 20, 'A4': 19, 'A5': 18,
                  'D1': 11, 'D2': 10, 'D3': 9,
                  'E1': 8, 'E2': 7, 'E3': 6,
                  'F1': 5, 'F2': 4, 'F3': 3,
-                 'G1': 2, 'G2': 1, 'G3': 0,
+                 'G1': 2, 'G2': 1, 'H': 0,
                  }
 
 # Could be removed if not necessary
@@ -89,6 +88,7 @@ class Degree(models.Model):
     slug = models.SlugField(unique=True)
 
     def save(self, *args, **kwargs):
+        self.degreeCode = self.degreeCode.upper()
         self.slug = slugify(self.degreeCode)
         super(Degree, self).save(*args, **kwargs)
 
