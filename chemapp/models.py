@@ -119,7 +119,7 @@ class Staff(models.Model):
         verbose_name_plural = 'Staff'
 
     def __str__(self):
-        return (str(self.title) + " " + str(self.firstName) + " " + str(self.lastName) + " " + str(self.staffID))
+        return (str(self.title) + " " + str(self.firstName) + " " + str(self.lastName))
 
 
 class Course(models.Model):

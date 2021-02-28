@@ -16,19 +16,46 @@
     <p> Degree: {{ course.degree }} </p>
     <p> Credits: {{ course.creditsWorth }} </p>
     <p> Shorthand: {{ course.shortHand }} </p>
-    <p> Level: {{ course.level }} </p>
+
+    {% if course.level == '3' %}
+      <p> Level: Honours </p>
+    {% elif course.level == '4' %}
+      <p> Level: Postgraduate </p>
+    {% else %}
+      <p> Level: {{ course.level }} </p>
+    {% endif %}
+
     <p> Academic Year Taught: {{ course.academicYearTaught }} </p>
     <p> Semester: {{ course.semester }} </p>
     <p> Minimum Pass Grade: {{ course.minimumPassGrade }} </p>
     <p> Minimum Requirements For Credit: {{ course.minimumRequirementsForCredit }} </p>
+    <p> Number of Students Enrolled: {{ course.numberOfStudents }} </p>
     <p> Description: {{ course.description }} </p>
-    <p> Comments: {{ course.comments }} </p>
-    <p> Number of Students: {{ course.numberOfStudents }} </p>
+
+    {% if course.lecturers.all.exists %}
+      <p> Lecturers:
+      {% for lecturer in course.lecturers.all %}
+        {{ lecturer }} ,
+      {% endfor %}
+      </p>
+    {% else %}
+     <p> No Lecturers have been added yet</p>
+    {% endif %}
+
+    {% if course.comments %}
+      <p> Comments: {{ course.comments }} </p>
+    {% else %}
+      <p> No Comments yet</p>
+    {% endif %}
+
 
 
 
 
     <div class=" mb-3 d-grid gap-2 d-md-flex justify-content-md-start">
+      {% if not course.lecturers.all.exists %}
+        <a type= "button" class="btn btn-info "  href="{% url 'chemapp:add_lecturers' course_name_slug=course_name_slug %}"> Add Lecturers</a>
+      {% endif %}
       <a type= "button" class="btn btn-info "  href="{% url 'chemapp:course_students' course_name_slug=course_name_slug %}"> View enrolled Students</a>
       <a class="btn btn-primary " href="c"><i class="pe-1 bi bi-file-earmark-arrow-up"></i> Upload CSV File to add students to this course</a>
       <a class="btn btn-warning " href="{% url 'chemapp:edit_course' course_name_slug=course_name_slug %}"><i class="bi bi-pencil-square"></i> Edit</a>

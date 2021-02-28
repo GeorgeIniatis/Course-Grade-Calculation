@@ -265,18 +265,16 @@ class SuperCourseForm(forms.ModelForm):
                                    }
                                ))
 
-    lecturers = forms.ModelChoiceField(label='Lecturers',
-                                       help_text='e.g. Dr. Linnea Soler',
-                                       empty_label="Select a choice",
-                                       queryset=Staff.objects.all(),
-                                       widget=forms.Select(
-                                           attrs={
-                                               'style': 'width:100%',
-                                               'required': True,
-                                               'id': 'floatingDegree',
-                                               'class': 'form-select',
-                                           }
-                                       ))
+    lecturers = forms.ModelMultipleChoiceField(label='Lecturers',
+                                               help_text='Dr. Linnea Soler',
+                                               queryset=Staff.objects.all(),
+                                               widget=forms.SelectMultiple(
+                                                   attrs={
+                                                       'style': 'width:300px;height:150px',
+                                                       'required': True,
+                                                       'class': 'form-select',
+                                                   }
+                                               ))
 
     field_order = ['code', 'degree', 'name', 'shortHand', 'creditsWorth', 'level', 'academicYearTaught',
                    'semester', 'minimumPassGrade', 'minimumRequirementsForCredit', 'lecturers', 'description',
@@ -307,7 +305,7 @@ class EditCourseForm(SuperCourseForm):
 
     class Meta:
         model = Course
-        fields = CourseForm.Meta.fields
+        fields = SuperCourseForm.Meta.fields
         exclude = {'code', 'degree'}
 
 
@@ -328,7 +326,7 @@ class CourseLecturerForm(SuperCourseForm):
 
     class Meta:
         model = Course
-        fields = CourseForm.Meta.fields
+        fields = SuperCourseForm.Meta.fields
         exclude = {'code', 'degree', 'creditsWorth', 'name', 'shortHand', 'level', 'academicYearTaught',
                    'semester', 'description', 'comments', 'minimumPassGrade',
                    'minimumRequirementsForCredit', 'courseColor'}
@@ -475,7 +473,7 @@ class AssessmentComponentForm(forms.ModelForm):
                                        queryset=Staff.objects.all(),
                                        widget=forms.Select(
                                            attrs={
-                                               'style': 'width:100%',
+                                               'style': 'width:300px',
                                                'required': True,
                                                'id': 'floatingDegree',
                                                'class': 'form-select',

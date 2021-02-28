@@ -298,6 +298,7 @@ def edit_course(request, course_name_slug):
             description = edit_course_form.cleaned_data.get('description')
             comments = edit_course_form.cleaned_data.get('comments')
             courseColor = edit_course_form.cleaned_data.get('courseColor')
+            lecturers = edit_course_form.cleaned_data.get('lecturers')
 
             course.name = name
             course.shortHand = shortHand
@@ -310,6 +311,7 @@ def edit_course(request, course_name_slug):
             course.description = description
             course.comments = comments
             course.courseColor = courseColor
+            course.lecturers.set(lecturers)
 
             course.save()
 
