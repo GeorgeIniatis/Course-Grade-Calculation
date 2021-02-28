@@ -17,6 +17,7 @@ from chemapp.utils import user_edit_perm_check, permission_required_context, use
 from django.contrib.auth.decorators import permission_required
 from datetime import datetime
 import pytz
+from decimal import *
 
 GRADE_TO_BAND = {22: 'A1', 21: 'A2', 20: 'A3', 19: 'A4', 18: 'A5',
                  17: 'B1', 16: 'B2', 15: 'B3',
@@ -1480,8 +1481,6 @@ def upload_course_csv(request):
 @permission_required_context('chemapp.add_assessments', 'No permission to add_assessments', raise_exception=True)
 def upload_assessment_csv(request, course_name_slug):
     template = 'chemapp/upload_assessment_csv.html'
-    data = Assessment.objects.all()
-    weightsum = 0
 
     if request.method == "GET":
         return render(request, template)
@@ -1495,37 +1494,45 @@ def upload_assessment_csv(request, course_name_slug):
     io_string = io.StringIO(data_set)
     next(io_string)
 
-    exams = []
-    examNames = []
+    # Calculates current Weight Sum with existing Assessments
+    course = Course.objects.get(slug=course_name_slug)
+    weightsum = 0
 
-    # weight has to be equal to 1
-    # cannot have duplicate names
+    courseAssessments = Assessment.objects.filter(course=course)
+    for assessment in courseAssessments:
+        weightsum += assessment.weight
+
+    assessments = []
+    assessmentNames = []
+
     for column in csv.reader(io_string, delimiter=',', quotechar="|"):
-        weightsum += float(column[2])
-        if column[0] in examNames:
+        weightsum += Decimal(column[2])
+        # Cannot have duplicate Assessments
+        if column[0] in assessmentNames:
             messages.error(request, 'Duplicate Assessment Detected')
             return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
 
-        examNames.append(column[0])
-        exams.append(column)
+        assessmentNames.append(column[0])
+        assessments.append(column)
 
+    # The sum of the weight of all Assessments must be equal to 1
     if weightsum != 1:
         messages.error(request, 'The sum of the Assessment Weights must be equal to 1')
         return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
 
-    for exam in exams:
+    for assessment in assessments:
         # Converts date string to datetime object
-        dueDateString = exam[3]
+        dueDateString = assessment[3]
         dueDate = datetime.strptime(dueDateString, '%d/%m/%Y %H:%M')  # Unaware datetime object
         dueDate = dueDate.replace(tzinfo=pytz.UTC)  # Aware datetime object
 
         _, created = Assessment.objects.update_or_create(
-            assessmentName=exam[0],
+            assessmentName=assessment[0],
             course=Course.objects.get(slug=course_name_slug),
-            defaults={'totalMarks': exam[1],
-                      'componentNumberNeeded': exam[4],
+            defaults={'totalMarks': assessment[1],
+                      'componentNumberNeeded': assessment[4],
                       'dueDate': dueDate,
-                      'weight': exam[2],
+                      'weight': assessment[2],
                       }
         )
     else:
