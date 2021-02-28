@@ -57,7 +57,7 @@
         <a type= "button" class="btn btn-info "  href="{% url 'chemapp:add_lecturers' course_name_slug=course_name_slug %}"> Add Lecturers</a>
       {% endif %}
       <a type= "button" class="btn btn-info "  href="{% url 'chemapp:course_students' course_name_slug=course_name_slug %}"> View enrolled Students</a>
-      <a class="btn btn-primary " href="c"><i class="pe-1 bi bi-file-earmark-arrow-up"></i> Upload CSV File to add students to this course</a>
+      <a class="btn btn-primary " href="{% url 'chemapp:upload_student_csv' course_name_slug=course_name_slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i> Upload CSV File to add students to this course</a>
       <a class="btn btn-warning " href="{% url 'chemapp:edit_course' course_name_slug=course_name_slug %}"><i class="bi bi-pencil-square"></i> Edit</a>
       <a type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#{{course_name_slug}}"><i class="bi bi-trash"></i></a>
     </div>
