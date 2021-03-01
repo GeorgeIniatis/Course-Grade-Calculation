@@ -115,16 +115,16 @@
 
     <div class=" mb-3 d-grid gap-2 d-md-flex justify-content-md-start">
       <a class="btn btn-warning " href="{% url 'chemapp:edit_assessment' course_name_slug=course_name_slug assessment_name_slug=assessment.slug %}"><i class="bi bi-pencil-square"></i> Edit</a>
-      <a type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#{{assessment.slug}}"><i class="bi bi-trash"></i></a>
+      <a type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#A{{assessment.slug}}"><i class="bi bi-trash"></i></a>
     </div>
 
 
     <!-- Modal -->
-    <div class="modal fade" id="{{assessment.slug}}" tabindex="-1" aria-labelledby="{{assessment.slug}}Label" aria-hidden="true">
+    <div class="modal fade" id="A{{assessment.slug}}" tabindex="-1" aria-labelledby="A{{assessment.slug}}Label" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title text-dark" id="{{assessment.slug}}Label">Are you sure?</h5>
+            <h5 class="modal-title text-dark" id="A{{assessment.slug}}Label">Are you sure?</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-footer">
@@ -163,11 +163,11 @@
             </div>
 
             <!-- Modal -->
-            <div class="modal fade" id="{{component.slug}}" tabindex="-1" aria-labelledby="{{component.slug}}Label" aria-hidden="true">
+            <div class="modal fade" id="A{{component.slug}}" tabindex="-1" aria-labelledby="A{{component.slug}}Label" aria-hidden="true">
               <div class="modal-dialog">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h5 class="modal-title text-dark" id="{{component.slug}}Label">Are you sure?</h5>
+                    <h5 class="modal-title text-dark" id="A{{component.slug}}Label">Are you sure?</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
                   <div class="modal-footer">
