@@ -32,11 +32,14 @@ Students
         <th scope="row"><a href="{% url 'chemapp:student' student_id=student.studentID %}"><button>{{ student.studentID }}</button></a> </th>
         <td>{{student.firstName}}</td>
         <td>{{student.lastName}}</td>
-        <td>
+        <td></td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
 
+  <div class=" mb-3 d-grid gap-2 d-md-flex justify-content-md-start">
+    <a class="btn btn-primary " href="{% url 'chemapp:upload_student_csv' course_name_slug=course_name_slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i> Upload CSV File to add students to this course</a>
+  </div>
 </div>
 {% endblock %}
