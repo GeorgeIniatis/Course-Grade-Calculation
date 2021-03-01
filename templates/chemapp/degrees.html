@@ -60,6 +60,11 @@
                     <h5 class="modal-title text-dark" id="A{{ degree.name }}{{ degree.degreeCode }}Label">Are you sure?</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
+                  <div class="modal-body text-dark">
+                    <h3 class="text-danger bold">WARNING:</h3>
+                    <h5 class="text-danger">This will delete this degree and everything associated, including Courses and their exams. </h5>
+                    <h5 class="text-danger">This is permanent and cannot be undone, proceed with caution!<h5>
+                  </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-success" data-bs-dismiss="modal">Cancel</button>
                     <form id="course_delete_form" method="post" action="{% url 'chemapp:delete_degree' degree_code_slug=degree.slug %}">

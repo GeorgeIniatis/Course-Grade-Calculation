@@ -66,6 +66,11 @@
           <li class="nav-item">
             <a class="nav-link" href="{% url 'chemapp:about' %}">About</a>
           </li>
+          {% if user.is_superuser %}
+          <li class="nav-item">
+            <a class="nav-link text-danger" href="/admin">Admin</a>
+          </li>
+          {% endif %}
         </ul>
 
 
