@@ -6,7 +6,6 @@ class SlugAdmin(admin.ModelAdmin):
     exclude = ('slug',)
 
 
-admin.site.register(UserProfile)
 admin.site.register(Student)
 admin.site.register(Staff)
 admin.site.register(Degree)

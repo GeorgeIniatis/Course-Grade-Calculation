@@ -57,19 +57,7 @@ GOOD_CAUSE_ACTION = (
 )
 
 
-# People that have access to the site
-# Lecturers etc
-class UserProfile(models.Model):
-    user = models.OneToOneField(User,
-                                on_delete=models.CASCADE)
 
-    title = models.CharField(max_length=128)
-
-    class Meta:
-        verbose_name_plural = 'Users'
-
-    def __str__(self):
-        return self.user.username
 
 
 class Degree(models.Model):

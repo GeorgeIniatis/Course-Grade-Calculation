@@ -44,11 +44,6 @@ class UserForm(forms.ModelForm):
         fields = {'username', 'password', }
 
 
-class UserProfileForm(forms.ModelForm):
-    class Meta:
-        model = UserProfile
-        fields = {'title'}
-
 
 class DegreeForm(forms.ModelForm):
     degreeCode = forms.CharField(label='Degree Code',
