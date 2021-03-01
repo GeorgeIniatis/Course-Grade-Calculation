@@ -1691,7 +1691,7 @@ def add_staff(request):
     addStaffDict['staff_form'] = staff_form
     return render(request, 'chemapp/add_staff.html', context=addStaffDict)
 
-
+@login_required
 def staff_member(request, staffID):
     staff_memberDict = {}
     try:
