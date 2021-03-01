@@ -27,9 +27,9 @@ MEDIA_DIR = os.path.join(BASE_DIR, 'media')
 SECRET_KEY = '=vt10-w_zl1%lg8nlt%bem#k)@@o_^6@ebf445nd=6tw_+5)ft'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'chemapp',
     'tempus_dominus',
+    'whitenoise',
     'django_tables2',
     'colorfield',
 ]
