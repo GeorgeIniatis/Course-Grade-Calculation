@@ -28,6 +28,26 @@ GRADE_TO_BAND = {22: 'A1', 21: 'A2', 20: 'A3', 19: 'A4', 18: 'A5',
                  2: 'G1', 1: 'G2', 0: 'H',
                  }
 
+def addCoursePermissions(course_slug):
+    course_slug = course_slug.upper()
+    content_type = ContentType.objects.get_for_model(Course)
+    Permission.objects.create(codename='can_edit_course' + course_slug, name="can edit course " + course_slug,
+                              content_type=content_type, )
+    Permission.objects.create(codename='can_upload_grades_for' + course_slug,
+                              name="can upload grades for " + course_slug, content_type=content_type, )
+    return
+
+
+def removeCoursePermissions(course_slug):
+    course_slug = course_slug.upper()
+    content_type = ContentType.objects.get_for_model(Course)
+    Permission.objects.filter(codename='can_edit_course' + course_slug, name="can edit course " + course_slug,
+                              content_type=content_type, ).delete()
+    Permission.objects.filter(codename='can_upload_grades_for' + course_slug,
+                              name="can upload grades for " + course_slug, content_type=content_type, ).delete()
+    return
+
+
 
 @login_required
 def home(request):
@@ -130,10 +150,15 @@ def edit_degree(request, degree_code_slug):
 @login_required
 @permission_required_context('chemapp.delete_degree', 'No permission to delete_degree', raise_exception=True)
 def delete_degree(request, degree_code_slug):
-    degree = Degree.objects.get(slug=degree_code_slug)
+    delDegree = Degree.objects.get(slug=degree_code_slug)
 
     if request.method == 'POST':
-        degree.delete()
+        courses = Course.objects.filter(degree=delDegree)
+
+        for course in courses:
+            removeCoursePermissions(course.slug)
+
+        delDegree.delete()
 
         messages.success(request, 'Degree deleted successfully!')
         return redirect(reverse('chemapp:degrees'))
@@ -228,11 +253,7 @@ def add_course(request):
             course = course_form.save()
             course_slug = course.slug
 
-            content_type = ContentType.objects.get_for_model(Course)
-            Permission.objects.create(codename='can_edit_course' + course_slug, name="can edit course " + course_slug,
-                                      content_type=content_type, )
-            Permission.objects.create(codename='can_upload_grades_for' + course_slug,
-                                      name="can upload grades for " + course_slug, content_type=content_type, )
+            addCoursePermissions(course_slug)
 
             # Increment degree course count
             degree = course.degree
@@ -339,6 +360,11 @@ def delete_course(request, course_name_slug):
         # Reduce degree course count
         degree.numberOfCourses = degree.numberOfCourses - 1
         degree.save()
+
+
+
+        removeCoursePermissions(course_name_slug)
+
 
         messages.success(request, 'Course deleted successfully!')
         return redirect(reverse('chemapp:courses'))
@@ -1443,6 +1469,18 @@ def upload_course_csv(request):
             messages.error(request, 'The degree does not exist, unable to upload courses csv file')
             return redirect(reverse('chemapp:courses'))
 
+        if not Course.objects.filter(code=column[0]).exists():
+            degree = Degree.objects.get(degreeCode=column[1])
+            degree.numberOfCourses = degree.numberOfCourses + 1
+            degree.save()
+
+
+            course_slug = column[0] + "-" + column[1]
+
+            addCoursePermissions(course_slug)
+
+
+
         _, created = Course.objects.update_or_create(
             code=column[0],
             degree=Degree.objects.get(degreeCode=column[1]),
@@ -1460,21 +1498,7 @@ def upload_course_csv(request):
 
         )
 
-        if not Course.objects.filter(code=column[0]).exists():
-            degree = Degree.objects.get(degreeCode=column[1])
-            degree.numberOfCourses = degree.numberOfCourses + 1
-            degree.save()
 
-            content_type = ContentType.objects.get_for_model(Course)
-
-            course_slug = column[0] + "-" + column[1]
-
-
-            Permission.objects.create(codename='can_edit_course' + course_slug,
-                                      name="can edit course " + course_slug,
-                                      content_type=content_type, )
-            Permission.objects.create(codename='can_upload_grades_for' + course_slug,
-                                      name="can upload grades for " + course_slug, content_type=content_type, )
 
     context = {}
     messages.success(request, "Courses Added Successfully")
