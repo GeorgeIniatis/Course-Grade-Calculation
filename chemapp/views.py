@@ -1741,6 +1741,7 @@ def edit_staff(request, staffID):
     return render(request, 'chemapp/edit_staff.html', context=editStaffDict)
 
 
+@login_required
 def search_site(request):
     if request.method == 'GET':
         query = request.GET.get('q')
