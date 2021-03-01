@@ -2,22 +2,22 @@ from django import forms
 from chemapp.models import *
 from django.contrib.auth.models import User
 
-LEVEL_CHOICES = [
+COURSE_LEVEL_CHOICES = [
     ('', 'Select a choice'),
     ('1', 'Level 1'),
     ('2', 'Level 2'),
-    ('3', 'Level 3'),
-    ('3-M', 'Level 3 MSci'),
-    ('3-CS', 'Level 3 Chemical Studies'),
-    ('4-M', 'Level 4 MSci'),
-    ('4-H-CHEM', 'Level 4 Variation 1'),
-    ('4-H-CMC', 'Level 4 Variation 2'),
-    ('4-H-C&M', 'Level 4 Variation 3'),
-    ('5-M', 'Level 5 Variation 1'),
-    ('5-M-CHEM', 'Level 5 Variation 2'),
-    ('5-M-CMC', 'Level 5 Variation 3'),
-    ('5-M-C&M', 'Level 5 Variation 4'),
-    ('5-M-CP', 'Level 5 Variation 5'),
+    ('3', 'Honours'),
+    ('4', 'Postgraduate'),
+]
+
+STUDENT_LEVEL_CHOICES = [
+    ('', 'Select a choice'),
+    ('1', 'Level 1'),
+    ('2', 'Level 2'),
+    ('3', 'Honours Level 3'),
+    ('4', 'Honours Level 4'),
+    ('5', 'Honours Level 5'),
+    ('6', 'Postgraduate'),
 ]
 
 SEMESTER_CHOICES = [
@@ -25,6 +25,14 @@ SEMESTER_CHOICES = [
     ('1', 'Semester 1'),
     ('2', 'Semester 2'),
     ('Both', 'Both'),
+]
+
+STAFF_TITTLES = [
+    ('', 'Select a choice'),
+    ('Dr', 'Dr'),
+    ('Mr', 'Mr'),
+    ('Miss', 'Miss'),
+    ('Mrs', 'Mrs'),
 ]
 
 
@@ -44,12 +52,12 @@ class UserProfileForm(forms.ModelForm):
 
 class DegreeForm(forms.ModelForm):
     degreeCode = forms.CharField(label='Degree Code',
-                                 help_text='4A-ABC',
+                                 help_text='F123-4567',
                                  widget=forms.TextInput(
                                      attrs={
                                          'maxlength': '30',
                                          'type': 'text',
-                                         'style': 'width:300px',
+                                         'style': 'width:300px;text-transform:uppercase',
                                          'placeholder': 'Degree Code',
                                          'id': 'degreeCode',
                                          'required': True,
@@ -67,7 +75,7 @@ class DegreeForm(forms.ModelForm):
                                    'placeholder': 'Name',
                                    'required': True,
                                    'autofocus': True,
-                                   'id': 'degreeCode',
+                                   'id': 'degreeName',
                                    'class': 'form-control'
                                }
                            ))
@@ -88,10 +96,9 @@ class EditDegreeForm(DegreeForm):
         exclude = {'degreeCode'}
 
 
-
 class SuperCourseForm(forms.ModelForm):
     code = forms.CharField(label='Code',
-                           help_text='CHEM1006',
+                           help_text='CHEM_1006',
                            widget=forms.TextInput(
                                attrs={
                                    'maxlength': '30',
@@ -162,7 +169,7 @@ class SuperCourseForm(forms.ModelForm):
 
     level = forms.ChoiceField(label='Level',
                               help_text='Level 1',
-                              choices=LEVEL_CHOICES,
+                              choices=COURSE_LEVEL_CHOICES,
                               widget=forms.Select(
                                   attrs={
                                       'style': 'width:300px',
@@ -258,21 +265,20 @@ class SuperCourseForm(forms.ModelForm):
                                    }
                                ))
 
-    lecturers = forms.ModelChoiceField(label='Lecturers',
-                                    help_text='e.g. Dr. Linnea Soler',
-                                    empty_label="Select a choice",
-                                    queryset=Staff.objects.all(),
-                                    widget=forms.Select(
-                                        attrs={
-                                            'style': 'width:100%',
-                                            'required': True,
-                                            'id': 'floatingDegree',
-                                            'class': 'form-select',
-                                        }
-                                    ))
+    lecturers = forms.ModelMultipleChoiceField(label='Lecturers',
+                                               help_text='Dr. Linnea Soler',
+                                               queryset=Staff.objects.all(),
+                                               widget=forms.SelectMultiple(
+                                                   attrs={
+                                                       'style': 'width:300px;height:150px',
+                                                       'required': True,
+                                                       'class': 'form-select',
+                                                   }
+                                               ))
 
     field_order = ['code', 'degree', 'name', 'shortHand', 'creditsWorth', 'level', 'academicYearTaught',
-                   'semester', 'minimumPassGrade', 'minimumRequirementsForCredit', 'lecturers','description', 'comments',
+                   'semester', 'minimumPassGrade', 'minimumRequirementsForCredit', 'lecturers', 'description',
+                   'comments',
                    'courseColor']
 
     class Meta:
@@ -281,14 +287,17 @@ class SuperCourseForm(forms.ModelForm):
                   'semester', 'description', 'comments', 'minimumPassGrade',
                   'minimumRequirementsForCredit', 'lecturers', 'courseColor'}
 
+
 class CourseForm(SuperCourseForm):
     lecturers = None
+
     class Meta:
         model = Course
         fields = {'code', 'degree', 'creditsWorth', 'name', 'shortHand', 'level', 'academicYearTaught',
                   'semester', 'description', 'comments', 'minimumPassGrade',
                   'minimumRequirementsForCredit', 'courseColor'}
-        exclude = {'lecturers',}
+        exclude = {'lecturers', }
+
 
 class EditCourseForm(SuperCourseForm):
     code = None
@@ -296,8 +305,9 @@ class EditCourseForm(SuperCourseForm):
 
     class Meta:
         model = Course
-        fields = CourseForm.Meta.fields
+        fields = SuperCourseForm.Meta.fields
         exclude = {'code', 'degree'}
+
 
 class CourseLecturerForm(SuperCourseForm):
     code = None
@@ -316,10 +326,11 @@ class CourseLecturerForm(SuperCourseForm):
 
     class Meta:
         model = Course
-        fields = CourseForm.Meta.fields
+        fields = SuperCourseForm.Meta.fields
         exclude = {'code', 'degree', 'creditsWorth', 'name', 'shortHand', 'level', 'academicYearTaught',
-                  'semester', 'description', 'comments', 'minimumPassGrade',
-                  'minimumRequirementsForCredit', 'courseColor'}
+                   'semester', 'description', 'comments', 'minimumPassGrade',
+                   'minimumRequirementsForCredit', 'courseColor'}
+
 
 class AssessmentForm(forms.ModelForm):
     assessmentName = forms.CharField(label='Name',
@@ -397,6 +408,29 @@ class AssessmentForm(forms.ModelForm):
         fields = {'assessmentName', 'weight', 'totalMarks', 'componentNumberNeeded', 'dueDate'}
 
 
+class EditAssessmentForm(AssessmentForm):
+    assessmentName = None
+    weight = None
+
+    dueDate = forms.DateTimeField(input_formats=['%Y-%m-%dT%H:%M', ],
+                                  label='Due Date and Time',
+                                  help_text='12/01/2021 10:00',
+                                  widget=forms.DateTimeInput(
+                                      attrs={
+                                          'placeholder': 'Due Date and Time',
+                                          'type': 'datetime-local',
+                                          'style': 'width:200px',
+                                          'class': 'form-control',
+                                          'required': True,
+                                      },
+                                      format='%Y-%m-%dT%H:%M'))
+
+    class Meta:
+        model = Assessment
+        fields = AssessmentForm.Meta.fields
+        exclude = {'assessmentName', 'weight'}
+
+
 class AssessmentComponentForm(forms.ModelForm):
     required = forms.BooleanField(label='Required',
                                   required=False,
@@ -433,25 +467,24 @@ class AssessmentComponentForm(forms.ModelForm):
                                       }
                                   ))
 
-
     lecturers = forms.ModelChoiceField(label='Lecturers',
-                                help_text='e.g. Dr. Linnea Soler',
-                                empty_label="Select a choice",
-                                queryset=Staff.objects.all(),
-                                widget=forms.Select(
-                                    attrs={
-                                        'style': 'width:100%',
-                                        'required': True,
-                                        'id': 'floatingDegree',
-                                        'class': 'form-select',
-                                    }
-                                ))
+                                       help_text='e.g. Dr. Linnea Soler',
+                                       empty_label="Select a choice",
+                                       queryset=Staff.objects.all(),
+                                       widget=forms.Select(
+                                           attrs={
+                                               'style': 'width:300px',
+                                               'required': True,
+                                               'id': 'floatingDegree',
+                                               'class': 'form-select',
+                                           }
+                                       ))
 
-    field_order = ['required', 'lecturers','description', 'marks']
+    field_order = ['required', 'lecturers', 'description', 'marks']
 
     class Meta:
         model = AssessmentComponent
-        fields = {'required', 'lecturers' , 'marks', 'description'}
+        fields = {'required', 'lecturers', 'marks', 'description'}
 
 
 class EditAssessmentComponentForm(AssessmentComponentForm):
@@ -518,7 +551,7 @@ class StudentForm(forms.ModelForm):
                                           ))
 
     level = forms.ChoiceField(label='Level',
-                              choices=LEVEL_CHOICES,
+                              choices=STUDENT_LEVEL_CHOICES,
                               widget=forms.Select(
                                   attrs={
                                       'style': 'width:300px',
@@ -586,13 +619,13 @@ class StudentForm(forms.ModelForm):
         if 'academicPlan' in self.data:
             try:
                 degree = int(self.data.get('academicPlan'))
-                self.fields['courses'].queryset = Course.objects.filter(degree=degree).order_by('year')
+                self.fields['courses'].queryset = Course.objects.filter(degree=degree).order_by('level')
             except (ValueError, TypeError):
                 pass
         elif self.instance.pk:
             if (self.instance.academicPlan != None):
                 self.fields['courses'].queryset = Course.objects.filter(degree=self.instance.academicPlan).order_by(
-                    'year')
+                    'level')
 
 
 class EditStudentForm(StudentForm):
@@ -616,34 +649,34 @@ class EditStudentForm(StudentForm):
         fields = StudentForm.Meta.fields
         exclude = {'studentID'}
 
-class StaffForm(forms.ModelForm):
-    staffID = forms.IntegerField(label='staffID',
-                                   help_text='1234567',
-                                   widget=forms.NumberInput(
-                                       attrs={
-                                           'min': '0',
-                                           'max': '9999999',
-                                           'type': 'number',
-                                           'placeholder': 'Staff ID',
-                                           'style': 'width:300px',
-                                           'autofocus': True,
-                                           'class': 'form-control',
-                                           'required': True,
-                                       }
-                                   ))
 
-    title = forms.CharField(label='Title',
-                            help_text='Dr.',
-                            widget=forms.TextInput(
-                                attrs={
-                                    'maxlength': '128',
-                                    'type': 'text',
-                                    'placeholder': 'First Name',
-                                    'style': 'width:100%',
-                                    'class': 'form-control',
-                                    'required': True,
-                                }
-                            ))
+class StaffForm(forms.ModelForm):
+    staffID = forms.IntegerField(label='Staff ID',
+                                 help_text='1234567',
+                                 widget=forms.NumberInput(
+                                     attrs={
+                                         'min': '0',
+                                         'max': '9999999',
+                                         'type': 'number',
+                                         'placeholder': 'Staff ID',
+                                         'style': 'width:300px',
+                                         'autofocus': True,
+                                         'class': 'form-control',
+                                         'required': True,
+                                     }
+                                 ))
+
+    title = forms.ChoiceField(label='Title',
+                              help_text='Dr',
+                              choices=STAFF_TITTLES,
+                              widget=forms.Select(
+                                  attrs={
+                                      'style': 'width:300px',
+                                      'required': True,
+                                      'class': 'form-select',
+                                  }
+                              ))
+
     firstName = forms.CharField(label='First Name',
                                 help_text='Boyd',
                                 widget=forms.TextInput(
@@ -681,18 +714,21 @@ class StaffForm(forms.ModelForm):
                                    }
                                ))
 
-    field_order = ['staffID', 'title','firstName', 'lastName','comments']
+    field_order = ['staffID', 'title', 'firstName', 'lastName', 'comments']
 
     class Meta:
         model = Staff
-        fields = {'staffID', 'title','firstName', 'lastName', 'comments'}
+        fields = {'staffID', 'title', 'firstName', 'lastName', 'comments'}
+
 
 class EditStaffForm(StaffForm):
     staffID = None
+
     class Meta:
         model = Staff
         fields = StaffForm.Meta.fields
         exclude = {'staffID'}
+
 
 class AssessmentGradeForm(forms.ModelForm):
     submissionDate = forms.DateTimeField(input_formats=['%Y-%m-%dT%H:%M', ],

@@ -2,7 +2,6 @@
 {% load static %}
 
 {% block js_block %}
-<script src="{% static 'js/chemapp-courseInputMask.js' %}"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.min.js"></script>
 {% endblock %}
@@ -12,10 +11,10 @@ Add Course Lecturers
 {% endblock %}
 
 {% block body_block %}
-<div class="container mt-5 mb-5 ">
-  <h2> Add Course Lecturers (Optional)</h2>
+<div class="container mb-5 ">
+  <h2> Add Course Lecturers</h2>
 
-  <form id="course_lecturer_form" method="post" action="{% url 'chemapp:course_lecturer' course_name_slug=course_name_slug %}" enctype="multipart/form-data">
+  <form id="course_lecturer_form" method="post" action="{% url 'chemapp:add_lecturers' course_name_slug=course_name_slug %}" enctype="multipart/form-data">
 
     {% csrf_token %}
     <select class="js-example-basic-multiple" multiple="multiple" name="lecturers_list" style="width:300px">

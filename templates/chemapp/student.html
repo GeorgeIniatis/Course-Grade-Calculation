@@ -16,10 +16,10 @@
     <p> Graduation Date: {{ student.graduationDate }} </p>
     <p> Status: {{ student.status }} </p>
     <p> Comments: {{ student.comments }} </p>
-    
+
     <h2> Courses and Assessments </h2>
     {% for course,nestedDict in courses.items %}
-        
+
         <!-- Course Section -->
         <h4> Course: {{ course.name }} </h4>
         <!-- Course Grade Section -->
@@ -35,76 +35,87 @@
                 <p> <b> Student passed course </b> </p>
             {% endif %}
         {% endif %}
-        {% for assessmentDict in nestedDict.assessmentList %}
-            <!-- Assessment Section -->
-            {% for assessment,nestedDict in assessmentDict.items %}
-                <h4> Assessment: {{ assessment.assessmentName }} </h4>
-                <p> Weight: {{ assessment.weight }} </p>
-                <p> Total Marks: {{ assessment.totalMarks }} </p>
-                <p> Number of Components Needed: {{ assessment.componentNumberNeeded }} </p>
-                <p> Due Date and Time: {{ assessment.dueDate }} </p>
-                
-                <!-- Assessment Grade Section -->
-                {% if nestedDict.gradeObject is None %}
-                    <p> Assessment Grade has not been calculated yet </p>
-                {% else %}
-                    <p> Date and Time of Submission: {{ nestedDict.gradeObject.submissionDate }} </p>
-                    <p> <b> NDP: {{ nestedDict.gradeObject.noDetriment }} </b> </p>
-                    <p> <b> Good Cause: {{ nestedDict.gradeObject.goodCause }} </b> </p>
-                    <p> <b> Late: {{ nestedDict.gradeObject.late }} </b> </p>
-                    <p> <b> Component Numbers Match: {{ nestedDict.gradeObject.componentNumberMatch }} </b> </p>
-                    <p> Marked Grade (Out of {{ assessment.totalMarks }}) : {{ nestedDict.gradeObject.markedGrade }} </p>
-                    {% if nestedDict.gradeObject.finalGrade is not None %}
-                        <p> Final Grade (Out of {{ assessment.totalMarks }}): {{ nestedDict.gradeObject.finalGrade }} </p>
-                        <p> Final Grade (Out of 22): {{ nestedDict.gradeObject.finalGrade22Scale }} </p>
-                        <p> Band : {{ nestedDict.gradeObject.band }}</p>
-                    {% endif %}
 
-                    {% if nestedDict.gradeObject.finalGrade is None %}
-                        <!-- Add Final Grade Button -->
-                        <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_final_grade' student_id=student_id course_name_slug=course.slug assessment_name_slug=assessment.slug %}">Add final assessment grade</a>
-                        <br><br>
+        <!-- Check for Course Assessments -->
+        {% if nestedDict.assessmentList %}
+            {% for assessmentDict in nestedDict.assessmentList %}
+                <!-- Assessment Section -->
+                {% for assessment,nestedDict in assessmentDict.items %}
+                    <h4> Assessment: {{ assessment.assessmentName }} </h4>
+                    <p> Weight: {{ assessment.weight }} </p>
+                    <p> Total Marks: {{ assessment.totalMarks }} </p>
+                    <p> Number of Components Needed: {{ assessment.componentNumberNeeded }} </p>
+                    <p> Due Date and Time: {{ assessment.dueDate }} </p>
+
+                    <!-- Assessment Grade Section -->
+                    {% if nestedDict.gradeObject is None %}
+                        <p> Assessment Grade has not been calculated yet </p>
                     {% else %}
-                        <!-- Edit Final Grade Button -->
-                        <a class="btn btn-danger mt-3" href="{% url 'chemapp:edit_final_grade' student_id=student_id course_name_slug=course.slug assessment_name_slug=assessment.slug %}">Edit final grade</a>
-                         <!-- Delete Final Grade Button -->
-                        <form id="final_grade_delete_form" method="post" action="{% url 'chemapp:delete_final_grade' student_id=student_id course_name_slug=course.slug assessment_name_slug=assessment.slug %}">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-primary mt-5">Delete Final Grade</button>
-                        </form>
-                    {% endif %}
-                    
-                {% endif %}
-                <!-- Assessment Component Section -->
-                {% for componentDict in nestedDict.componentList %}
-                    {% for component,grade in componentDict.items %}
-                        <h4> Component: {{ component.description }} </h4>
-                        <p> Status: {{ component.status }} </p>
-                        <p> Marks: {{ component.marks }} </p>
-                        {% if grade is None %}
-                            <p> Grade: Not added yet </p>
-                        {% else %}
-                            <p> Grade: {{ grade }} </p>
+                        <p> Date and Time of Submission: {{ nestedDict.gradeObject.submissionDate }} </p>
+                        <p> <b> NDP: {{ nestedDict.gradeObject.noDetriment }} </b> </p>
+                        <p> <b> Good Cause: {{ nestedDict.gradeObject.goodCause }} </b> </p>
+                        <p> <b> Late: {{ nestedDict.gradeObject.late }} </b> </p>
+                        <p> <b> Component Numbers Match: {{ nestedDict.gradeObject.componentNumberMatch }} </b> </p>
+                        <p> Marked Grade (Out of {{ assessment.totalMarks }}) : {{ nestedDict.gradeObject.markedGrade }} </p>
+                        {% if nestedDict.gradeObject.finalGrade is not None %}
+                            <p> Final Grade (Out of {{ assessment.totalMarks }}): {{ nestedDict.gradeObject.finalGrade }} </p>
+                            <p> Final Grade (Out of 22): {{ nestedDict.gradeObject.finalGrade22Scale }} </p>
+                            <p> Band : {{ nestedDict.gradeObject.band }}</p>
                         {% endif %}
-                    {% endfor %}
-                {% endfor %}
 
-                {% if nestedDict.gradeObject is None %}
-                    <!-- Add Grades Button -->
-                    <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_grades' student_id=student_id course_name_slug=course.slug assessment_name_slug=assessment.slug %}">Add grades</a>
-                    <br><br>
-                {% else %}
-                    <!-- Edit Grades Button -->
-                    <a class="btn btn-danger mt-3" href="{% url 'chemapp:edit_grades' student_id=student_id course_name_slug=course.slug assessment_name_slug=assessment.slug %}">Edit grades</a>
-                    <!-- Delete Grades Button -->
-                    <form id="grades_delete_form" method="post" action="{% url 'chemapp:delete_grades' student_id=student_id course_name_slug=course.slug assessment_name_slug=assessment.slug %}">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-primary mt-5">Delete Grades</button>
-                    </form>
-                {% endif %}
-                
+                        {% if nestedDict.gradeObject.finalGrade is None %}
+                            <!-- Add Final Grade Button -->
+                            <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_final_grade' student_id=student_id course_name_slug=course.slug assessment_name_slug=assessment.slug %}">Add final assessment grade</a>
+                            <br><br>
+                        {% else %}
+                            <!-- Edit Final Grade Button -->
+                            <a class="btn btn-danger mt-3" href="{% url 'chemapp:edit_final_grade' student_id=student_id course_name_slug=course.slug assessment_name_slug=assessment.slug %}">Edit final grade</a>
+                            <!-- Delete Final Grade Button -->
+                            <form id="final_grade_delete_form" method="post" action="{% url 'chemapp:delete_final_grade' student_id=student_id course_name_slug=course.slug assessment_name_slug=assessment.slug %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary mt-5">Delete Final Grade</button>
+                            </form>
+                        {% endif %}
+
+                    {% endif %}
+
+                    <!-- Check for Assessment Components -->
+                    {% if nestedDict.componentList %}
+                        <!-- Assessment Component Section -->
+                        {% for componentDict in nestedDict.componentList %}
+                            {% for component,grade in componentDict.items %}
+                                <h4> Component: {{ component.description }} </h4>
+                                <p> Status: {{ component.status }} </p>
+                                <p> Marks: {{ component.marks }} </p>
+                                {% if grade is None %}
+                                    <p> Grade: Not added yet </p>
+                                {% else %}
+                                    <p> Grade: {{ grade }} </p>
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+
+                        {% if nestedDict.gradeObject is None %}
+                            <!-- Add Grades Button -->
+                            <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_grades' student_id=student_id course_name_slug=course.slug assessment_name_slug=assessment.slug %}">Add grades</a>
+                            <br><br>
+                        {% else %}
+                            <!-- Edit Grades Button -->
+                            <a class="btn btn-danger mt-3" href="{% url 'chemapp:edit_grades' student_id=student_id course_name_slug=course.slug assessment_name_slug=assessment.slug %}">Edit grades</a>
+                            <!-- Delete Grades Button -->
+                            <form id="grades_delete_form" method="post" action="{% url 'chemapp:delete_grades' student_id=student_id course_name_slug=course.slug assessment_name_slug=assessment.slug %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary mt-5">Delete Grades</button>
+                            </form>
+                        {% endif %}
+                    {% else %}
+                        <p> No Components have been added yet for this Assessment</p>
+                    {% endif %}
+                {% endfor %}
             {% endfor %}
-        {% endfor %}
+        {% else %}
+            <p> No Assessment have been added yet for this Course</p>
+        {% endif %}
     {% endfor %}
 
     <!-- Edit Student Button -->

@@ -11,7 +11,7 @@ Edit Student
 {% endblock %}
 
 {% block body_block %}
-<div class="container mt-5 mb-5 ">
+<div class="container mb-5 ">
     <h2> Edit Student "{{ student.firstName }} {{ student.lastName }}" </h2>
 
     <form id="edit_student_form" method="post" filter_courses_url = "{% url 'chemapp:ajax_filter_courses' %}" action="{% url 'chemapp:edit_student' student_id=student_id %}"  enctype="multipart/form-data">

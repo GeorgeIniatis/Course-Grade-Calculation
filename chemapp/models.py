@@ -5,25 +5,23 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from datetime import datetime
 from colorfield.fields import ColorField
 
-LEVEL_CHOICES = [
+COURSE_LEVEL_CHOICES = [
     ('1', 'Level 1'),
     ('2', 'Level 2'),
-    ('3', 'Level 3'),
-    ('3-M', 'Level 3 MSci'),
-    ('3-CS', 'Level 3 Chemical Studies'),
-    ('4-M', 'Level 4 MSci'),
-    ('4-H-CHEM', 'Level 4 Variation 1'),
-    ('4-H-CMC', 'Level 4 Variation 2'),
-    ('4-H-C&M', 'Level 4 Variation 3'),
-    ('5-M', 'Level 5 Variation 1'),
-    ('5-M-CHEM', 'Level 5 Variation 2'),
-    ('5-M-CMC', 'Level 5 Variation 3'),
-    ('5-M-C&M', 'Level 5 Variation 4'),
-    ('5-M-CP', 'Level 5 Variation 5'),
+    ('3', 'Honours'),
+    ('4', 'Postgraduate'),
+]
+
+STUDENT_LEVEL_CHOICES = [
+    ('1', 'Level 1'),
+    ('2', 'Level 2'),
+    ('3', 'Honours Level 3'),
+    ('4', 'Honours Level 4'),
+    ('5', 'Honours Level 5'),
+    ('6', 'Postgraduate'),
 ]
 
 SEMESTER_CHOICES = [
-    ('', 'Semester'),
     ('1', 'Semester 1'),
     ('2', 'Semester 2'),
     ('Both', 'Both'),
@@ -35,7 +33,7 @@ GRADE_TO_BAND = {22: 'A1', 21: 'A2', 20: 'A3', 19: 'A4', 18: 'A5',
                  11: 'D1', 10: 'D2', 9: 'D3',
                  8: 'E1', 7: 'E2', 6: 'E3',
                  5: 'F1', 4: 'F2', 3: 'F3',
-                 2: 'G1', 1: 'G2', 0: 'G3',
+                 2: 'G1', 1: 'G2', 0: 'H',
                  }
 
 BAND_TO_GRADE = {'A1': 22, 'A2': 21, 'A3': 20, 'A4': 19, 'A5': 18,
@@ -44,7 +42,7 @@ BAND_TO_GRADE = {'A1': 22, 'A2': 21, 'A3': 20, 'A4': 19, 'A5': 18,
                  'D1': 11, 'D2': 10, 'D3': 9,
                  'E1': 8, 'E2': 7, 'E3': 6,
                  'F1': 5, 'F2': 4, 'F3': 3,
-                 'G1': 2, 'G2': 1, 'G3': 0,
+                 'G1': 2, 'G2': 1, 'H': 0,
                  }
 
 # Could be removed if not necessary
@@ -75,7 +73,6 @@ class UserProfile(models.Model):
 
 
 class Degree(models.Model):
-    # Input mask?
     degreeCode = models.CharField(max_length=30,
                                   unique=True,
                                   help_text='eg.4H-CMC')
@@ -91,20 +88,22 @@ class Degree(models.Model):
     slug = models.SlugField(unique=True)
 
     def save(self, *args, **kwargs):
+        self.degreeCode = self.degreeCode.upper()
         self.slug = slugify(self.degreeCode)
         super(Degree, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.degreeCode
 
+
 class Staff(models.Model):
     staffID = models.PositiveIntegerField(validators=[MaxValueValidator(9999999)],
-                                            unique=True,
-                                            verbose_name="Staff ID")
+                                          unique=True,
+                                          verbose_name="Staff ID")
 
     title = models.CharField(max_length=128,
-                                 verbose_name="Title",
-                                  default='Dr/Mr/Miss/Mrs',)
+                             verbose_name="Title",
+                             default='Dr/Mr/Miss/Mrs', )
 
     firstName = models.CharField(max_length=128,
                                  verbose_name="First Name")
@@ -115,15 +114,15 @@ class Staff(models.Model):
     comments = models.TextField(max_length=2000,
                                 blank=True,
                                 help_text='Anything worth mentioning')
+
     class Meta:
         verbose_name_plural = 'Staff'
 
     def __str__(self):
-        return (str(self.title) + " " + str(self.firstName) + " " + str(self.lastName) + " " + str(self.staffID))
+        return (str(self.title) + " " + str(self.firstName) + " " + str(self.lastName))
+
 
 class Course(models.Model):
-    # I dont know the format of course codes need to check, format, max length ect
-    # Input mask?
     code = models.CharField(max_length=30,
                             help_text='eg. CHEM1005')
 
@@ -141,9 +140,7 @@ class Course(models.Model):
                                  help_text='eg.BIOCHEM3')
 
     level = models.CharField(max_length=20,
-                             choices=LEVEL_CHOICES)
-
-    year = models.PositiveIntegerField()
+                             choices=COURSE_LEVEL_CHOICES)
 
     academicYearTaught = models.CharField(max_length=5,
                                           verbose_name="Academic Year Taught",
@@ -172,7 +169,7 @@ class Course(models.Model):
     numberOfStudents = models.PositiveIntegerField(default=0,
                                                    verbose_name="Number of Students")
 
-    lecturers = models.ManyToManyField(Staff,verbose_name="Course Lecturers")
+    lecturers = models.ManyToManyField(Staff, verbose_name="Course Lecturers")
 
     slug = models.SlugField(unique=True)
 
@@ -186,13 +183,11 @@ class Course(models.Model):
         self.shortHand = self.shortHand.upper()
         self.minimumPassGrade = self.minimumPassGrade.upper()
         self.minimumPassGrade22Scale = BAND_TO_GRADE[self.minimumPassGrade]
-        self.year = int(self.level[0])
         self.slug = slugify(str(self.code) + "-" + str(self.degree))
         super(Course, self).save(*args, **kwargs)
 
     def __str__(self):
         return (str(self.name) + " (" + str(self.degree) + ")")
-
 
 
 class Student(models.Model):
@@ -221,7 +216,7 @@ class Student(models.Model):
                                      verbose_name="Academic Plan/Degree")
 
     level = models.CharField(max_length=20,
-                             choices=LEVEL_CHOICES)
+                             choices=STUDENT_LEVEL_CHOICES)
 
     graduationDate = models.DateField(blank=True,
                                       verbose_name="Graduation Date")
@@ -236,7 +231,7 @@ class Student(models.Model):
     courses = models.ManyToManyField(Course, blank=True)
 
     def save(self, *args, **kwargs):
-        self.anonID = (abs(hash(str(self.studentID))))/self.studentID
+        self.anonID = (abs(hash(str(self.studentID)))) / int(self.studentID)
         self.status = 'Enrolled' if self.gapYear == False else 'Gap Year'
         super(Student, self).save(*args, **kwargs)
 
@@ -285,8 +280,6 @@ class Assessment(models.Model):
                                on_delete=models.CASCADE)
 
     slug = models.SlugField()
-
-    componentsAdded = models.BooleanField(default=False)
 
     # Example
     # If an exam has 3 required question and the student needs to answer 1 more from 4 optional questions
@@ -370,7 +363,7 @@ class AssessmentComponent(models.Model):
 
     description = models.CharField(max_length=100)
 
-    lecturers = models.ManyToManyField(Staff,verbose_name="Course Lecturers")
+    lecturers = models.ManyToManyField(Staff, verbose_name="Course Lecturers")
 
     assessment = models.ForeignKey(Assessment,
                                    on_delete=models.CASCADE)

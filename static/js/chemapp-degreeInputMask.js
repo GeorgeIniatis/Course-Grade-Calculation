@@ -8,9 +8,5 @@ Mask Usage
 */
 $(document).ready(function(){
 	$.ajaxSetup({ cache: false });
-	$("#floatingCode").mask('SSSS_0000');
-    $("#id_academicYearTaught").mask('00-00');
-    $("#id_minimumPassGrade").mask('S0');
-    $("#id_creditsWorth").mask('099');
-    $("#id_minimumRequirementsForCredit").mask('0.09');
+    $("#degreeCode").mask('S000-0000');
 });

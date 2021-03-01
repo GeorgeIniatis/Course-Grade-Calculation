@@ -1,13 +1,11 @@
-from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.urls import reverse
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from chemapp.models import *
 from chemapp.forms import *
-from django.http import Http404
-from django.shortcuts import get_object_or_404,  render
 import csv, io
 from django.forms.formsets import formset_factory
 from django.template.defaultfilters import slugify
@@ -17,6 +15,9 @@ from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from chemapp.utils import user_edit_perm_check, permission_required_context, user_upload_grades_perm_check
 from django.contrib.auth.decorators import permission_required
+from datetime import datetime
+import pytz
+from decimal import *
 
 GRADE_TO_BAND = {22: 'A1', 21: 'A2', 20: 'A3', 19: 'A4', 18: 'A5',
                  17: 'B1', 16: 'B2', 15: 'B3',
@@ -24,8 +25,28 @@ GRADE_TO_BAND = {22: 'A1', 21: 'A2', 20: 'A3', 19: 'A4', 18: 'A5',
                  11: 'D1', 10: 'D2', 9: 'D3',
                  8: 'E1', 7: 'E2', 6: 'E3',
                  5: 'F1', 4: 'F2', 3: 'F3',
-                 2: 'G1', 1: 'G2', 0: 'G3',
+                 2: 'G1', 1: 'G2', 0: 'H',
                  }
+
+def addCoursePermissions(course_slug):
+    course_slug = course_slug.upper()
+    content_type = ContentType.objects.get_for_model(Course)
+    Permission.objects.create(codename='can_edit_course' + course_slug, name="can edit course " + course_slug,
+                              content_type=content_type, )
+    Permission.objects.create(codename='can_upload_grades_for' + course_slug,
+                              name="can upload grades for " + course_slug, content_type=content_type, )
+    return
+
+
+def removeCoursePermissions(course_slug):
+    course_slug = course_slug.upper()
+    content_type = ContentType.objects.get_for_model(Course)
+    Permission.objects.filter(codename='can_edit_course' + course_slug, name="can edit course " + course_slug,
+                              content_type=content_type, ).delete()
+    Permission.objects.filter(codename='can_upload_grades_for' + course_slug,
+                              name="can upload grades for " + course_slug, content_type=content_type, ).delete()
+    return
+
 
 
 @login_required
@@ -66,7 +87,7 @@ def add_degree(request):
             # This is used to check for Degree duplicates
             codes = []
             for form in degree_formset:
-                degreeCode = form.cleaned_data.get('degreeCode')
+                degreeCode = form.cleaned_data.get('degreeCode').upper()
                 name = form.cleaned_data.get('name')
                 slug = slugify(degreeCode)
 
@@ -129,10 +150,15 @@ def edit_degree(request, degree_code_slug):
 @login_required
 @permission_required_context('chemapp.delete_degree', 'No permission to delete_degree', raise_exception=True)
 def delete_degree(request, degree_code_slug):
-    degree = Degree.objects.get(slug=degree_code_slug)
+    delDegree = Degree.objects.get(slug=degree_code_slug)
 
     if request.method == 'POST':
-        degree.delete()
+        courses = Course.objects.filter(degree=delDegree)
+
+        for course in courses:
+            removeCoursePermissions(course.slug)
+
+        delDegree.delete()
 
         messages.success(request, 'Degree deleted successfully!')
         return redirect(reverse('chemapp:degrees'))
@@ -145,23 +171,23 @@ def courses(request):
     coursesDict = {}
     courses = Course.objects.all()
 
-    yearDict = {}
+    levelDict = {}
 
     for course in courses:
-        year = course.year
         slug = course.slug
-        name = course.name
+        code = course.code
         color = course.courseColor
         level = course.level
+        name = course.name
 
-        if year not in yearDict.values():
-            yearDict[year] = year
+        if level not in levelDict.values():
+            levelDict[level] = level
 
-        courseList = [year, slug, name, color, level]
+        courseList = [level, slug, code, color, name]
 
         coursesDict[course] = courseList
 
-    return render(request, 'chemapp/courses.html', {'courses': coursesDict, 'years': yearDict})
+    return render(request, 'chemapp/courses.html', {'courses': coursesDict, 'levels': levelDict})
 
 
 # Dictionary structure
@@ -194,6 +220,17 @@ def course(request, course_name_slug):
 
 
 @login_required
+def course_students(request, course_name_slug):
+    courseStudentsDict = {}
+    courseStudentsDict['course_name_slug'] = course_name_slug
+    course = Course.objects.get(slug=course_name_slug)
+    students = Student.objects.filter(courses=course)
+    courseStudentsDict['students'] = students
+
+    return render(request, 'chemapp/course_students.html', context=courseStudentsDict)
+
+
+@login_required
 @permission_required_context('chemapp.add_course', 'No permission to add_course', raise_exception=True)
 def add_course(request):
     addCourseDict = {}
@@ -216,11 +253,7 @@ def add_course(request):
             course = course_form.save()
             course_slug = course.slug
 
-            content_type = ContentType.objects.get_for_model(Course)
-            Permission.objects.create(codename='can_edit_course' + course_slug, name="can edit course " + course_slug,
-                                      content_type=content_type, )
-            Permission.objects.create(codename='can_upload_grades_for' + course_slug,
-                                      name="can upload grades for " + course_slug, content_type=content_type, )
+            addCoursePermissions(course_slug)
 
             # Increment degree course count
             degree = course.degree
@@ -229,7 +262,7 @@ def add_course(request):
 
             # Success message
             messages.success(request, "Course added successfully!")
-            return redirect(reverse('chemapp:course_lecturer', kwargs={'course_name_slug': course_slug}))
+            return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_slug}))
 
         else:
             messages.error(request, 'Course has already been added!')
@@ -240,6 +273,29 @@ def add_course(request):
     addCourseDict['course_form'] = CourseForm()
 
     return render(request, 'chemapp/add_course.html', context=addCourseDict)
+
+
+@login_required
+def add_lecturers(request, course_name_slug):
+    CourseLecturerDict = {}
+    CourseLecturerDict['course_name_slug'] = course_name_slug
+    CourseLecturerDict['lecturers'] = Staff.objects.all()
+    course = Course.objects.get(slug=course_name_slug)
+
+    if (request.method == 'POST'):
+        lect = request.POST.getlist('lecturers_list')
+        lecturers_list = []
+        for lecture in lect:
+            lecturers_list.append(Staff.objects.get(staffID=lecture))
+        course.lecturers.add(*lecturers_list)
+        messages.success(request, 'Lecturers added successfully!')
+        return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
+    else:
+        course_lecturer_form = CourseLecturerForm(instance=course)
+
+    CourseLecturerDict['course_lecturer_form'] = course_lecturer_form
+
+    return render(request, 'chemapp/add_lecturers.html', context=CourseLecturerDict)
 
 
 @login_required
@@ -264,6 +320,7 @@ def edit_course(request, course_name_slug):
             description = edit_course_form.cleaned_data.get('description')
             comments = edit_course_form.cleaned_data.get('comments')
             courseColor = edit_course_form.cleaned_data.get('courseColor')
+            lecturers = edit_course_form.cleaned_data.get('lecturers')
 
             course.name = name
             course.shortHand = shortHand
@@ -276,6 +333,7 @@ def edit_course(request, course_name_slug):
             course.description = description
             course.comments = comments
             course.courseColor = courseColor
+            course.lecturers.set(lecturers)
 
             course.save()
 
@@ -303,6 +361,11 @@ def delete_course(request, course_name_slug):
         degree.numberOfCourses = degree.numberOfCourses - 1
         degree.save()
 
+
+
+        removeCoursePermissions(course_name_slug)
+
+
         messages.success(request, 'Course deleted successfully!')
         return redirect(reverse('chemapp:courses'))
 
@@ -312,11 +375,13 @@ def delete_course(request, course_name_slug):
 @login_required
 @permission_required_context('chemapp.add_assessments', 'No permission to add_assessments', raise_exception=True)
 def add_assessments(request, course_name_slug):
-    addAssessmentsDict = {}
-    addAssessmentsDict['course_name_slug'] = course_name_slug
-
     AssessmentFormSet = formset_factory(AssessmentForm, extra=1)
     course = Course.objects.get(slug=course_name_slug)
+    existingAssessments = Assessment.objects.filter(course=course)
+
+    addAssessmentsDict = {}
+    addAssessmentsDict['course_name_slug'] = course_name_slug
+    addAssessmentsDict['existingAssessments'] = existingAssessments
 
     if (request.method == 'POST'):
         assessment_formset = AssessmentFormSet(request.POST)
@@ -326,8 +391,12 @@ def add_assessments(request, course_name_slug):
 
             # This is used to check for Assessment duplicates
             assessmentNames = []
-            # This is used to check that the Assessmet weight sum is equal to 1 in the end
+            # This is used to check that the Assessment weight sum is equal to 1 in the end
             weightSum = 0
+            # Calculates current weight Sum with existing Assessments
+            for assessment in existingAssessments:
+                weightSum += assessment.weight
+
             for form in assessment_formset:
                 weight = form.cleaned_data.get('weight')
                 weightSum += weight
@@ -369,10 +438,7 @@ def add_assessments(request, course_name_slug):
 
                 # Success message
                 messages.success(request, "Assessments added successfully!")
-                assessment_name_slug = assessmentsCreated.first().slug
-                return redirect(reverse('chemapp:add_assessmentComponents',
-                                        kwargs={'course_name_slug': course_name_slug,
-                                                'assessment_name_slug': assessment_name_slug}))
+                return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
         else:
             print(assessment_formset.errors)
     else:
@@ -494,15 +560,6 @@ def add_assessmentComponents(request, course_name_slug, assessment_name_slug):
                                                                     assessment=assessment))
 
             AssessmentComponent.objects.bulk_create(assessmentComponents)
-            assessment.componentsAdded = True
-            assessment.save()
-
-            for assessment in allAssessments:
-                if assessment.componentsAdded == False:
-                    assessment_name_slug = assessment.slug
-                    return redirect(reverse('chemapp:add_assessmentComponents',
-                                            kwargs={'course_name_slug': course_name_slug,
-                                                    'assessment_name_slug': assessment_name_slug}))
 
             # Success message
             messages.success(request, "Components added successfully!")
@@ -699,8 +756,7 @@ def add_student(request):
             else:
                 status = 'Gap Year'
 
-            # Just to test until we have correct equation && 000000 did not allow for more students since it has to be unique
-            anonID = random.randint(0, 99999)
+            anonID = (abs(hash(str(studentID)))) / studentID
 
             student = Student.objects.create(studentID=studentID, anonID=anonID, firstName=firstName, lastName=lastName,
                                              gapYear=gapYear, status=status, academicPlan=academicPlan, level=level,
@@ -835,7 +891,7 @@ def delete_student(request, student_id):
 @login_required
 def ajax_filter_courses(request):
     degree = request.GET.get('degree')
-    courses = Course.objects.filter(degree=degree).order_by('year')
+    courses = Course.objects.filter(degree=degree).order_by('level')
     return render(request, 'chemapp/courses_dropdown_list.html', {'courses': courses})
 
 
@@ -1404,27 +1460,37 @@ def upload_course_csv(request):
         if not Degree.objects.filter(degreeCode=column[1]).exists():
             messages.error(request, 'The degree does not exist, unable to upload courses csv file')
             return redirect(reverse('chemapp:courses'))
-        else:
-            if not Course.objects.filter(code=column[0]).exists():
-                degree = Degree.objects.get(degreeCode=column[1])
-                degree.numberOfCourses = degree.numberOfCourses + 1
-                degree.save()
-            _, created = Course.objects.update_or_create(
-                code=column[0],
-                degree=Degree.objects.get(degreeCode=column[1]),
-                creditsWorth=column[2],
-                name=column[3],
-                shortHand=column[4],
-                level=column[5],
-                year=column[6],
-                academicYearTaught=column[7],
-                semester=column[8],
-                minimumPassGrade=column[9],
-                minimumRequirementsForCredit=column[10],
-                description=column[11],
-                comments=column[12],
 
-            )
+        if not Course.objects.filter(code=column[0]).exists():
+            degree = Degree.objects.get(degreeCode=column[1])
+            degree.numberOfCourses = degree.numberOfCourses + 1
+            degree.save()
+
+
+            course_slug = column[0] + "-" + column[1]
+
+            addCoursePermissions(course_slug)
+
+
+
+        _, created = Course.objects.update_or_create(
+            code=column[0],
+            degree=Degree.objects.get(degreeCode=column[1]),
+            defaults={'creditsWorth': column[2],
+                      'name': column[3],
+                      'shortHand': column[4],
+                      'level': column[5],
+                      'academicYearTaught': column[6],
+                      'semester': column[7],
+                      'minimumPassGrade': column[8],
+                      'minimumRequirementsForCredit': column[9],
+                      'description': column[10],
+                      'comments': column[11],
+                      }
+
+        )
+
+
 
     context = {}
     messages.success(request, "Courses Added Successfully")
@@ -1435,8 +1501,6 @@ def upload_course_csv(request):
 @permission_required_context('chemapp.add_assessments', 'No permission to add_assessments', raise_exception=True)
 def upload_assessment_csv(request, course_code):
     template = 'chemapp/upload_assessment_csv.html'
-    data = Assessment.objects.all()
-    weightsum = 0
 
     if request.method == "GET":
         return render(request, template)
@@ -1449,20 +1513,48 @@ def upload_assessment_csv(request, course_code):
     data_set = csv_file.read().decode('UTF-8')
     io_string = io.StringIO(data_set)
     next(io_string)
+
+    # Calculates current Weight Sum with existing Assessments
+    course = Course.objects.get(slug=course_name_slug)
+    weightsum = 0
+
+    courseAssessments = Assessment.objects.filter(course=course)
+    for assessment in courseAssessments:
+        weightsum += assessment.weight
+
+    assessments = []
+    assessmentNames = []
+
     for column in csv.reader(io_string, delimiter=',', quotechar="|"):
-        weightsum = weightsum + int(column[2])
-        _, created = Assessment.objects.update_or_create(
-            weight=column[2],
-            totalMarks=column[1],
-            assessmentName=column[0],
-            dueDate=column[3],
-            course=Course.objects.get(code=course_code),
-            componentNumberNeeded=column[4],
-        )
+        weightsum += Decimal(column[2])
+        # Cannot have duplicate Assessments
+        if column[0] in assessmentNames:
+            messages.error(request, 'Duplicate Assessment Detected')
+            return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
+
+        assessmentNames.append(column[0])
+        assessments.append(column)
+
+    # The sum of the weight of all Assessments must be equal to 1
     if weightsum != 1:
         messages.error(request, 'The sum of the Assessment Weights must be equal to 1')
-        return redirect(reverse('chemapp:courses'))
+        return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
 
+    for assessment in assessments:
+        # Converts date string to datetime object
+        dueDateString = assessment[3]
+        dueDate = datetime.strptime(dueDateString, '%d/%m/%Y %H:%M')  # Unaware datetime object
+        dueDate = dueDate.replace(tzinfo=pytz.UTC)  # Aware datetime object
+
+        _, created = Assessment.objects.update_or_create(
+            assessmentName=assessment[0],
+            course=Course.objects.get(slug=course_name_slug),
+            defaults={'totalMarks': assessment[1],
+                      'componentNumberNeeded': assessment[4],
+                      'dueDate': dueDate,
+                      'weight': assessment[2],
+                      }
+        )
     else:
         messages.success(request, "Assessment Added Successfully")
         return redirect(reverse('chemapp:courses'))
@@ -1502,10 +1594,33 @@ def upload_assessment_comp_csv(request, course_code, assessment_name):
     if totalmarks != assessment.totalMarks:
         AssessmentComponent.objects.filter(assessment=assessment).delete()
         messages.error(request, 'The sum of the Assessment Components must be equal to %s' % assessment.totalMarks)
+        return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
+
+    messages.success(request, "Assessment Components Added Successfully")
+    return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
+
+
+@login_required
+@permission_required_context('chemapp.add_assessmentComponents', 'No permission to add_grades', raise_exception=True)
+def upload_grades_csv(request, course_name_slug, assessment_name_slug, assessment_component_slug):
+    template = 'chemapp/upload_grades_csv.html'
+    data = AssessmentComponentGrade.objects.all()
+
+    course = Course.objects.get(slug=course_name_slug)
+    assessment = Assessment.objects.get(slug=assessment_name_slug, course=course)
+    component = AssessmentComponent.objects.get(slug=assessment_component_slug, assessment=assessment)
+
+    if request.method == "GET":
+        return render(request, template)
+
+    csv_file = request.FILES['file']
+    if not csv_file.name.endswith('.csv'):
+        messages.error(request, 'THIS IS NOT A CSV FILE')
         return redirect(reverse('chemapp:courses'))
 
     messages.success(request, "Assessment Components Added Successfully")
     return redirect(reverse('chemapp:courses'))
+
 
 @login_required
 def staff(request):
@@ -1514,8 +1629,8 @@ def staff(request):
     staff = Staff.objects.order_by('lastName')
     StaffDict['staff'] = staff
 
-
     return render(request, 'chemapp/staff.html', context=StaffDict)
+
 
 @login_required
 def add_staff(request):
@@ -1550,6 +1665,7 @@ def add_staff(request):
     addStaffDict['staff_form'] = staff_form
     return render(request, 'chemapp/add_staff.html', context=addStaffDict)
 
+@login_required
 def staff_member(request, staffID):
     staff_memberDict = {}
     try:
@@ -1598,51 +1714,32 @@ def edit_staff(request, staffID):
 
     return render(request, 'chemapp/edit_staff.html', context=editStaffDict)
 
+
 @login_required
-def course_lecturer(request, course_name_slug):
-    CourseLecturerDict = {}
-    CourseLecturerDict['course_name_slug'] = course_name_slug
-    CourseLecturerDict['lecturers'] = Staff.objects.all()
-    course = Course.objects.get(slug=course_name_slug)
-
-    if (request.method == 'POST'):
-        lect = request.POST.getlist('lecturers_list')
-        lecturers_list= []
-        for lecture in lect:
-            lecturers_list.append(Staff.objects.get(staffID=lecture))
-        course.lecturers.add(*lecturers_list)
-        messages.success(request, 'Course was updated successfully!')
-        return redirect(reverse('chemapp:add_assessments', kwargs={'course_name_slug': course_name_slug}))
-    else:
-        course_lecturer_form = CourseLecturerForm(instance=course)
-
-    CourseLecturerDict['course_lecturer_form'] = course_lecturer_form
-
-    return render(request, 'chemapp/course_lecturer.html', context=CourseLecturerDict)
-
-
-def search_course(request):
+def search_site(request):
     if request.method == 'GET':
-        query= request.GET.get('q')
+        query = request.GET.get('q')
 
-        submitbutton= request.GET.get('submit')
+        submitbutton = request.GET.get('submit')
 
         if query is not None:
-            course_lookups= Q(name__icontains=query) | Q(code__icontains=query) | Q(shortHand__icontains=query)
-            student_lookups= Q(studentID__icontains=query) | Q(firstName__icontains=query) | Q(lastName__icontains=query)
-            staff_lookups= Q(staffID__icontains=query) | Q(firstName__icontains=query) | Q(lastName__icontains=query)
+            course_lookups = Q(name__icontains=query) | Q(code__icontains=query) | Q(shortHand__icontains=query)
+            student_lookups = Q(studentID__icontains=query) | Q(firstName__icontains=query) | Q(
+                lastName__icontains=query)
+            staff_lookups = Q(staffID__icontains=query) | Q(firstName__icontains=query) | Q(lastName__icontains=query)
 
-            course_results= Course.objects.filter(course_lookups).distinct()
-            student_results= Student.objects.filter(student_lookups).distinct()
-            staff_results= Staff.objects.filter(staff_lookups).distinct()
-            results = [course_results,student_results,staff_results]
-            context={'staff_results': staff_results,'course_results': course_results,'student_results': student_results,
-                     'submitbutton': submitbutton}
+            course_results = Course.objects.filter(course_lookups).distinct()
+            student_results = Student.objects.filter(student_lookups).distinct()
+            staff_results = Staff.objects.filter(staff_lookups).distinct()
+            results = [course_results, student_results, staff_results]
+            context = {'staff_results': staff_results, 'course_results': course_results,
+                       'student_results': student_results,
+                       'submitbutton': submitbutton}
 
-            return render(request, 'chemapp/search_course.html', context)
+            return render(request, 'chemapp/search_site.html', context)
 
         else:
-            return render(request, 'chemapp/search_course.html')
+            return render(request, 'chemapp/search_site.html')
 
     else:
-        return render(request, 'chemapp/search_course.html')
+        return render(request, 'chemapp/search_site.html')
