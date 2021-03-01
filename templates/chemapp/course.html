@@ -101,15 +101,8 @@
 
   <h2> Assessments</h2>
 
-  {% if not assessments %}
-  <p> No assessments have been yet set for this course! </p>
-  <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-    <!-- Add Assessment Button -->
-    <a class="btn btn-success mt-3" href="{% url 'chemapp:add_assessments' course_name_slug=course_name_slug %}"><i class="bi bi-plus"></i>Add Assessments</a>
-    <!-- Upload Assessments Button -->
-    <a class="btn btn-primary mt-3" href="{% url 'chemapp:upload_assessment_csv'  course_name_slug=course_name_slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Upload CSV File to add Assessments</a>
-  </div>
-  {% else %}
+  {% if assessments %}
+
 
     {% for assessment,components in assessments.items %}
     <div class="col-12 m-3 p-3 bg-secondary-light rounded">
@@ -207,16 +200,15 @@
   {% endfor %}
 
 
-
+  {% else %}
+    <p> No assessments have been yet set for this course! </p>
+  {% endif %}
 
   <div class="d-grid gap-2 d-md-flex justify-content-md-start">
     <!-- Add Assessment Button -->
-    <a class="btn btn-danger mt-3" href="{% url 'chemapp:add_assessments' course_name_slug=course_name_slug %}"><i class="bi bi-plus"></i></i>Add Assessments</a>
+    <a class="btn btn-success mt-3" href="{% url 'chemapp:add_assessments' course_name_slug=course_name_slug %}"><i class="bi bi-plus"></i>Add Assessments</a>
     <!-- Upload Assessments Button -->
-    <a class="btn btn-danger mt-3" href="{% url 'chemapp:upload_assessment_csv'  course_name_slug=course_name_slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Upload CSV File to add Assessments</a>
+    <a class="btn btn-primary mt-3" href="{% url 'chemapp:upload_assessment_csv'  course_name_slug=course_name_slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Upload CSV File to add Assessments</a>
   </div>
-
-  {% endif %}
-
 
 {% endblock %}
