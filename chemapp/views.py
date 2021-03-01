@@ -1442,41 +1442,39 @@ def upload_course_csv(request):
         if not Degree.objects.filter(degreeCode=column[1]).exists():
             messages.error(request, 'The degree does not exist, unable to upload courses csv file')
             return redirect(reverse('chemapp:courses'))
-        else:
-            if not Course.objects.filter(code=column[0]).exists():
-                degree = Degree.objects.get(degreeCode=column[1])
-                degree.numberOfCourses = degree.numberOfCourses + 1
-                degree.save()
 
-                content_type = ContentType.objects.get_for_model(Course)
+        _, created = Course.objects.update_or_create(
+            code=column[0],
+            degree=Degree.objects.get(degreeCode=column[1]),
+            defaults={'creditsWorth': column[2],
+                      'name': column[3],
+                      'shortHand': column[4],
+                      'level': column[5],
+                      'academicYearTaught': column[6],
+                      'semester': column[7],
+                      'minimumPassGrade': column[8],
+                      'minimumRequirementsForCredit': column[9],
+                      'description': column[10],
+                      'comments': column[11],
+                      }
 
-                course_slug = column[0] + "-" + column[1]
+        )
 
-                print("helllooo")
+        if not Course.objects.filter(code=column[0]).exists():
+            degree = Degree.objects.get(degreeCode=column[1])
+            degree.numberOfCourses = degree.numberOfCourses + 1
+            degree.save()
 
-                Permission.objects.create(codename='can_edit_course' + course_slug,
-                                          name="can edit course " + course_slug,
-                                          content_type=content_type, )
-                Permission.objects.create(codename='can_upload_grades_for' + course_slug,
-                                          name="can upload grades for " + course_slug, content_type=content_type, )
+            content_type = ContentType.objects.get_for_model(Course)
 
-            _, created = Course.objects.update_or_create(
-                code=column[0],
-                degree=Degree.objects.get(degreeCode=column[1]),
-                defaults={'creditsWorth': column[2],
-                          'name': column[3],
-                          'shortHand': column[4],
-                          'level': column[5],
-                          'year': column[6],
-                          'academicYearTaught': column[7],
-                          'semester': column[8],
-                          'minimumPassGrade': column[9],
-                          'minimumRequirementsForCredit': column[10],
-                          'description': column[11],
-                          'comments': column[12],
-                          }
+            course_slug = column[0] + "-" + column[1]
 
-            )
+
+            Permission.objects.create(codename='can_edit_course' + course_slug,
+                                      name="can edit course " + course_slug,
+                                      content_type=content_type, )
+            Permission.objects.create(codename='can_upload_grades_for' + course_slug,
+                                      name="can upload grades for " + course_slug, content_type=content_type, )
 
     context = {}
     messages.success(request, "Courses Added Successfully")
