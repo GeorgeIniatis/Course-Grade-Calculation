@@ -1,5 +1,6 @@
 from django.contrib import admin
 from chemapp.models import *
+from django.contrib.auth.models import Permission
 
 
 class SlugAdmin(admin.ModelAdmin):
@@ -7,6 +8,7 @@ class SlugAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Student)
+admin.site.register(Permission)
 admin.site.register(Staff)
 admin.site.register(Degree)
 admin.site.register(Course, SlugAdmin)
