@@ -555,11 +555,11 @@ class StudentForm(forms.ModelForm):
                                ))
 
     courses = forms.ModelMultipleChoiceField(label='Courses',
+                                             required=False,
                                              queryset=Course.objects.none(),
                                              widget=forms.SelectMultiple(
                                                  attrs={
                                                      'style': 'width:300px;height:150px',
-                                                     'required': True,
                                                      'class': 'form-select',
                                                  }
                                              ))

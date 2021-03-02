@@ -250,6 +250,12 @@ def add_course(request):
             except Course.DoesNotExist:
                 pass
 
+            # Check for a valid Pass Grade
+            minimumPassGrade = course_form.cleaned_data.get('minimumPassGrade')
+            if minimumPassGrade not in GRADE_TO_BAND.values():
+                messages.error(request, (str(minimumPassGrade) + ' is not a valid grade!'))
+                return redirect(reverse('chemapp:add_course'))
+
             course = course_form.save()
             course_slug = course.slug
 
@@ -298,6 +304,11 @@ def edit_course(request, course_name_slug):
             comments = edit_course_form.cleaned_data.get('comments')
             courseColor = edit_course_form.cleaned_data.get('courseColor')
             lecturers = edit_course_form.cleaned_data.get('lecturers')
+
+            # Check for a valid Pass Grade
+            if minimumPassGrade not in GRADE_TO_BAND.values():
+                messages.error(request, (str(minimumPassGrade) + ' is not a valid grade!'))
+                return redirect(reverse('chemapp:add_course'))
 
             course.name = name
             course.shortHand = shortHand
