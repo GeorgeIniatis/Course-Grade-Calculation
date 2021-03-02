@@ -1403,15 +1403,13 @@ def upload_student_csv(request, course_name_slug):
             course.numberOfStudents += 1
             course.save()
 
-        anonID = (abs(hash(str(studentID)))) / studentID
         _, created = Student.objects.update_or_create(
             studentID=column[0],
             defaults={'firstName': column[1],
                       'lastName': column[2],
                       'academicPlan': Degree.objects.get(degreeCode=column[3]),
                       'level': column[4],
-                      'anonID': anonID,
-                      'graduationDate': column[6],
+                      'graduationDate': column[5],
                       }
         )
         student = Student.objects.get(studentID=column[0])
