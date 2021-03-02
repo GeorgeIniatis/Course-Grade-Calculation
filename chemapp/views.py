@@ -28,6 +28,7 @@ GRADE_TO_BAND = {22: 'A1', 21: 'A2', 20: 'A3', 19: 'A4', 18: 'A5',
                  2: 'G1', 1: 'G2', 0: 'H',
                  }
 
+
 def addCoursePermissions(course_slug):
     course_slug = course_slug.upper()
     content_type = ContentType.objects.get_for_model(Course)
@@ -46,7 +47,6 @@ def removeCoursePermissions(course_slug):
     Permission.objects.filter(codename='can_upload_grades_for' + course_slug,
                               name="can upload grades for " + course_slug, content_type=content_type, ).delete()
     return
-
 
 
 @login_required
@@ -276,29 +276,6 @@ def add_course(request):
 
 
 @login_required
-def add_lecturers(request, course_name_slug):
-    CourseLecturerDict = {}
-    CourseLecturerDict['course_name_slug'] = course_name_slug
-    CourseLecturerDict['lecturers'] = Staff.objects.all()
-    course = Course.objects.get(slug=course_name_slug)
-
-    if (request.method == 'POST'):
-        lect = request.POST.getlist('lecturers_list')
-        lecturers_list = []
-        for lecture in lect:
-            lecturers_list.append(Staff.objects.get(staffID=lecture))
-        course.lecturers.add(*lecturers_list)
-        messages.success(request, 'Lecturers added successfully!')
-        return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
-    else:
-        course_lecturer_form = CourseLecturerForm(instance=course)
-
-    CourseLecturerDict['course_lecturer_form'] = course_lecturer_form
-
-    return render(request, 'chemapp/add_lecturers.html', context=CourseLecturerDict)
-
-
-@login_required
 @user_edit_perm_check
 def edit_course(request, course_name_slug):
     editCourseDict = {}
@@ -361,10 +338,7 @@ def delete_course(request, course_name_slug):
         degree.numberOfCourses = degree.numberOfCourses - 1
         degree.save()
 
-
-
         removeCoursePermissions(course_name_slug)
-
 
         messages.success(request, 'Course deleted successfully!')
         return redirect(reverse('chemapp:courses'))
@@ -1474,12 +1448,9 @@ def upload_course_csv(request):
             degree.numberOfCourses = degree.numberOfCourses + 1
             degree.save()
 
-
             course_slug = column[0] + "-" + column[1]
 
             addCoursePermissions(course_slug)
-
-
 
         _, created = Course.objects.update_or_create(
             code=column[0],
@@ -1497,8 +1468,6 @@ def upload_course_csv(request):
                       }
 
         )
-
-
 
     context = {}
     messages.success(request, "Courses Added Successfully")
@@ -1690,6 +1659,7 @@ def add_staff(request):
 
     addStaffDict['staff_form'] = staff_form
     return render(request, 'chemapp/add_staff.html', context=addStaffDict)
+
 
 @login_required
 def staff_member(request, staffID):

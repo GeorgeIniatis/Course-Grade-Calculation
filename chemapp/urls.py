@@ -26,7 +26,6 @@ urlpatterns = [
     path('courses/add_course/',views.add_course, name='add_course'),
     path('courses/upload_course_csv/', views.upload_course_csv, name='upload_course_csv'),
     path('courses/<slug:course_name_slug>/', views.course, name='course'),
-    path('courses/<slug:course_name_slug>/add_lecturers/', views.add_lecturers, name='add_lecturers'),
     path('courses/<slug:course_name_slug>/edit_course/', views.edit_course, name='edit_course'),
     path('courses/<slug:course_name_slug>/delete_course/', views.delete_course, name='delete_course'),
     path('courses/<slug:course_name_slug>/upload_student_csv/', views.upload_student_csv, name='upload_student_csv'),
