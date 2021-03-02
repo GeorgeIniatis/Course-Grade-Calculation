@@ -47,17 +47,17 @@
             <a class="btn btn-warning " href="{% url 'chemapp:edit_degree' degree_code_slug=degree.slug %}"><i class="bi bi-pencil-square"></i> Edit</a>
             {% endif %}
             {% if perms.chemapp.delete_degree %}
-            <a type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#A{{ degree.name }}{{ degree.degreeCode }}"><i class="bi bi-trash"></i></a>
+            <a type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#A{{ degree.degreeCode }}"><i class="bi bi-trash"></i></a>
             {% endif %}
           </div>
 
           {% if perms.chemapp.delete_degree %}
             <!-- Modal -->
-            <div class="modal fade" id="A{{ degree.name }}{{ degree.degreeCode }}" tabindex="-1" aria-labelledby="A{{ degree.name }}{{ degree.degreeCode }}Label" aria-hidden="true">
+            <div class="modal fade" id="A{{ degree.degreeCode }}" tabindex="-1" aria-labelledby="A{{ degree.degreeCode }}Label" aria-hidden="true">
               <div class="modal-dialog">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h5 class="modal-title text-dark" id="A{{ degree.name }}{{ degree.degreeCode }}Label">Are you sure?</h5>
+                    <h5 class="modal-title text-dark" id="A{{ degree.degreeCode }}Label">Are you sure?</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
                   <div class="modal-body text-dark">

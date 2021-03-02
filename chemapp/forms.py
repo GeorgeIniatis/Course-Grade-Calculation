@@ -44,7 +44,6 @@ class UserForm(forms.ModelForm):
         fields = {'username', 'password', }
 
 
-
 class DegreeForm(forms.ModelForm):
     degreeCode = forms.CharField(label='Degree Code',
                                  help_text='F123-4567',
@@ -91,7 +90,7 @@ class EditDegreeForm(DegreeForm):
         exclude = {'degreeCode'}
 
 
-class SuperCourseForm(forms.ModelForm):
+class CourseForm(forms.ModelForm):
     code = forms.CharField(label='Code',
                            help_text='CHEM_1006',
                            widget=forms.TextInput(
@@ -261,20 +260,19 @@ class SuperCourseForm(forms.ModelForm):
                                ))
 
     lecturers = forms.ModelMultipleChoiceField(label='Lecturers',
+                                               required=False,
                                                help_text='Dr. Linnea Soler',
                                                queryset=Staff.objects.all(),
                                                widget=forms.SelectMultiple(
                                                    attrs={
                                                        'style': 'width:300px;height:150px',
-                                                       'required': True,
                                                        'class': 'form-select',
                                                    }
                                                ))
 
     field_order = ['code', 'degree', 'name', 'shortHand', 'creditsWorth', 'level', 'academicYearTaught',
                    'semester', 'minimumPassGrade', 'minimumRequirementsForCredit', 'lecturers', 'description',
-                   'comments',
-                   'courseColor']
+                   'comments', 'courseColor']
 
     class Meta:
         model = Course
@@ -283,48 +281,14 @@ class SuperCourseForm(forms.ModelForm):
                   'minimumRequirementsForCredit', 'lecturers', 'courseColor'}
 
 
-class CourseForm(SuperCourseForm):
-    lecturers = None
-
-    class Meta:
-        model = Course
-        fields = {'code', 'degree', 'creditsWorth', 'name', 'shortHand', 'level', 'academicYearTaught',
-                  'semester', 'description', 'comments', 'minimumPassGrade',
-                  'minimumRequirementsForCredit', 'courseColor'}
-        exclude = {'lecturers', }
-
-
-class EditCourseForm(SuperCourseForm):
+class EditCourseForm(CourseForm):
     code = None
     degree = None
 
     class Meta:
         model = Course
-        fields = SuperCourseForm.Meta.fields
+        fields = CourseForm.Meta.fields
         exclude = {'code', 'degree'}
-
-
-class CourseLecturerForm(SuperCourseForm):
-    code = None
-    degree = None
-    name = None
-    shortHand = None
-    creditsWorth = None
-    level = None
-    academicYearTaught = None
-    semester = None
-    minimumPassGrade = None
-    minimumRequirementsForCredit = None
-    description = None
-    comments = None
-    courseColor = None
-
-    class Meta:
-        model = Course
-        fields = SuperCourseForm.Meta.fields
-        exclude = {'code', 'degree', 'creditsWorth', 'name', 'shortHand', 'level', 'academicYearTaught',
-                   'semester', 'description', 'comments', 'minimumPassGrade',
-                   'minimumRequirementsForCredit', 'courseColor'}
 
 
 class AssessmentForm(forms.ModelForm):
@@ -591,11 +555,11 @@ class StudentForm(forms.ModelForm):
                                ))
 
     courses = forms.ModelMultipleChoiceField(label='Courses',
+                                             required=False,
                                              queryset=Course.objects.none(),
                                              widget=forms.SelectMultiple(
                                                  attrs={
                                                      'style': 'width:300px;height:150px',
-                                                     'required': True,
                                                      'class': 'form-select',
                                                  }
                                              ))
