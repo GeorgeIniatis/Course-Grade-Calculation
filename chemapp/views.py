@@ -251,7 +251,7 @@ def add_course(request):
                 pass
 
             # Check for a valid Pass Grade
-            minimumPassGrade = course_form.cleaned_data.get('minimumPassGrade')
+            minimumPassGrade = course_form.cleaned_data.get('minimumPassGrade').upper()
             if minimumPassGrade not in GRADE_TO_BAND.values():
                 messages.error(request, (str(minimumPassGrade) + ' is not a valid grade!'))
                 return redirect(reverse('chemapp:add_course'))
@@ -306,7 +306,7 @@ def edit_course(request, course_name_slug):
             lecturers = edit_course_form.cleaned_data.get('lecturers')
 
             # Check for a valid Pass Grade
-            if minimumPassGrade not in GRADE_TO_BAND.values():
+            if minimumPassGrade.upper() not in GRADE_TO_BAND.values():
                 messages.error(request, (str(minimumPassGrade) + ' is not a valid grade!'))
                 return redirect(reverse('chemapp:add_course'))
 
@@ -1644,13 +1644,14 @@ def staff_member(request, staffID):
     try:
         staff = Staff.objects.get(staffID=staffID)
         courses = Course.objects.filter(lecturers__staffID=staffID)
+
         staff_memberDict['courses'] = courses
         staff_memberDict['staff'] = staff
-        staff_memberDict['courses'] = {}
         staff_memberDict['staffID'] = staffID
 
     except Staff.DoesNotExist:
         raise Http404("Staff member does not exist")
+
     return render(request, 'chemapp/staff_member.html', context=staff_memberDict)
 
 

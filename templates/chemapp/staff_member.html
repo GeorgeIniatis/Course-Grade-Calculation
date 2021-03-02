@@ -8,13 +8,18 @@
 <div class="container ">
 <div>
     <!-- Staff Section -->
-    <h2> {{ staff.firstName }} {{ staff.lastName }} </h2>
+    <h2> {{ staff.title }} {{ staff.firstName }} {{ staff.lastName }} </h2>
     <p> Staff ID: {{ staff.staffID }} </p>
-    <p> Comments: {{ staff.comments }} </p>
+    {% if staff.comments %}
+        <p> Comments: {{ staff.comments }} </p>
+    {% else %}
+      <p> No Comments yet</p>
+    {% endif %}
+
 </div>
 <div>
     <!-- Course Section -->
-    <h2> Courses </h2>
+    <h2> Associated Courses </h2>
     {% for course in courses %}
     <p> Course Code: {{ course.code }} </p>
     <p> Course Name: {{ course.name }} </p>
