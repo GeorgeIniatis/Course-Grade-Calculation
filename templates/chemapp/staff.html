@@ -32,6 +32,10 @@ Staff
             <td>
               <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                 <a class="btn btn-info"href="{% url 'chemapp:staff_member' staffID=staff_member.staffID %}">View</a>
+                <form id="staff_delete_form" method="post" action="{% url 'chemapp:delete_staff' staffID=staff_member.staffID %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
               </div>
             </td>
           </tr>

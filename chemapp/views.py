@@ -1639,40 +1639,6 @@ def staff(request):
 
 
 @login_required
-def add_staff(request):
-    addStaffDict = {}
-
-    if request.method == 'POST':
-        staff_form = StaffForm(request.POST)
-        if staff_form.is_valid():
-            staffID = staff_form.cleaned_data.get('staffID')
-            title = staff_form.cleaned_data.get('title')
-            firstName = staff_form.cleaned_data.get('firstName')
-            lastName = staff_form.cleaned_data.get('lastName')
-            comments = staff_form.cleaned_data.get('comments')
-            username = firstName + lastName
-            user_object = User.objects.create_user(username, password=str(staffID))
-            # Check if Course has already been added
-            try:
-                staff = Staff.objects.get(staffID=staffID)
-                messages.error(request, 'Staff has already been added!')
-                return redirect(reverse('chemapp:add_staff'))
-            except Staff.DoesNotExist:
-                pass
-
-            staff = staff_form.save()
-            messages.success(request, "Staff Added Successfully")
-            return redirect(reverse('chemapp:staff'))
-        else:
-            print(staff_form.errors)
-    else:
-        staff_form = StaffForm()
-
-    addStaffDict['staff_form'] = staff_form
-    return render(request, 'chemapp/add_staff.html', context=addStaffDict)
-
-
-@login_required
 def staff_member(request, staffID):
     staff_memberDict = {}
     try:
@@ -1686,6 +1652,42 @@ def staff_member(request, staffID):
     except Staff.DoesNotExist:
         raise Http404("Staff member does not exist")
     return render(request, 'chemapp/staff_member.html', context=staff_memberDict)
+
+
+@login_required
+def add_staff(request):
+    addStaffDict = {}
+
+    if request.method == 'POST':
+        staff_form = StaffForm(request.POST)
+        if staff_form.is_valid():
+            staffID = staff_form.cleaned_data.get('staffID')
+            firstName = staff_form.cleaned_data.get('firstName')
+            lastName = staff_form.cleaned_data.get('lastName')
+            username = firstName + lastName
+
+            # Check if Staff Member has already been added
+            try:
+                staff = Staff.objects.get(staffID=staffID)
+                messages.error(request, 'Staff has already been added!')
+                return redirect(reverse('chemapp:add_staff'))
+            except Staff.DoesNotExist:
+                pass
+
+            staff = staff_form.save()
+
+            # Create User
+            user_object = User.objects.create_user(username, password=str(staffID))
+
+            messages.success(request, "Staff Member Added Successfully")
+            return redirect(reverse('chemapp:staff_member', kwargs={'staffID': staffID}))
+        else:
+            print(staff_form.errors)
+    else:
+        staff_form = StaffForm()
+
+    addStaffDict['staff_form'] = staff_form
+    return render(request, 'chemapp/add_staff.html', context=addStaffDict)
 
 
 @login_required
@@ -1710,7 +1712,7 @@ def edit_staff(request, staffID):
 
             staff.save()
 
-            messages.success(request, 'Staff data was updated successfully!')
+            messages.success(request, 'Staff Member was updated successfully!')
             return redirect(reverse('chemapp:staff_member', kwargs={'staffID': staffID}))
         else:
             print(edit_staff_form.errors)
@@ -1720,6 +1722,21 @@ def edit_staff(request, staffID):
     editStaffDict['edit_staff_form'] = edit_staff_form
 
     return render(request, 'chemapp/edit_staff.html', context=editStaffDict)
+
+
+@login_required
+def delete_staff(request, staffID):
+    staff = Staff.objects.get(staffID=staffID)
+    user = User.objects.get(username=staff.username)
+
+    if request.method == 'POST':
+        staff.delete()
+        user.delete()
+
+        messages.success(request, 'Staff Member deleted successfully!')
+        return redirect(reverse('chemapp:staff'))
+
+    return render(request, 'chemapp/staff_member.html', context={})
 
 
 @login_required

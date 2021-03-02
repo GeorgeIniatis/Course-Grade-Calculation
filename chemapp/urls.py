@@ -64,6 +64,7 @@ urlpatterns = [
     path('staff/add_staff/', views.add_staff, name='add_staff'),
     path('staff/<staffID>/', views.staff_member, name='staff_member'),
     path('staff/<staffID>/edit_staff/', views.edit_staff, name='edit_staff'),
+    path('staff/<staffID>/delete_staff/', views.delete_staff, name='delete_staff'),
 
     # Search URLs
     path('search/', views.search_site, name='search_site'),

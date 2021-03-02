@@ -57,9 +57,6 @@ GOOD_CAUSE_ACTION = (
 )
 
 
-
-
-
 class Degree(models.Model):
     degreeCode = models.CharField(max_length=30,
                                   unique=True,
@@ -99,12 +96,18 @@ class Staff(models.Model):
     lastName = models.CharField(max_length=128,
                                 verbose_name="Last Name")
 
+    username = models.CharField(max_length=128)
+
     comments = models.TextField(max_length=2000,
                                 blank=True,
                                 help_text='Anything worth mentioning')
 
     class Meta:
         verbose_name_plural = 'Staff'
+
+    def save(self, *args, **kwargs):
+        self.username = (self.firstName + self.lastName)
+        super(Staff, self).save(*args, **kwargs)
 
     def __str__(self):
         return (str(self.title) + " " + str(self.firstName) + " " + str(self.lastName))
