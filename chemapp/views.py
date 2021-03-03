@@ -1367,7 +1367,7 @@ def upload_student_csv(request, course_name_slug):
                 degree.numberOfStudents += 1
                 degree.save()
             except Degree.DoesNotExist:
-                messages.error(request, 'Degree "' + column[3] + '" does not exist, unable to upload courses csv file')
+                messages.error(request, 'Degree "' + column[3] + '" does not exist, unable to upload students csv file')
                 return redirect(reverse('chemapp:course_students', kwargs={'course_name_slug': course_name_slug}))
 
             course.numberOfStudents += 1
