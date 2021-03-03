@@ -1426,7 +1426,10 @@ def upload_degree_csv(request):
     for column in csv.reader(io_string, delimiter=',', quotechar="|"):
         _, created = Degree.objects.update_or_create(
             degreeCode=column[0],
+            defaults={'name': column[1],
+                      }
         )
+
     context = {}
     messages.success(request, "Degrees Added Successfully")
     return redirect(reverse('chemapp:degrees'))
