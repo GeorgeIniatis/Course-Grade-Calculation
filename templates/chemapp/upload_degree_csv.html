@@ -10,14 +10,15 @@ Degrees Upload
   <h2> Upload CSV files to add Degrees</h2>
     <p>Format for Degree CSV - the heading of the columns are required</p>
     <div class="alert alert-secondary" role="alert">
-      Code<br>
-      F100-2208<br>
-      F103-2208<br>
-      F101-2207
+      Code,Name<br>
+      F100-2208,Degree Name 1<br>
+      F103-2208,Degree Name 2<br>
+      F101-2207,Degree Name 3<br>
+      <br>
+      *We expect you to provide correctly formatted files
     </div>
 
-
-    <form class="mt-5"action="" method="POST" enctype="multipart/form-data">
+    <form class="mt-5" action="{% url 'chemapp:upload_degree_csv' %}" method="POST" enctype="multipart/form-data">
       {% csrf_token %}
       <input  type="file" id="file1" name="file"><br/>
       <button class="btn btn-primary mt-4"type="submit"><i class="pe-1 bi bi-file-earmark-arrow-up"></i> Upload</button>
