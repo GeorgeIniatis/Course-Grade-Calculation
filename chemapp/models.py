@@ -186,7 +186,7 @@ class Student(models.Model):
                                             unique=True,
                                             verbose_name="Student ID")
 
-    anonID = models.PositiveIntegerField(validators=[MaxValueValidator(9999999)],
+    anonID = models.BigIntegerField(validators=[MaxValueValidator(9999999)],
                                          unique=True,
                                          verbose_name="Anonymous ID")
 
@@ -222,7 +222,7 @@ class Student(models.Model):
     courses = models.ManyToManyField(Course, blank=True)
 
     def save(self, *args, **kwargs):
-        self.anonID = (abs(hash(str(self.studentID)))) / int(self.studentID)
+        self.anonID = int((abs(hash(str(self.studentID)))) / int(self.studentID))
         self.status = 'Enrolled' if self.gapYear == False else 'Gap Year'
         super(Student, self).save(*args, **kwargs)
 
