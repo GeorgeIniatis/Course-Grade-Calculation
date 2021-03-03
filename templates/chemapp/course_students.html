@@ -18,25 +18,34 @@ Students
 
 <div class="container ">
 
-<table class="table table-hover">
+  {% if students %}
+  <table class="table table-hover">
     <thead>
       <tr>
         <th scope="col">Student ID</th>
         <th scope="col">First Name</th>
         <th scope="col">Last Name</th>
+        <th scope="col" class="text-end">Actions</th>
       </tr>
     </thead>
     <tbody>
       {% for student in students %}
       <tr>
-        <th scope="row"><a href="{% url 'chemapp:student' student_id=student.studentID %}"><button>{{ student.studentID }}</button></a> </th>
+        <th scope="row">{{ student.studentID }}</th>
         <td>{{student.firstName}}</td>
         <td>{{student.lastName}}</td>
-        <td></td>
+        <td>
+          <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <a class="btn btn-info"href="{% url 'chemapp:student' student_id=student.studentID %}">View</a>
+          </div>
+        </td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
+  {% else %}
+    <h4>There are no  Staff</h4>
+  {% endif %}
 
   <div class=" mb-3 d-grid gap-2 d-md-flex justify-content-md-start">
     <a class="btn btn-primary " href="{% url 'chemapp:upload_student_csv' course_name_slug=course_name_slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i> Upload CSV File to add students to this course</a>
