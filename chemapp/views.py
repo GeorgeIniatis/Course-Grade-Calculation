@@ -741,7 +741,7 @@ def add_student(request):
             else:
                 status = 'Gap Year'
 
-            anonID = (abs(hash(str(studentID)))) / int(studentID)
+            anonID = int((abs(hash(str(studentID)))) / int(studentID))
 
             student = Student.objects.create(studentID=studentID, anonID=anonID, firstName=firstName, lastName=lastName,
                                              gapYear=gapYear, status=status, academicPlan=academicPlan, level=level,
