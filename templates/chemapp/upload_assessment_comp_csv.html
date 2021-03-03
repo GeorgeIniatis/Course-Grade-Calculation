@@ -14,11 +14,13 @@
 <h2> Upload csv files to add Assessment Component</h2>
 <p>Format for Assessment Component CSV - the heading of the columns are required</p>
 <div class="alert alert-secondary" role="alert">
-  Description,Required,Marks<br>
-  Q1,False,10<br>
-  Q2,False,10<br>
-  Q3,False,10<br>
-  Q4,True,10
+    Description,Required,Marks<br>
+    Q1,False,10<br>
+    Q2,False,10<br>
+    Q3,False,10<br>
+    Q4,True,10<br>
+    <br>
+    *We expect you to provide correctly formatted files
 </div>
     <form class="mt-5" action="{% url 'chemapp:upload_assessment_comp_csv' course_name_slug=course_name_slug assessment_name_slug=assessment_name_slug %}" method="POST" enctype="multipart/form-data">
       {% csrf_token %}
