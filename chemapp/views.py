@@ -741,7 +741,7 @@ def add_student(request):
             else:
                 status = 'Gap Year'
 
-            anonID = (abs(hash(str(studentID)))) / studentID
+            anonID = (abs(hash(str(studentID)))) / int(studentID)
 
             student = Student.objects.create(studentID=studentID, anonID=anonID, firstName=firstName, lastName=lastName,
                                              gapYear=gapYear, status=status, academicPlan=academicPlan, level=level,
@@ -1361,17 +1361,17 @@ def delete_final_grade(request, student_id, course_name_slug, assessment_name_sl
 @login_required
 @permission_required_context('chemapp.add_student', 'No permission to add_student', raise_exception=True)
 def upload_student_csv(request, course_name_slug):
-    # student_dict = {'boldmessage':'Upload csv file to add students'}
-    # return render(request,'chemapp/upload_student_csv.html', context=student_dict)
+    course = Course.objects.get(slug=course_name_slug)
+
     template = 'chemapp/upload_student_csv.html'
-    data = Student.objects.all()
     uploadStudents = {}
     uploadStudents['course_name_slug'] = course_name_slug
-    course = Course.objects.get(slug=course_name_slug)
+
     if request.method == "GET":
         return render(request, template)
 
     csv_file = request.FILES['file']
+    # Check if this is a CSV file
     if not csv_file.name.endswith('.csv'):
         messages.error(request, 'THIS IS NOT A CSV FILE')
         return render(request, 'chemapp/upload_student_csv.html', context=uploadStudents)
@@ -1380,30 +1380,37 @@ def upload_student_csv(request, course_name_slug):
     io_string = io.StringIO(data_set)
     next(io_string)
     for column in csv.reader(io_string, delimiter=',', quotechar="|"):
-        if not Student.objects.filter(studentID=column[0]).exists():
+        # Check if this Student already exists
+        try:
+            student = Student.objects.get(studentID=column[0])
+        except Student.DoesNotExist:
             degree = Degree.objects.get(degreeCode=column[3])
             degree.numberOfStudents += 1
             degree.save()
-        if not Student.objects.filter(studentID=column[0], courses=course).exists():
+
             course.numberOfStudents += 1
             course.save()
-        _, created = Student.objects.update_or_create(
+
+        # Converts date string to datetime object
+        graduationDateString = column[5]
+        graduationDate = datetime.strptime(graduationDateString, '%d/%m/%Y')
+
+        created = Student.objects.update_or_create(
             studentID=column[0],
             defaults={'firstName': column[1],
                       'lastName': column[2],
                       'academicPlan': Degree.objects.get(degreeCode=column[3]),
                       'level': column[4],
-                      'graduationDate': column[6],
-                      'anonID': column[5],
+                      'graduationDate': graduationDate,
+                      'anonID': (abs(hash(str(column[0])))) / int(column[0])
                       }
         )
         student = Student.objects.get(studentID=column[0])
         student.courses.add(course)
         student.save()
 
-    context = {}
     messages.success(request, "Student Added Successfully")
-    return render(request, 'chemapp/upload_student_csv.html', context=uploadStudents)
+    return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
 
 
 @login_required

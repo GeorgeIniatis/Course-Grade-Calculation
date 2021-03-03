@@ -10,7 +10,25 @@
 
 
 <div class="container">
-<h2> Upload csv files to add students</h2>
+    <h2> Upload csv files to add students</h2>
+    <p>Format for Student CSV - the heading of the columns are required</p>
+    <div class="alert alert-secondary" role="alert">
+    StudentID,First Name,Last Name,Academic Plan,Level,Grad Year<br>
+    3159976,Ahab,Captain,F100-2208,1,22/09/2022<br>
+    2790987,Blake,Flake,F103-2208,2,22/09/2023<br>
+    <br>
+    Level Instructions: <br>
+    1 : Level 1 <br>
+    2 : Level 2 <br>
+    3 : Honours Level 3 <br>
+    4 : Honours Level 4 <br>
+    5 : Honours Level 5 <br>
+    6 : Postgraduate <br>
+    <br>
+
+    *We expect you to provide correctly formatted files
+  </div>
+
     <form class="mt-5"action="" method="POST" enctype="multipart/form-data">
       {% csrf_token %}
       <input  type="file" id="file1" name="file"><br/>
