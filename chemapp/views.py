@@ -1557,11 +1557,19 @@ def upload_assessment_comp_csv(request, course_name_slug, assessment_name_slug):
 
     for column in csv.reader(io_string, delimiter=',', quotechar="|"):
         # totalmarks = totalmarks + int(column[2])
+        required_optional = column[1]
+        if required_optional == "Required":
+            required = True
+        else:
+            required = False
+
         created = AssessmentComponent.objects.update_or_create(
             description=column[0],
-            required=column[1],
-            marks=column[2],
             assessment=Assessment.objects.get(slug=assessment_name_slug, course=course),
+            defaults={'required': required,
+                      'marks': column[2],
+                      'lecturer': Staff.objects.get(username=column[3].replace(" ", "")),
+                      }
         )
 
     assessment = Assessment.objects.get(slug=assessment_name_slug, course=course)
