@@ -221,10 +221,11 @@ def course(request, course_name_slug):
 
 @login_required
 def course_students(request, course_name_slug):
-    courseStudentsDict = {}
-    courseStudentsDict['course_name_slug'] = course_name_slug
     course = Course.objects.get(slug=course_name_slug)
     students = Student.objects.filter(courses=course)
+
+    courseStudentsDict = {}
+    courseStudentsDict['course_name_slug'] = course_name_slug
     courseStudentsDict['students'] = students
 
     return render(request, 'chemapp/course_students.html', context=courseStudentsDict)
@@ -490,7 +491,6 @@ def delete_assessment(request, course_name_slug, assessment_name_slug):
 def add_assessmentComponents(request, course_name_slug, assessment_name_slug):
     AssessmentComponentFormSet = formset_factory(AssessmentComponentForm, extra=1)
     course = Course.objects.get(slug=course_name_slug)
-    allAssessments = Assessment.objects.filter(course=course)
     assessment = Assessment.objects.get(course=course, slug=assessment_name_slug)
 
     addAssessmentComponentsDict = {}
@@ -508,12 +508,12 @@ def add_assessmentComponents(request, course_name_slug, assessment_name_slug):
             componentDescriptions = []
             for form in assessmentComponent_formset:
                 required = form.cleaned_data.get('required')
-                lecturer = form.cleaned_data.get('lecturers')
+                lecturer = form.cleaned_data.get('lecturer')
                 marks = form.cleaned_data.get('marks')
                 description = form.cleaned_data.get('description')
                 slug = slugify(description)
 
-                if required == True:
+                if required is True:
                     status = 'Required'
                 else:
                     status = 'Optional'
@@ -541,6 +541,7 @@ def add_assessmentComponents(request, course_name_slug, assessment_name_slug):
                                                                     status=status,
                                                                     marks=marks,
                                                                     description=description,
+                                                                    lecturer=lecturer,
                                                                     slug=slug,
                                                                     assessment=assessment))
 
@@ -578,9 +579,11 @@ def edit_assessmentComponent(request, course_name_slug, assessment_name_slug, as
         if edit_component_form.is_valid():
             required = edit_component_form.cleaned_data.get('required')
             marks = edit_component_form.cleaned_data.get('marks')
+            lecturer = edit_component_form.cleaned_data.get('lecturer')
 
             component.required = required
             component.marks = marks
+            component.lecturer = lecturer
 
             component.save()
 
@@ -726,31 +729,7 @@ def add_student(request):
     if request.method == 'POST':
         student_form = StudentForm(request.POST)
         if student_form.is_valid():
-            studentID = student_form.cleaned_data.get('studentID')
-            firstName = student_form.cleaned_data.get('firstName')
-            lastName = student_form.cleaned_data.get('lastName')
-            gapYear = student_form.cleaned_data.get('gapYear')
-            academicPlan = student_form.cleaned_data.get('academicPlan')
-            level = student_form.cleaned_data.get('level')
-            graduationDate = student_form.cleaned_data.get('graduationDate')
-            comments = student_form.cleaned_data.get('comments')
-            courses = student_form.cleaned_data.get('courses')
-
-            if gapYear == False:
-                status = 'Enrolled'
-            else:
-                status = 'Gap Year'
-
-            anonID = int((abs(hash(str(studentID)))) / int(studentID))
-
-            student = Student.objects.create(studentID=studentID, anonID=anonID, firstName=firstName, lastName=lastName,
-                                             gapYear=gapYear, status=status, academicPlan=academicPlan, level=level,
-                                             graduationDate=graduationDate,
-                                             comments=comments)
-
-            # Populate student's courses
-            student.courses.set(courses)
-            student.save()
+            student = student_form.save()
 
             # Increment degree student count
             degree = student.academicPlan
@@ -1383,9 +1362,13 @@ def upload_student_csv(request, course_name_slug):
         try:
             student = Student.objects.get(studentID=column[0])
         except Student.DoesNotExist:
-            degree = Degree.objects.get(degreeCode=column[3])
-            degree.numberOfStudents += 1
-            degree.save()
+            try:
+                degree = Degree.objects.get(degreeCode=column[3])
+                degree.numberOfStudents += 1
+                degree.save()
+            except Degree.DoesNotExist:
+                messages.error(request, 'Degree "' + column[3] + '" does not exist, unable to upload courses csv file')
+                return redirect(reverse('chemapp:course_students', kwargs={'course_name_slug': course_name_slug}))
 
             course.numberOfStudents += 1
             course.save()
@@ -1401,7 +1384,6 @@ def upload_student_csv(request, course_name_slug):
                       'academicPlan': Degree.objects.get(degreeCode=column[3]),
                       'level': column[4],
                       'graduationDate': graduationDate,
-                      'anonID': (abs(hash(str(column[0])))) / int(column[0])
                       }
         )
         student = Student.objects.get(studentID=column[0])
@@ -1409,7 +1391,7 @@ def upload_student_csv(request, course_name_slug):
         student.save()
 
     messages.success(request, "Student Added Successfully")
-    return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
+    return redirect(reverse('chemapp:course_students', kwargs={'course_name_slug': course_name_slug}))
 
 
 @login_required
@@ -1554,7 +1536,7 @@ def upload_assessment_csv(request, course_name_slug):
 @permission_required_context('chemapp.add_assessmentComponents', 'No permission to add_assessmentComponents',
                              raise_exception=True)
 def upload_assessment_comp_csv(request, course_name_slug, assessment_name_slug):
-    #totalmarks = 0
+    # totalmarks = 0
     course = Course.objects.get(slug=course_name_slug)
 
     uploadAssessmentComponents = {}
@@ -1562,7 +1544,7 @@ def upload_assessment_comp_csv(request, course_name_slug, assessment_name_slug):
     uploadAssessmentComponents['assessment_name_slug'] = assessment_name_slug
 
     if request.method == "GET":
-        return render(request, 'chemapp/upload_assessment_comp_csv.html',context=uploadAssessmentComponents)
+        return render(request, 'chemapp/upload_assessment_comp_csv.html', context=uploadAssessmentComponents)
 
     csv_file = request.FILES['file']
     if not csv_file.name.endswith('.csv'):
@@ -1574,7 +1556,7 @@ def upload_assessment_comp_csv(request, course_name_slug, assessment_name_slug):
     next(io_string)
 
     for column in csv.reader(io_string, delimiter=',', quotechar="|"):
-        #totalmarks = totalmarks + int(column[2])
+        # totalmarks = totalmarks + int(column[2])
         created = AssessmentComponent.objects.update_or_create(
             description=column[0],
             required=column[1],
@@ -1585,7 +1567,7 @@ def upload_assessment_comp_csv(request, course_name_slug, assessment_name_slug):
     assessment = Assessment.objects.get(slug=assessment_name_slug, course=course)
 
     # Is this check needed??
-    #if totalmarks != assessment.totalMarks:
+    # if totalmarks != assessment.totalMarks:
     #    AssessmentComponent.objects.filter(assessment=assessment).delete()
     #    messages.error(request, 'The sum of the Assessment Components must be equal to %s' % assessment.totalMarks)
     #    return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))

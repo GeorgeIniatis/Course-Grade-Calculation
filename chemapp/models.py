@@ -45,16 +45,12 @@ BAND_TO_GRADE = {'A1': 22, 'A2': 21, 'A3': 20, 'A4': 19, 'A5': 18,
                  'G1': 2, 'G2': 1, 'H': 0,
                  }
 
-# Could be removed if not necessary
-LATE_STATUS = (
-    ('1', '1 Band'),
-    ('2', '2 Bands'),
-)
-
-GOOD_CAUSE_ACTION = (
-    ('Resit', 'Resit Exam'),
-    ('CA', 'Credit Awarded'),
-)
+STAFF_TITTLES = [
+    ('Dr', 'Dr'),
+    ('Mr', 'Mr'),
+    ('Miss', 'Miss'),
+    ('Mrs', 'Mrs'),
+]
 
 
 class Degree(models.Model):
@@ -86,9 +82,9 @@ class Staff(models.Model):
                                           unique=True,
                                           verbose_name="Staff ID")
 
-    title = models.CharField(max_length=128,
+    title = models.CharField(max_length=20,
                              verbose_name="Title",
-                             default='Dr/Mr/Miss/Mrs', )
+                             choices=STAFF_TITTLES)
 
     firstName = models.CharField(max_length=128,
                                  verbose_name="First Name")
@@ -187,19 +183,14 @@ class Student(models.Model):
                                             verbose_name="Student ID")
 
     anonID = models.BigIntegerField(validators=[MaxValueValidator(9999999)],
-                                         unique=True,
-                                         verbose_name="Anonymous ID")
+                                    unique=True,
+                                    verbose_name="Anonymous ID")
 
     firstName = models.CharField(max_length=128,
                                  verbose_name="First Name")
 
     lastName = models.CharField(max_length=128,
                                 verbose_name="Last Name")
-
-    # not quite sure why we need this?
-    # This will be the name provided in the excel file as far as i know
-    # Something like John,Smith with the comma included
-    # myCampusName = models.CharField(max_length=128, verbose_name="myCampus Name")
 
     # Degree
     academicPlan = models.ForeignKey(Degree,
@@ -223,7 +214,7 @@ class Student(models.Model):
 
     def save(self, *args, **kwargs):
         self.anonID = int((abs(hash(str(self.studentID)))) / int(self.studentID))
-        self.status = 'Enrolled' if self.gapYear == False else 'Gap Year'
+        self.status = 'Enrolled' if self.gapYear is False else 'Gap Year'
         super(Student, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -291,11 +282,6 @@ class Assessment(models.Model):
 
 
 class AssessmentGrade(models.Model):
-    # Removed for now
-    # lateStatus = models.CharField(max_length=1,choices = LATE_STATUS,blank = True,verbose_name="Late Status")
-    # goodCauseAction = models.CharField(max_length=5,choices = GOOD_CAUSE_ACTION,blank = True,verbose_name="Good Cause Action")
-    # penalty = models.CharField()
-
     submissionDate = models.DateTimeField(verbose_name="Submission Date and Time")
 
     noDetriment = models.BooleanField(default=False,
@@ -354,7 +340,8 @@ class AssessmentComponent(models.Model):
 
     description = models.CharField(max_length=100)
 
-    lecturers = models.ManyToManyField(Staff, verbose_name="Course Lecturers")
+    lecturer = models.ForeignKey(Staff,
+                                 on_delete=models.CASCADE)
 
     assessment = models.ForeignKey(Assessment,
                                    on_delete=models.CASCADE)
@@ -365,7 +352,7 @@ class AssessmentComponent(models.Model):
         unique_together = ('description', 'assessment')
 
     def save(self, *args, **kwargs):
-        self.status = 'Required' if self.required == True else 'Optional'
+        self.status = 'Required' if self.required is True else 'Optional'
         self.slug = slugify(self.description)
         super(AssessmentComponent, self).save(*args, **kwargs)
 

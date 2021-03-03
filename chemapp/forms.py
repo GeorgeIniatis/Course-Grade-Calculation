@@ -107,7 +107,7 @@ class CourseForm(forms.ModelForm):
                            ))
 
     degree = forms.ModelChoiceField(label='Degree',
-                                    help_text='4A-ABC',
+                                    help_text='F123-4567',
                                     empty_label="Select a choice",
                                     queryset=Degree.objects.all(),
                                     widget=forms.Select(
@@ -426,24 +426,24 @@ class AssessmentComponentForm(forms.ModelForm):
                                       }
                                   ))
 
-    lecturers = forms.ModelChoiceField(label='Lecturers',
-                                       help_text='e.g. Dr. Linnea Soler',
-                                       empty_label="Select a choice",
-                                       queryset=Staff.objects.all(),
-                                       widget=forms.Select(
-                                           attrs={
-                                               'style': 'width:300px',
-                                               'required': True,
-                                               'id': 'floatingDegree',
-                                               'class': 'form-select',
-                                           }
-                                       ))
+    lecturer = forms.ModelChoiceField(label='Lecturer',
+                                      help_text='Dr. Linnea Soler',
+                                      empty_label="Select a choice",
+                                      queryset=Staff.objects.all(),
+                                      widget=forms.Select(
+                                          attrs={
+                                              'style': 'width:300px',
+                                              'required': True,
+                                              'id': 'floatingDegree',
+                                              'class': 'form-select',
+                                          }
+                                      ))
 
-    field_order = ['required', 'lecturers', 'description', 'marks']
+    field_order = ['required', 'lecturer', 'description', 'marks']
 
     class Meta:
         model = AssessmentComponent
-        fields = {'required', 'lecturers', 'marks', 'description'}
+        fields = {'required', 'lecturer', 'marks', 'description'}
 
 
 class EditAssessmentComponentForm(AssessmentComponentForm):
