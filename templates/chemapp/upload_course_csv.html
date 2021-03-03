@@ -10,9 +10,17 @@
   <h2> Upload csv files to add Courses</h2>
   <p>Format for Course CSV - the heading of the columns are required</p>
   <div class="alert alert-secondary" role="alert">
-    Code,degree,creditsWorth,name,shorthand,level,year,academic y,sem,min pass,minreq,desc,comments<br>
+    Code,Degree,Credits Worth,Name,Shorthand,Level,Academic Year,Semester,Minimum Pass Grade,Requirement For Credit,Description,Comments<br>
     CHEM1001,F100-2208,50,CHEMISTRY,CHEM,1,2020,19-20,1,B3,0.75,HI,COMMENT<br>
     CHEM1002,FG11-2208,60,CHEMISTRY,CHEM,1,2020,19-20,1,B3,0.75,HI,COMMENT<br>
+    <br>
+    Level Instructions: <br>
+    1 : Level 1 <br>
+    2 : Level 2 <br>
+    3 : Honours <br>
+    4 : Postgraduate <br>
+    <br>
+    *We expect you to provide correctly formatted files
   </div>
     <form class="mt-5"action="" method="POST" enctype="multipart/form-data">
       {% csrf_token %}

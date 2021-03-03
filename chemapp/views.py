@@ -1454,15 +1454,16 @@ def upload_course_csv(request):
     next(io_string)
     for column in csv.reader(io_string, delimiter=',', quotechar="|"):
         if not Degree.objects.filter(degreeCode=column[1]).exists():
-            messages.error(request, 'The degree does not exist, unable to upload courses csv file')
+            messages.error(request, 'Degree ' + column[1] + ' does not exist, unable to upload courses csv file')
             return redirect(reverse('chemapp:courses'))
 
         if not Course.objects.filter(code=column[0]).exists():
+            # Increment degree course count
             degree = Degree.objects.get(degreeCode=column[1])
             degree.numberOfCourses = degree.numberOfCourses + 1
             degree.save()
 
-            course_slug = column[0] + "-" + column[1]
+            course_slug = slugify(str(column[0]) + "-" + str(column[1]))
 
             addCoursePermissions(course_slug)
 
@@ -1480,7 +1481,6 @@ def upload_course_csv(request):
                       'description': column[10],
                       'comments': column[11],
                       }
-
         )
 
     context = {}
