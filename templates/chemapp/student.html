@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block body_block %}
-<div class="container">
+<div class="containe-fluid mx-5">
 <div>
     <!-- Student Section -->
     <h2> {{ student.firstName }} {{ student.lastName }} </h2>
@@ -50,8 +50,11 @@
     </div>
 
     <h2> Courses and Assessments </h2>
-    {% for course,nestedDict in courses.items %}
 
+
+    {% if courses.items %}
+
+    {% for course,nestedDict in courses.items %}
         <!-- Course Section -->
         <h4> Course: {{ course.name }} </h4>
         <!-- Course Grade Section -->
@@ -149,6 +152,188 @@
             <p> No Assessment have been added yet for this Course</p>
         {% endif %}
     {% endfor %}
+    {% else %}
+      <p> No assessments have been yet set for this course! </p>
+    {% endif %}
+
+
+    <br><br><br><br><br><br><br><br><br><br><br>
+
+
+
+    <h2> Courses and Assessments </h2>
+    <div class="row">
+
+      <div class="col-2">
+        <div class="d-grid gap-2  mt-3 mx-auto">
+          {% for course,nestedDict in courses.items %}
+          <a class="btn btn-block btn-outline-primary " data-bs-toggle="collapse" href="#A{{ course.code }}" role="button" aria-expanded="false" aria-controls="A{{ course.code }}">
+            {{ course.name }}
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="col-10">
+        {% for course,nestedDict in courses.items %}
+        <div class="collapse " id="A{{ course.code }}">
+          <div class="row align-items-start pt-3 ">
+            <h4> Course: {{ course.name }} </h4>
+            <!-- Course Grade Section -->
+            {% if nestedDict.gradeObject is None %}
+                <p> Course Grade has not been calculated yet </p>
+            {% else %}
+                <p> Grade (Out of 22): {{ nestedDict.gradeObject.grade }} </p>
+                <p> Band : {{ nestedDict.gradeObject.band }}</p>
+                <!-- Check if Student passed course -->
+                {% if nestedDict.gradeObject.grade < course.minimumPassGrade22Scale %}
+                    <p> <b> Student needs to resit course </b> </p>
+                {% else %}
+                    <p> <b> Student passed course </b> </p>
+                {% endif %}
+            {% endif %}
+
+            <!-- Check for Course Assessments -->
+            {% if nestedDict.assessmentList %}
+                {% for assessmentDict in nestedDict.assessmentList %}
+                    <!-- Assessment Section -->
+                    {% for assessment,nestedDict in assessmentDict.items %}
+                      <h4 class="mt-3"> Assessment: {{ assessment.assessmentName }} </h4>
+                        <table class="table text-center ">
+                          <thead>
+                            <tr>
+                              <th scope="col">#</th>
+                              <th scope="col">Weight</th>
+                              <th scope="col">Total Marks</th>
+                              <th scope="col">Num.Comps</th>
+                              <th scope="col">Submission Time</th>
+                              <th scope="col">NDP</th>
+                              <th scope="col">GC</th>
+                              <th scope="col">Late</th>
+                              <th scope="col">Num.Match</th>
+                              <th scope="col">Marked/{{ assessment.totalMarks }}</th>
+                              <th scope="col">Final/{{ assessment.totalMarks }}</th>
+                              <th scope="col">Grade/22</th>
+                              <th scope="col">Band</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <th scope="row">{{ assessment.assessmentName }}</th>
+                              <td>{{ assessment.weight }}</td>
+                              <td>{{ assessment.totalMarks }}</td>
+                              <td>{{ assessment.componentNumberNeeded }}</td>
+                              <td> {{ nestedDict.gradeObject.submissionDate }}</td>
+                              <td> {{ nestedDict.gradeObject.noDetriment }}</td>
+                              <td> {{ nestedDict.gradeObject.goodCause }}</td>
+                              <td> {{ nestedDict.gradeObject.late }}</td>
+                              <td> {{ nestedDict.gradeObject.componentNumberMatch }}</td>
+                              <td> {{ nestedDict.gradeObject.markedGrade }}</td>
+                              {% if nestedDict.gradeObject.finalGrade is not None %}
+                                <td> {{ nestedDict.gradeObject.finalGrade }} </td>
+                                <td> {{ nestedDict.gradeObject.finalGrade22Scale }}</td>
+                                <td> {{ nestedDict.gradeObject.band }}</td>
+                              {% else %}
+                                <td><a  href="{% url 'chemapp:add_final_grade' student_id=student_id course_name_slug=course.slug assessment_name_slug=assessment.slug %}">Add</a></td>
+                                <td> /</td>
+                                <td> /</td>
+                              {% endif %}
+
+                            </tr>
+                            {% if nestedDict.componentList %}
+                            <tr>
+                              <td colspan="13" class="p-4">
+                                <table class="table  table-borderless">
+                                  <caption>
+                                    {% if not nestedDict.gradeObject is None %}
+                                        <!-- Add Grades Button -->
+                                        <div class=" mb-3 d-grid gap-2 d-md-flex justify-content-md-end">
+                                        <a class="btn btn-danger " href="{% url 'chemapp:edit_grades' student_id=student_id course_name_slug=course.slug assessment_name_slug=assessment.slug %}">Edit grades</a>
+                                        <!-- Delete Grades Button -->
+                                        <form id="grades_delete_form" method="post" action="{% url 'chemapp:delete_grades' student_id=student_id course_name_slug=course.slug assessment_name_slug=assessment.slug %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-primary">Delete Grades</button>
+                                        </form>
+                                        </div>
+                                    {% endif %}
+
+                                  </caption>
+                                  <thead>
+                                    <tr>
+                                      <th scope="col">Component</th>
+                                      <th scope="col">Status</th>
+                                      <th scope="col">Marks</th>
+                                      <th scope="col">Grade</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {% for componentDict in nestedDict.componentList %}
+                                        {% for component,grade in componentDict.items %}
+                                          <tr>
+                                            <th scope="row">{{ component.description }}</th>
+                                            <td>{{ component.status }}</td>
+                                            <td>{{ component.marks }}</td>
+                                            {% if grade is None %}
+                                                <td><a  href="{% url 'chemapp:add_grades' student_id=student_id course_name_slug=course.slug assessment_name_slug=assessment.slug %}">Add</a></td>
+                                            {% else %}
+                                                <td>{{ grade }}</td>
+                                            {% endif %}
+                                          </tr>
+                                        {% endfor %}
+                                    {% endfor %}
+                                  </tbody>
+                                  <tfoot>
+                                    <tr>
+                                      <td>Footer</td>
+
+                                    </tr>
+                                  </tfoot>
+                                </table>
+                              </td>
+                            </tr>
+                            {% else %}
+                                <tr><td colspan="13" class="p-4"> No Components have been added yet for this Assessment</td></tr>
+                            {% endif %}
+                          </tbody>
+                        </table>
+
+
+                            {% if not nestedDict.gradeObject.finalGrade is None %}
+                                <!-- Add Final Grade Button -->
+                                <!-- Edit Final Grade Button -->
+                                <div class=" mb-3 d-grid gap-2 d-md-flex justify-content-md-start">
+                                  <a class="btn btn-danger " href="{% url 'chemapp:edit_final_grade' student_id=student_id course_name_slug=course.slug assessment_name_slug=assessment.slug %}">Edit final grade</a>
+                                  <!-- Delete Final Grade Button -->
+                                  <form id="final_grade_delete_form" method="post" action="{% url 'chemapp:delete_final_grade' student_id=student_id course_name_slug=course.slug assessment_name_slug=assessment.slug %}">
+                                      {% csrf_token %}
+                                      <button type="submit" class="btn btn-primary">Delete Final Grade</button>
+                                  </form>
+                                </div>
+                            {% endif %}
+
+
+
+                        <!-- Check for Assessment Components -->
+                        {% if nestedDict.componentList %}
+                            <!-- Assessment Component Section -->
+
+
+                        {% else %}
+                            <p> No Components have been added yet for this Assessment</p>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            {% else %}
+                <p> No Assessment have been added yet for this Course</p>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+    </div>
+
+
 
 
 
