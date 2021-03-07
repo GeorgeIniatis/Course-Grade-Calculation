@@ -1,0 +1,33 @@
+{% extends 'chemapp/base.html' %}
+
+{% block title_block %}
+22-Scale Map Upload
+{% endblock %}
+
+{% block body_block %}
+
+<div class="container">
+  <h2> Upload CSV file to 22-Scale Map</h2>
+    <p>Format for Map CSV - the heading of the columns are required</p>
+    <div class="alert alert-secondary" role="alert">
+      22_Scale<br>
+      0<br>
+      0<br>
+      0<br>
+      0<br>
+      1<br>
+      1<br>
+      1<br>
+      <br>
+      *Goes on and on until you reach row 102 <br>
+      *We expect you to provide correctly formatted files
+    </div>
+
+    <form class="mt-5" action="{% url 'chemapp:upload_map_csv' course_name_slug=course_name_slug assessment_name_slug=assessment_name_slug %}" method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <input  type="file" id="file1" name="file"><br/>
+      <button class="btn btn-primary mt-4"type="submit"><i class="pe-1 bi bi-file-earmark-arrow-up"></i> Upload</button>
+    </form>
+</div>
+
+{% endblock %}

@@ -18,6 +18,7 @@ from django.contrib.auth.decorators import permission_required
 from datetime import datetime
 import pytz
 from decimal import *
+import json
 
 GRADE_TO_BAND = {22: 'A1', 21: 'A2', 20: 'A3', 19: 'A4', 18: 'A5',
                  17: 'B1', 16: 'B2', 15: 'B3',
@@ -412,7 +413,8 @@ def add_assessments(request, course_name_slug):
                                                   dueDate=dueDate,
                                                   componentNumberNeeded=componentNumberNeeded,
                                                   course=course,
-                                                  slug=slug))
+                                                  slug=slug,
+                                                  map=None))
 
             # Check that the weights add to 1
             if weightSum != 1:
@@ -483,6 +485,25 @@ def delete_assessment(request, course_name_slug, assessment_name_slug):
         return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
 
     return render(request, 'chemapp/course.html', context={})
+
+
+@login_required
+def map(request, course_name_slug, assessment_name_slug):
+    course = Course.objects.get(slug=course_name_slug)
+    assessment = Assessment.objects.get(course=course, slug=assessment_name_slug)
+
+    mapDict = {}
+    mapDict['course_name_slug'] = course_name_slug
+    mapDict['assessment_name_slug'] = assessment_name_slug
+
+    if assessment.map is None:
+        mapDict['mapList'] = None
+    else:
+        jsonDec = json.decoder.JSONDecoder()
+        mapList = jsonDec.decode(assessment.map)
+        mapDict['mapList'] = mapList
+
+    return render(request, 'chemapp/map.html', context=mapDict)
 
 
 @login_required
@@ -1480,7 +1501,7 @@ def upload_assessment_csv(request, course_name_slug):
     csv_file = request.FILES['file']
     if not csv_file.name.endswith('.csv'):
         messages.error(request, 'THIS IS NOT A CSV FILE')
-        return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
+        return redirect(reverse('chemapp:upload_assessment_csv', kwargs={'course_name_slug': course_name_slug}))
 
     data_set = csv_file.read().decode('UTF-8')
     io_string = io.StringIO(data_set)
@@ -1530,6 +1551,46 @@ def upload_assessment_csv(request, course_name_slug):
     else:
         messages.success(request, "Assessment Added Successfully")
         return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
+
+
+@login_required
+def upload_map_csv(request, course_name_slug, assessment_name_slug):
+    uploadMapDict = {}
+    uploadMapDict['course_name_slug'] = course_name_slug
+    uploadMapDict['assessment_name_slug'] = assessment_name_slug
+
+    course = Course.objects.get(slug=course_name_slug)
+    assessment = Assessment.objects.get(slug=assessment_name_slug, course=course)
+
+    mapList = []
+
+    if request.method == "GET":
+        return render(request, 'chemapp/upload_map_csv.html', context=uploadMapDict)
+
+    csv_file = request.FILES['file']
+    if not csv_file.name.endswith('.csv'):
+        messages.error(request, 'THIS IS NOT A CSV FILE')
+        return redirect(reverse('chemapp:upload_map_csv', kwargs={'course_name_slug': course_name_slug,
+                                                                  'assessment_name_slug': assessment_name_slug}))
+
+    data_set = csv_file.read().decode('UTF-8')
+    io_string = io.StringIO(data_set)
+    next(io_string)
+    for column in csv.reader(io_string, delimiter=',', quotechar="|"):
+        scale = column[0]
+        mapList.append(scale)
+
+    if len(mapList) != 101:
+        messages.error(request, "Incorrect Map Size")
+        return redirect(reverse('chemapp:upload_map_csv', kwargs={'course_name_slug': course_name_slug,
+                                                                  'assessment_name_slug': assessment_name_slug}))
+    else:
+        assessment.map = json.dumps(mapList)
+        assessment.save()
+
+    messages.success(request, "Map Added Successfully")
+    return redirect(reverse('chemapp:map', kwargs={'course_name_slug': course_name_slug,
+                                                   'assessment_name_slug': assessment_name_slug}))
 
 
 @login_required

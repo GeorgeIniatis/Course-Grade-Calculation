@@ -270,6 +270,10 @@ class Assessment(models.Model):
                                                         help_text="Includes required and optional components",
                                                         default=0)
 
+    map = models.TextField(verbose_name="22 Scale Map",
+                           null=True,
+                           blank=True)
+
     class Meta:
         unique_together = ('assessmentName', 'course')
 

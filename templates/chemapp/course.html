@@ -206,8 +206,10 @@
     <div class="d-grid gap-2 d-md-flex justify-content-md-end pt-3 ">
       <!-- Add Assessment Components Button -->
       <a class="btn btn-success btn-sm " href="{% url 'chemapp:add_assessmentComponents' course_name_slug=course_name_slug assessment_name_slug=assessment.slug %}"><i class="bi bi-plus"></i></i>Add Components</a>
-      <!-- Upload Button -->
+      <!-- Upload Assessment Components Button -->
       <a class="btn btn-primary btn-sm" href="{% url 'chemapp:upload_assessment_comp_csv' course_name_slug=course_name_slug assessment_name_slug=assessment.slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Upload CSV File to add {{assessment.assessmentName}} components</a>
+      <!-- Map Page Button -->
+      <a class="btn btn-primary btn-sm" href="{% url 'chemapp:map' course_name_slug=course_name_slug assessment_name_slug=assessment.slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Map</a>
     </div>
     </div>
   {% endfor %}

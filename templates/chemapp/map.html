@@ -1,0 +1,34 @@
+{% extends 'chemapp/base.html' %}
+
+{% block title_block %}
+    Map
+{% endblock %}
+
+{% block body_block %}
+
+<div class="container ">
+
+  <h2> Map </h2>
+  {% if mapList %}
+    <table>
+      <tr>
+        <th> Percentage</th>
+        <th> 22-Scale</th>
+      </tr>
+      {% for i in mapList %}
+        <tr>
+          <td> {{ forloop.counter0 }} </td>
+          <td> {{ i }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+    <br>
+
+  {% else %}
+    <h4>No 22-Scale has been added!</h4>
+    <br>
+
+  {% endif %}
+    <a class="btn btn-primary btn-sm" href="{% url 'chemapp:upload_map_csv' course_name_slug=course_name_slug assessment_name_slug=assessment_name_slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Upload CSV File to add 22-Scale Map</a>
+</div>
+{% endblock %}
