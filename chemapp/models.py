@@ -304,6 +304,10 @@ class AssessmentGrade(models.Model):
                                      blank=True,
                                      verbose_name="Final Grade")
 
+    finalGradePercentage = models.PositiveIntegerField(verbose_name= "Final Grade Percentage",
+                                                       null=True,
+                                                       blank=True)
+
     finalGrade22Scale = models.PositiveIntegerField(verbose_name="Final Grade Out of 22",
                                                     null=True,
                                                     blank=True)
