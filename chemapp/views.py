@@ -168,6 +168,31 @@ def delete_degree(request, degree_code_slug):
 
 
 @login_required
+@permission_required_context('chemapp.add_degree', 'No permission to add_degree', raise_exception=True)
+def upload_degree_csv(request):
+    if request.method == "GET":
+        return render(request, 'chemapp/upload_degree_csv.html')
+
+    csv_file = request.FILES['file']
+    if not csv_file.name.endswith('.csv'):
+        messages.error(request, 'THIS IS NOT A CSV FILE')
+        return redirect(reverse('chemapp:degrees'))
+
+    data_set = csv_file.read().decode('UTF-8')
+    io_string = io.StringIO(data_set)
+    next(io_string)
+    for column in csv.reader(io_string, delimiter=',', quotechar="|"):
+        created = Degree.objects.update_or_create(
+            degreeCode=column[0],
+            defaults={'name': column[1],
+                      }
+        )
+
+    messages.success(request, "Degrees Added Successfully")
+    return redirect(reverse('chemapp:degrees'))
+
+
+@login_required
 def courses(request):
     coursesDict = {}
     courses = Course.objects.all()
@@ -360,6 +385,55 @@ def delete_course(request, course_name_slug):
 
 
 @login_required
+@permission_required_context('chemapp.add_course', 'No permission to add_course', raise_exception=True)
+def upload_course_csv(request):
+    if request.method == "GET":
+        return render(request, 'chemapp/upload_course_csv.html')
+
+    csv_file = request.FILES['file']
+    if not csv_file.name.endswith('.csv'):
+        messages.error(request, 'THIS IS NOT A CSV FILE')
+        return redirect('chemapp:upload_course_csv')
+
+    data_set = csv_file.read().decode('UTF-8')
+    io_string = io.StringIO(data_set)
+    next(io_string)
+    for column in csv.reader(io_string, delimiter=',', quotechar="|"):
+        if not Degree.objects.filter(degreeCode=column[1]).exists():
+            messages.error(request, 'Degree "' + column[1] + '" does not exist, unable to upload courses csv file')
+            return redirect(reverse('chemapp:courses'))
+
+        if not Course.objects.filter(code=column[0]).exists():
+            # Increment degree course count
+            degree = Degree.objects.get(degreeCode=column[1])
+            degree.numberOfCourses = degree.numberOfCourses + 1
+            degree.save()
+
+            course_slug = slugify(str(column[0]) + "-" + str(column[1]))
+
+            addCoursePermissions(course_slug)
+
+            created = Course.objects.update_or_create(
+                code=column[0],
+                degree=Degree.objects.get(degreeCode=column[1]),
+                defaults={'creditsWorth': column[2],
+                          'name': column[3],
+                          'shortHand': column[4],
+                          'level': column[5],
+                          'academicYearTaught': column[6],
+                          'semester': column[7],
+                          'minimumPassGrade': column[8],
+                          'minimumRequirementsForCredit': column[9],
+                          'description': column[10],
+                          'comments': column[11],
+                          }
+            )
+
+    messages.success(request, "Courses Added Successfully")
+    return redirect(reverse('chemapp:courses'))
+
+
+@login_required
 @permission_required_context('chemapp.add_assessments', 'No permission to add_assessments', raise_exception=True)
 def add_assessments(request, course_name_slug):
     AssessmentFormSet = formset_factory(AssessmentForm, extra=1)
@@ -488,6 +562,70 @@ def delete_assessment(request, course_name_slug, assessment_name_slug):
 
 
 @login_required
+@permission_required_context('chemapp.add_assessments', 'No permission to add_assessments', raise_exception=True)
+def upload_assessment_csv(request, course_name_slug):
+    uploadAssessments = {}
+    uploadAssessments['course_name_slug'] = course_name_slug
+
+    if request.method == "GET":
+        return render(request, 'chemapp/upload_assessment_csv.html', context=uploadAssessments)
+
+    csv_file = request.FILES['file']
+    if not csv_file.name.endswith('.csv'):
+        messages.error(request, 'THIS IS NOT A CSV FILE')
+        return redirect(reverse('chemapp:upload_assessment_csv', kwargs={'course_name_slug': course_name_slug}))
+
+    data_set = csv_file.read().decode('UTF-8')
+    io_string = io.StringIO(data_set)
+    next(io_string)
+
+    # Calculates current Weight Sum with existing Assessments
+    course = Course.objects.get(slug=course_name_slug)
+    weightsum = 0
+
+    courseAssessments = Assessment.objects.filter(course=course)
+    for assessment in courseAssessments:
+        weightsum += assessment.weight
+
+    assessments = []
+    assessmentNames = []
+
+    for column in csv.reader(io_string, delimiter=',', quotechar="|"):
+        weightsum += Decimal(column[2])
+        # Cannot have duplicate Assessments
+        if column[0] in assessmentNames:
+            messages.error(request, 'Duplicate Assessment "' + column[0] + '" Detected')
+            return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
+
+        assessmentNames.append(column[0])
+        assessments.append(column)
+
+    # The sum of the weight of all Assessments must be equal to 1
+    if weightsum != 1:
+        messages.error(request, 'The sum of the Assessment Weights must be equal to 1')
+        return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
+
+    for assessment in assessments:
+        # Converts date string to datetime object
+        dueDateString = assessment[3]
+        dueDate = datetime.strptime(dueDateString, '%d/%m/%Y %H:%M')  # Unaware datetime object
+        dueDate = dueDate.replace(tzinfo=pytz.UTC)  # Aware datetime object
+
+        created = Assessment.objects.update_or_create(
+            assessmentName=assessment[0],
+            course=Course.objects.get(slug=course_name_slug),
+            defaults={'totalMarks': assessment[1],
+                      'componentNumberNeeded': assessment[4],
+                      'dueDate': dueDate,
+                      'weight': assessment[2],
+                      }
+        )
+    else:
+        messages.success(request, "Assessment Added Successfully")
+        return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
+
+
+@login_required
 def map(request, course_name_slug, assessment_name_slug):
     course = Course.objects.get(slug=course_name_slug)
     assessment = Assessment.objects.get(course=course, slug=assessment_name_slug)
@@ -504,6 +642,46 @@ def map(request, course_name_slug, assessment_name_slug):
         mapDict['mapList'] = mapList
 
     return render(request, 'chemapp/map.html', context=mapDict)
+
+
+@login_required
+def upload_map_csv(request, course_name_slug, assessment_name_slug):
+    uploadMapDict = {}
+    uploadMapDict['course_name_slug'] = course_name_slug
+    uploadMapDict['assessment_name_slug'] = assessment_name_slug
+
+    course = Course.objects.get(slug=course_name_slug)
+    assessment = Assessment.objects.get(slug=assessment_name_slug, course=course)
+
+    mapList = []
+
+    if request.method == "GET":
+        return render(request, 'chemapp/upload_map_csv.html', context=uploadMapDict)
+
+    csv_file = request.FILES['file']
+    if not csv_file.name.endswith('.csv'):
+        messages.error(request, 'THIS IS NOT A CSV FILE')
+        return redirect(reverse('chemapp:upload_map_csv', kwargs={'course_name_slug': course_name_slug,
+                                                                  'assessment_name_slug': assessment_name_slug}))
+
+    data_set = csv_file.read().decode('UTF-8')
+    io_string = io.StringIO(data_set)
+    next(io_string)
+    for column in csv.reader(io_string, delimiter=',', quotechar="|"):
+        scale = column[0]
+        mapList.append(scale)
+
+    if len(mapList) != 101:
+        messages.error(request, "Incorrect Map Size")
+        return redirect(reverse('chemapp:upload_map_csv', kwargs={'course_name_slug': course_name_slug,
+                                                                  'assessment_name_slug': assessment_name_slug}))
+    else:
+        assessment.map = json.dumps(mapList)
+        assessment.save()
+
+    messages.success(request, "Map Added Successfully")
+    return redirect(reverse('chemapp:map', kwargs={'course_name_slug': course_name_slug,
+                                                   'assessment_name_slug': assessment_name_slug}))
 
 
 @login_required
@@ -633,6 +811,58 @@ def delete_assessmentComponent(request, course_name_slug, assessment_name_slug, 
         return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
 
     return render(request, 'chemapp/course.html', context={})
+
+
+@login_required
+@permission_required_context('chemapp.add_assessmentComponents', 'No permission to add_assessmentComponents',
+                             raise_exception=True)
+def upload_assessment_comp_csv(request, course_name_slug, assessment_name_slug):
+    # totalmarks = 0
+    course = Course.objects.get(slug=course_name_slug)
+
+    uploadAssessmentComponents = {}
+    uploadAssessmentComponents['course_name_slug'] = course_name_slug
+    uploadAssessmentComponents['assessment_name_slug'] = assessment_name_slug
+
+    if request.method == "GET":
+        return render(request, 'chemapp/upload_assessment_comp_csv.html', context=uploadAssessmentComponents)
+
+    csv_file = request.FILES['file']
+    if not csv_file.name.endswith('.csv'):
+        messages.error(request, 'THIS IS NOT A CSV FILE')
+        return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
+
+    data_set = csv_file.read().decode('UTF-8')
+    io_string = io.StringIO(data_set)
+    next(io_string)
+
+    for column in csv.reader(io_string, delimiter=',', quotechar="|"):
+        # totalmarks = totalmarks + int(column[2])
+        required_optional = column[1]
+        if required_optional == "Required":
+            required = True
+        else:
+            required = False
+
+        created = AssessmentComponent.objects.update_or_create(
+            description=column[0],
+            assessment=Assessment.objects.get(slug=assessment_name_slug, course=course),
+            defaults={'required': required,
+                      'marks': column[2],
+                      'lecturer': Staff.objects.get(username=column[3].replace(" ", "")),
+                      }
+        )
+
+    assessment = Assessment.objects.get(slug=assessment_name_slug, course=course)
+
+    # Is this check needed??
+    # if totalmarks != assessment.totalMarks:
+    #    AssessmentComponent.objects.filter(assessment=assessment).delete()
+    #    messages.error(request, 'The sum of the Assessment Components must be equal to %s' % assessment.totalMarks)
+    #    return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
+
+    messages.success(request, "Assessment Components Added Successfully")
+    return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
 
 
 def user_login(request):
@@ -871,6 +1101,63 @@ def delete_student(request, student_id):
         return redirect(reverse('chemapp:students'))
 
     return render(request, 'chemapp/student.html', context={})
+
+
+@login_required
+@permission_required_context('chemapp.add_student', 'No permission to add_student', raise_exception=True)
+def upload_student_csv(request, course_name_slug):
+    course = Course.objects.get(slug=course_name_slug)
+
+    uploadStudents = {}
+    uploadStudents['course_name_slug'] = course_name_slug
+
+    if request.method == "GET":
+        return render(request, 'chemapp/upload_student_csv.html', context=uploadStudents)
+
+    csv_file = request.FILES['file']
+    # Check if this is a CSV file
+    if not csv_file.name.endswith('.csv'):
+        messages.error(request, 'THIS IS NOT A CSV FILE')
+        return render(request, 'chemapp/upload_student_csv.html', context=uploadStudents)
+
+    data_set = csv_file.read().decode('UTF-8')
+    io_string = io.StringIO(data_set)
+    next(io_string)
+    for column in csv.reader(io_string, delimiter=',', quotechar="|"):
+        # Check if this Student already exists
+        try:
+            student = Student.objects.get(studentID=column[0])
+        except Student.DoesNotExist:
+            try:
+                degree = Degree.objects.get(degreeCode=column[3])
+                degree.numberOfStudents += 1
+                degree.save()
+            except Degree.DoesNotExist:
+                messages.error(request, 'Degree "' + column[3] + '" does not exist, unable to upload students csv file')
+                return redirect(reverse('chemapp:course_students', kwargs={'course_name_slug': course_name_slug}))
+
+            course.numberOfStudents += 1
+            course.save()
+
+        # Converts date string to datetime object
+        graduationDateString = column[5]
+        graduationDate = datetime.strptime(graduationDateString, '%d/%m/%Y')
+
+        created = Student.objects.update_or_create(
+            studentID=column[0],
+            defaults={'firstName': column[1],
+                      'lastName': column[2],
+                      'academicPlan': Degree.objects.get(degreeCode=column[3]),
+                      'level': column[4],
+                      'graduationDate': graduationDate,
+                      }
+        )
+        student = Student.objects.get(studentID=column[0])
+        student.courses.add(course)
+        student.save()
+
+    messages.success(request, "Student Added Successfully")
+    return redirect(reverse('chemapp:course_students', kwargs={'course_name_slug': course_name_slug}))
 
 
 @login_required
@@ -1382,293 +1669,6 @@ def delete_final_grade(request, student_id, course_name_slug, assessment_name_sl
         return redirect(reverse('chemapp:student', kwargs={'student_id': student_id, }))
 
     return render(request, 'chemapp/student.html', context={})
-
-
-@login_required
-@permission_required_context('chemapp.add_student', 'No permission to add_student', raise_exception=True)
-def upload_student_csv(request, course_name_slug):
-    course = Course.objects.get(slug=course_name_slug)
-
-    uploadStudents = {}
-    uploadStudents['course_name_slug'] = course_name_slug
-
-    if request.method == "GET":
-        return render(request, 'chemapp/upload_student_csv.html', context=uploadStudents)
-
-    csv_file = request.FILES['file']
-    # Check if this is a CSV file
-    if not csv_file.name.endswith('.csv'):
-        messages.error(request, 'THIS IS NOT A CSV FILE')
-        return render(request, 'chemapp/upload_student_csv.html', context=uploadStudents)
-
-    data_set = csv_file.read().decode('UTF-8')
-    io_string = io.StringIO(data_set)
-    next(io_string)
-    for column in csv.reader(io_string, delimiter=',', quotechar="|"):
-        # Check if this Student already exists
-        try:
-            student = Student.objects.get(studentID=column[0])
-        except Student.DoesNotExist:
-            try:
-                degree = Degree.objects.get(degreeCode=column[3])
-                degree.numberOfStudents += 1
-                degree.save()
-            except Degree.DoesNotExist:
-                messages.error(request, 'Degree "' + column[3] + '" does not exist, unable to upload students csv file')
-                return redirect(reverse('chemapp:course_students', kwargs={'course_name_slug': course_name_slug}))
-
-            course.numberOfStudents += 1
-            course.save()
-
-        # Converts date string to datetime object
-        graduationDateString = column[5]
-        graduationDate = datetime.strptime(graduationDateString, '%d/%m/%Y')
-
-        created = Student.objects.update_or_create(
-            studentID=column[0],
-            defaults={'firstName': column[1],
-                      'lastName': column[2],
-                      'academicPlan': Degree.objects.get(degreeCode=column[3]),
-                      'level': column[4],
-                      'graduationDate': graduationDate,
-                      }
-        )
-        student = Student.objects.get(studentID=column[0])
-        student.courses.add(course)
-        student.save()
-
-    messages.success(request, "Student Added Successfully")
-    return redirect(reverse('chemapp:course_students', kwargs={'course_name_slug': course_name_slug}))
-
-
-@login_required
-@permission_required_context('chemapp.add_degree', 'No permission to add_degree', raise_exception=True)
-def upload_degree_csv(request):
-    if request.method == "GET":
-        return render(request, 'chemapp/upload_degree_csv.html')
-
-    csv_file = request.FILES['file']
-    if not csv_file.name.endswith('.csv'):
-        messages.error(request, 'THIS IS NOT A CSV FILE')
-        return redirect(reverse('chemapp:degrees'))
-
-    data_set = csv_file.read().decode('UTF-8')
-    io_string = io.StringIO(data_set)
-    next(io_string)
-    for column in csv.reader(io_string, delimiter=',', quotechar="|"):
-        created = Degree.objects.update_or_create(
-            degreeCode=column[0],
-            defaults={'name': column[1],
-                      }
-        )
-
-    messages.success(request, "Degrees Added Successfully")
-    return redirect(reverse('chemapp:degrees'))
-
-
-@login_required
-@permission_required_context('chemapp.add_course', 'No permission to add_course', raise_exception=True)
-def upload_course_csv(request):
-    if request.method == "GET":
-        return render(request, 'chemapp/upload_course_csv.html')
-
-    csv_file = request.FILES['file']
-    if not csv_file.name.endswith('.csv'):
-        messages.error(request, 'THIS IS NOT A CSV FILE')
-        return redirect('chemapp:upload_course_csv')
-
-    data_set = csv_file.read().decode('UTF-8')
-    io_string = io.StringIO(data_set)
-    next(io_string)
-    for column in csv.reader(io_string, delimiter=',', quotechar="|"):
-        if not Degree.objects.filter(degreeCode=column[1]).exists():
-            messages.error(request, 'Degree "' + column[1] + '" does not exist, unable to upload courses csv file')
-            return redirect(reverse('chemapp:courses'))
-
-        if not Course.objects.filter(code=column[0]).exists():
-            # Increment degree course count
-            degree = Degree.objects.get(degreeCode=column[1])
-            degree.numberOfCourses = degree.numberOfCourses + 1
-            degree.save()
-
-            course_slug = slugify(str(column[0]) + "-" + str(column[1]))
-
-            addCoursePermissions(course_slug)
-
-            created = Course.objects.update_or_create(
-                code=column[0],
-                degree=Degree.objects.get(degreeCode=column[1]),
-                defaults={'creditsWorth': column[2],
-                          'name': column[3],
-                          'shortHand': column[4],
-                          'level': column[5],
-                          'academicYearTaught': column[6],
-                          'semester': column[7],
-                          'minimumPassGrade': column[8],
-                          'minimumRequirementsForCredit': column[9],
-                          'description': column[10],
-                          'comments': column[11],
-                          }
-            )
-
-    messages.success(request, "Courses Added Successfully")
-    return redirect(reverse('chemapp:courses'))
-
-
-@login_required
-@permission_required_context('chemapp.add_assessments', 'No permission to add_assessments', raise_exception=True)
-def upload_assessment_csv(request, course_name_slug):
-    uploadAssessments = {}
-    uploadAssessments['course_name_slug'] = course_name_slug
-
-    if request.method == "GET":
-        return render(request, 'chemapp/upload_assessment_csv.html', context=uploadAssessments)
-
-    csv_file = request.FILES['file']
-    if not csv_file.name.endswith('.csv'):
-        messages.error(request, 'THIS IS NOT A CSV FILE')
-        return redirect(reverse('chemapp:upload_assessment_csv', kwargs={'course_name_slug': course_name_slug}))
-
-    data_set = csv_file.read().decode('UTF-8')
-    io_string = io.StringIO(data_set)
-    next(io_string)
-
-    # Calculates current Weight Sum with existing Assessments
-    course = Course.objects.get(slug=course_name_slug)
-    weightsum = 0
-
-    courseAssessments = Assessment.objects.filter(course=course)
-    for assessment in courseAssessments:
-        weightsum += assessment.weight
-
-    assessments = []
-    assessmentNames = []
-
-    for column in csv.reader(io_string, delimiter=',', quotechar="|"):
-        weightsum += Decimal(column[2])
-        # Cannot have duplicate Assessments
-        if column[0] in assessmentNames:
-            messages.error(request, 'Duplicate Assessment "' + column[0] + '" Detected')
-            return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
-
-        assessmentNames.append(column[0])
-        assessments.append(column)
-
-    # The sum of the weight of all Assessments must be equal to 1
-    if weightsum != 1:
-        messages.error(request, 'The sum of the Assessment Weights must be equal to 1')
-        return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
-
-    for assessment in assessments:
-        # Converts date string to datetime object
-        dueDateString = assessment[3]
-        dueDate = datetime.strptime(dueDateString, '%d/%m/%Y %H:%M')  # Unaware datetime object
-        dueDate = dueDate.replace(tzinfo=pytz.UTC)  # Aware datetime object
-
-        created = Assessment.objects.update_or_create(
-            assessmentName=assessment[0],
-            course=Course.objects.get(slug=course_name_slug),
-            defaults={'totalMarks': assessment[1],
-                      'componentNumberNeeded': assessment[4],
-                      'dueDate': dueDate,
-                      'weight': assessment[2],
-                      }
-        )
-    else:
-        messages.success(request, "Assessment Added Successfully")
-        return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
-
-
-@login_required
-def upload_map_csv(request, course_name_slug, assessment_name_slug):
-    uploadMapDict = {}
-    uploadMapDict['course_name_slug'] = course_name_slug
-    uploadMapDict['assessment_name_slug'] = assessment_name_slug
-
-    course = Course.objects.get(slug=course_name_slug)
-    assessment = Assessment.objects.get(slug=assessment_name_slug, course=course)
-
-    mapList = []
-
-    if request.method == "GET":
-        return render(request, 'chemapp/upload_map_csv.html', context=uploadMapDict)
-
-    csv_file = request.FILES['file']
-    if not csv_file.name.endswith('.csv'):
-        messages.error(request, 'THIS IS NOT A CSV FILE')
-        return redirect(reverse('chemapp:upload_map_csv', kwargs={'course_name_slug': course_name_slug,
-                                                                  'assessment_name_slug': assessment_name_slug}))
-
-    data_set = csv_file.read().decode('UTF-8')
-    io_string = io.StringIO(data_set)
-    next(io_string)
-    for column in csv.reader(io_string, delimiter=',', quotechar="|"):
-        scale = column[0]
-        mapList.append(scale)
-
-    if len(mapList) != 101:
-        messages.error(request, "Incorrect Map Size")
-        return redirect(reverse('chemapp:upload_map_csv', kwargs={'course_name_slug': course_name_slug,
-                                                                  'assessment_name_slug': assessment_name_slug}))
-    else:
-        assessment.map = json.dumps(mapList)
-        assessment.save()
-
-    messages.success(request, "Map Added Successfully")
-    return redirect(reverse('chemapp:map', kwargs={'course_name_slug': course_name_slug,
-                                                   'assessment_name_slug': assessment_name_slug}))
-
-
-@login_required
-@permission_required_context('chemapp.add_assessmentComponents', 'No permission to add_assessmentComponents',
-                             raise_exception=True)
-def upload_assessment_comp_csv(request, course_name_slug, assessment_name_slug):
-    # totalmarks = 0
-    course = Course.objects.get(slug=course_name_slug)
-
-    uploadAssessmentComponents = {}
-    uploadAssessmentComponents['course_name_slug'] = course_name_slug
-    uploadAssessmentComponents['assessment_name_slug'] = assessment_name_slug
-
-    if request.method == "GET":
-        return render(request, 'chemapp/upload_assessment_comp_csv.html', context=uploadAssessmentComponents)
-
-    csv_file = request.FILES['file']
-    if not csv_file.name.endswith('.csv'):
-        messages.error(request, 'THIS IS NOT A CSV FILE')
-        return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
-
-    data_set = csv_file.read().decode('UTF-8')
-    io_string = io.StringIO(data_set)
-    next(io_string)
-
-    for column in csv.reader(io_string, delimiter=',', quotechar="|"):
-        # totalmarks = totalmarks + int(column[2])
-        required_optional = column[1]
-        if required_optional == "Required":
-            required = True
-        else:
-            required = False
-
-        created = AssessmentComponent.objects.update_or_create(
-            description=column[0],
-            assessment=Assessment.objects.get(slug=assessment_name_slug, course=course),
-            defaults={'required': required,
-                      'marks': column[2],
-                      'lecturer': Staff.objects.get(username=column[3].replace(" ", "")),
-                      }
-        )
-
-    assessment = Assessment.objects.get(slug=assessment_name_slug, course=course)
-
-    # Is this check needed??
-    # if totalmarks != assessment.totalMarks:
-    #    AssessmentComponent.objects.filter(assessment=assessment).delete()
-    #    messages.error(request, 'The sum of the Assessment Components must be equal to %s' % assessment.totalMarks)
-    #    return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
-
-    messages.success(request, "Assessment Components Added Successfully")
-    return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
 
 
 @login_required
