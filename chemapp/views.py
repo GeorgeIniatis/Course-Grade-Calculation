@@ -975,7 +975,7 @@ def add_grades(request, student_id, course_name_slug, assessment_name_slug):
                                            goodCause=goodCause,
                                            markedGrade=grade,
                                            finalGrade=None,
-                                           finalGradePercentage = None,
+                                           finalGradePercentage=None,
                                            finalGrade22Scale=None,
                                            band=None,
                                            componentNumberAnswered=count,
@@ -1194,7 +1194,7 @@ def add_final_grade(request, student_id, course_name_slug, assessment_name_slug)
             finalGrade = final_grade_form.cleaned_data.get('finalGrade')
 
             # Convert final grade to Percentage
-            finalGradePercentage = (finalGrade * 100)/ assessment.totalMarks
+            finalGradePercentage = (finalGrade * 100) / assessment.totalMarks
             roundedFinalGradePercetange = round(finalGradePercentage)
 
             # Use the Percentage to 22-Scale Mapping
@@ -1280,10 +1280,22 @@ def edit_final_grade(request, student_id, course_name_slug, assessment_name_slug
 
         if final_grade_form.is_valid():
             finalGrade = final_grade_form.cleaned_data.get('finalGrade')
-            finalGrade22Scale = round((finalGrade * 22) / assessmentGrade.assessment.totalMarks)
+
+            # Convert final grade to Percentage
+            finalGradePercentage = (finalGrade * 100) / assessment.totalMarks
+            roundedFinalGradePercetange = round(finalGradePercentage)
+
+            # Use the Percentage to 22-Scale Mapping
+            jsonDec = json.decoder.JSONDecoder()
+            mapList = jsonDec.decode(assessment.map)
+
+            finalGrade22Scale = int(mapList[roundedFinalGradePercetange])
+
+            # Convert 22-Scale to the Band
             band = GRADE_TO_BAND[finalGrade22Scale]
 
             assessmentGrade.finalGrade = finalGrade
+            assessmentGrade.finalGradePercentage = roundedFinalGradePercetange
             assessmentGrade.finalGrade22Scale = finalGrade22Scale
             assessmentGrade.band = band
             assessmentGrade.save()

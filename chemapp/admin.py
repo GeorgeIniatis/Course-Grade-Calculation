@@ -3,6 +3,10 @@ from chemapp.models import *
 from django.contrib.auth.models import Permission
 
 
+# Before deployment remove access to Student/Staff/Degree/Course/CourseGrade/
+# Assessment/AssessmentGrade/AssessmentComponent/AssessmentComponentGrade
+
+
 class SlugAdmin(admin.ModelAdmin):
     exclude = ('slug',)
 
