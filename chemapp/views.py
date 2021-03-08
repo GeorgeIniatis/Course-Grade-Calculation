@@ -1211,7 +1211,7 @@ def add_grades(request, student_id, course_name_slug, assessment_name_slug):
                     pass
 
                 # Check if required grade is added
-                if assessmentComponent.required == True and grade is None:
+                if assessmentComponent.required is True and grade is None:
                     messages.error(request, 'Grade for ' + str(assessmentComponent.description) + ' is required!')
                     return redirect(reverse('chemapp:add_grades', kwargs={'student_id': student_id,
                                                                           'course_name_slug': course_name_slug,
@@ -1236,7 +1236,8 @@ def add_grades(request, student_id, course_name_slug, assessment_name_slug):
             count = 0
             grade = 0
             for component in components:
-                assessmentComponentGrade = AssessmentComponentGrade.objects.get(assessmentComponent=component)
+                assessmentComponentGrade = AssessmentComponentGrade.objects.get(assessmentComponent=component,
+                                                                                student=student)
                 if assessmentComponentGrade.grade is not None:
                     count = count + 1
                     grade = grade + assessmentComponentGrade.grade
@@ -1356,7 +1357,8 @@ def edit_grades(request, student_id, course_name_slug, assessment_name_slug):
             count = 0
             grade = 0
             for component in components:
-                assessmentComponentGrade = AssessmentComponentGrade.objects.get(assessmentComponent=component)
+                assessmentComponentGrade = AssessmentComponentGrade.objects.get(assessmentComponent=component,
+                                                                                student=student)
                 if assessmentComponentGrade.grade is not None:
                     count = count + 1
                     grade = grade + assessmentComponentGrade.grade
@@ -1482,19 +1484,19 @@ def add_final_grade(request, student_id, course_name_slug, assessment_name_slug)
 
             # Convert final grade to Percentage
             finalGradePercentage = (finalGrade * 100) / assessment.totalMarks
-            roundedFinalGradePercetange = round(finalGradePercentage)
+            roundedFinalGradePercentage = round(finalGradePercentage)
 
             # Use the Percentage to 22-Scale Mapping
             jsonDec = json.decoder.JSONDecoder()
             mapList = jsonDec.decode(assessment.map)
 
-            finalGrade22Scale = int(mapList[roundedFinalGradePercetange])
+            finalGrade22Scale = int(mapList[roundedFinalGradePercentage])
 
             # Convert 22-Scale to the Band
             band = GRADE_TO_BAND[finalGrade22Scale]
 
             assessmentGrade.finalGrade = finalGrade
-            assessmentGrade.finalGradePercentage = roundedFinalGradePercetange
+            assessmentGrade.finalGradePercentage = roundedFinalGradePercentage
             assessmentGrade.finalGrade22Scale = finalGrade22Scale
             assessmentGrade.band = band
             assessmentGrade.save()
@@ -1570,19 +1572,19 @@ def edit_final_grade(request, student_id, course_name_slug, assessment_name_slug
 
             # Convert final grade to Percentage
             finalGradePercentage = (finalGrade * 100) / assessment.totalMarks
-            roundedFinalGradePercetange = round(finalGradePercentage)
+            roundedFinalGradePercentage = round(finalGradePercentage)
 
             # Use the Percentage to 22-Scale Mapping
             jsonDec = json.decoder.JSONDecoder()
             mapList = jsonDec.decode(assessment.map)
 
-            finalGrade22Scale = int(mapList[roundedFinalGradePercetange])
+            finalGrade22Scale = int(mapList[roundedFinalGradePercentage])
 
             # Convert 22-Scale to the Band
             band = GRADE_TO_BAND[finalGrade22Scale]
 
             assessmentGrade.finalGrade = finalGrade
-            assessmentGrade.finalGradePercentage = roundedFinalGradePercetange
+            assessmentGrade.finalGradePercentage = roundedFinalGradePercentage
             assessmentGrade.finalGrade22Scale = finalGrade22Scale
             assessmentGrade.band = band
             assessmentGrade.save()
@@ -1740,34 +1742,172 @@ def upload_grades_csv(request, course_name_slug, assessment_name_slug, assessmen
     assessment = Assessment.objects.get(slug=assessment_name_slug, course=course)
     component = AssessmentComponent.objects.get(slug=assessment_component_slug, assessment=assessment)
 
+    uploadComponentGradesDict = {}
+    uploadComponentGradesDict['course_name_slug'] = course_name_slug
+    uploadComponentGradesDict['assessment_name_slug'] = assessment_name_slug
+    uploadComponentGradesDict['assessment_component_slug'] = assessment_component_slug
+
     if request.method == "GET":
-        return render(request, 'chemapp/upload_grades_csv.html')
+        return render(request, 'chemapp/upload_grades_csv.html', context=uploadComponentGradesDict)
 
     csv_file = request.FILES['file']
     if not csv_file.name.endswith('.csv'):
         messages.error(request, 'THIS IS NOT A CSV FILE')
-        return redirect(reverse('chemapp:courses'))
+        return redirect(reverse('chemapp:upload_grades_csv', kwargs={'course_name_slug': course_name_slug,
+                                                                     'assessment_name_slug': assessment_name_slug,
+                                                                     'assessment_component_slug': assessment_component_slug}))
 
     data_set = csv_file.read().decode('UTF-8')
     io_string = io.StringIO(data_set)
     next(io_string)
     for column in csv.reader(io_string, delimiter=',', quotechar="|"):
-        if int(column[2]) > component.marks:
+        if float(column[1]) > component.marks:
             messages.error(request,
                            'Student with ID number: %s has been awarded a grade higher than %s which is the highest mark available' % (
                                column[0], component.marks))
-            return redirect(reverse('chemapp:courses'))
-        elif not AssessmentComponent.objects.filter(description=column[1]).exists():
-            messages.error(request, '%s is not an assessment component' % column[1])
-            return redirect(reverse('chemapp:courses'))
-        _, created = AssessmentComponentGrade.objects.update_or_create(
-            student=Student.objects.get(studentID=column[0]),
-            assessmentComponent=AssessmentComponent.objects.get(description=column[1]),
-            grade=column[2],
+            return redirect(reverse('chemapp:upload_grades_csv', kwargs={'course_name_slug': course_name_slug,
+                                                                         'assessment_name_slug': assessment_name_slug,
+                                                                         'assessment_component_slug': assessment_component_slug}))
+
+        created = AssessmentComponentGrade.objects.update_or_create(
+            student=Student.objects.get(studentID=int(column[0])),
+            assessmentComponent=component,
+            defaults={'grade': float(column[1])
+                      }
         )
 
-    messages.success(request, "Grades Added Successfully")
-    return redirect(reverse('chemapp:courses'))
+    # Update Assessment Component to show that Grades have been added
+    component.gradesAdded = True
+    component.save()
+
+    canCourseGradeBeCalculated = True
+    canCalculateAssessmentGrades = True
+
+    components = AssessmentComponent.objects.filter(assessment=assessment)
+    # Check if its possible to calculate the Assessment Grades
+    for component in components:
+        if component.gradesAdded is False:
+            canCalculateAssessmentGrades = False
+
+    if canCalculateAssessmentGrades is True:
+        students = Student.objects.filter(courses__slug=course_name_slug)
+
+        for student in students:
+            try:
+                assessmentGrade = AssessmentGrade.objects.get(assessment=assessment, student=student)
+            except AssessmentGrade.DoesNotExist:
+                messages.error(request, 'Please Upload the Student Assessment Information and Try Again!')
+                return redirect(
+                    reverse('chemapp:upload_grades_csv', kwargs={'course_name_slug': course_name_slug,
+                                                                 'assessment_name_slug': assessment_name_slug,
+                                                                 'assessment_component_slug': assessment_component_slug}))
+
+            for component in components:
+                # Check that all required Components have been answered
+                if component.required is True:
+                    try:
+                        componentGrade = AssessmentComponentGrade.objects.get(assessmentComponent=component,
+                                                                              student=student)
+
+                    except AssessmentComponentGrade.DoesNotExist:
+                        messages.error(request,
+                                       'Student with ID number: ' + str(student.studentID) + ' has not answered ' +
+                                       str(component.description) + ' which is required')
+                        return redirect(
+                            reverse('chemapp:upload_grades_csv', kwargs={'course_name_slug': course_name_slug,
+                                                                         'assessment_name_slug': assessment_name_slug,
+                                                                         'assessment_component_slug': assessment_component_slug}))
+
+            # Calculate Assessment Grade
+            count = 0
+            grade = 0
+            for component in components:
+                try:
+                    componentGrade = AssessmentComponentGrade.objects.get(assessmentComponent=component,
+                                                                          student=student)
+
+                    if componentGrade.grade is not None:
+                        count = count + 1
+                        grade = grade + componentGrade.grade
+
+                except AssessmentComponentGrade.DoesNotExist:
+                    pass
+
+            # Check if the number of components answered match number of components needed
+            if count == assessment.componentNumberNeeded:
+                componentNumberMatch = True
+
+                # Convert final grade to Percentage
+                finalGradePercentage = (grade * 100) / assessment.totalMarks
+                roundedFinalGradePercentage = round(finalGradePercentage)
+
+                # Use the Percentage to 22-Scale Mapping
+                jsonDec = json.decoder.JSONDecoder()
+                mapList = jsonDec.decode(assessment.map)
+
+                finalGrade22Scale = int(mapList[roundedFinalGradePercentage])
+
+                # Convert 22-Scale to the Band
+                band = GRADE_TO_BAND[finalGrade22Scale]
+
+                assessmentGrade.markedGrade = grade
+                assessmentGrade.finalGrade = grade
+                assessmentGrade.finalGradePercentage = roundedFinalGradePercentage
+                assessmentGrade.finalGrade22Scale = finalGrade22Scale
+                assessmentGrade.band = band
+                assessmentGrade.componentNumberAnswered = count
+                assessmentGrade.componentNumberMatch = componentNumberMatch
+                assessmentGrade.save()
+
+                # Check if its possible to calculate the Course Grade
+                assessments = Assessment.objects.filter(course=course)
+                assessmentGrades = []
+                for assessmentTemp in assessments:
+                    try:
+                        assessmentGradeObject = AssessmentGrade.objects.get(assessment=assessmentTemp, student=student)
+
+                        if (assessmentGradeObject.finalGrade is None):
+                            canCourseGradeBeCalculated = False
+                        else:
+                            assessmentGrades.append(assessmentGradeObject)
+
+                    except AssessmentGrade.DoesNotExist:
+                        canCourseGradeBeCalculated = False
+
+                if canCourseGradeBeCalculated is True:
+                    courseGrade = 0
+                    for assessmentGrade in assessmentGrades:
+                        weight = assessmentGrade.assessment.weight
+                        weightedGrade = weight * assessmentGrade.finalGrade22Scale
+                        courseGrade = courseGrade + weightedGrade
+
+                    courseGrade = round(courseGrade)
+                    band = GRADE_TO_BAND[courseGrade]
+
+                    courseGradeObject = CourseGrade.objects.create(course=course, student=student,
+                                                                   grade=courseGrade,
+                                                                   band=band)
+            else:
+                componentNumberMatch = False
+
+                messages.error(request, 'Student with ID number: '
+                               + str(student.studentID) + ' has not answered the correct number of components')
+                return redirect(
+                    reverse('chemapp:upload_grades_csv', kwargs={'course_name_slug': course_name_slug,
+                                                                 'assessment_name_slug': assessment_name_slug,
+                                                                 'assessment_component_slug': assessment_component_slug}))
+
+        if canCourseGradeBeCalculated is True:
+            messages.success(request,
+                             'Grades Added Successfully, Assessment Grades Calculated and Course Grades Calculated')
+        else:
+            messages.success(request, 'Grades Added Successfully and Assessment Grades Calculated')
+
+        return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
+
+    else:
+        messages.success(request, 'Component Grades Added Successfully!')
+        return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
 
 
 @login_required

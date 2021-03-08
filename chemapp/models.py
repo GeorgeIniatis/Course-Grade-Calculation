@@ -358,6 +358,8 @@ class AssessmentComponent(models.Model):
 
     slug = models.SlugField()
 
+    gradesAdded = models.BooleanField(default=False)
+
     class Meta:
         unique_together = ('description', 'assessment')
 
