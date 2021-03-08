@@ -207,8 +207,8 @@
                                 <th scope="col">Weight</th>
                                 <th scope="col">Total Marks</th>
                                 <th scope="col">Num.Comps</th>
-                                <th scope="col">Due Date & Time</th>
-                                <th scope="col">Submission Date & Time</th>
+                                <th scope="col">Due</th>
+                                <th scope="col">Submitted</th>
                                 <th scope="col">NDP</th>
                                 <th scope="col">GC</th>
                                 <th scope="col">Late</th>
@@ -227,23 +227,36 @@
                                 <td>{{ assessment.totalMarks }}</td>
                                 <td>{{ assessment.componentNumberNeeded }}</td>
                                 <td>{{ assessment.dueDate }}</td>
-                                <td> {{ nestedDict.gradeObject.submissionDate }}</td>
-                                <td> {{ nestedDict.gradeObject.noDetriment }}</td>
-                                <td> {{ nestedDict.gradeObject.goodCause }}</td>
-                                <td> {{ nestedDict.gradeObject.late }}</td>
-                                <td> {{ nestedDict.gradeObject.componentNumberMatch }}</td>
-                                <td> {{ nestedDict.gradeObject.markedGrade }}</td>
-                              {% if nestedDict.gradeObject.finalGrade is not None %}
-                                <td> {{ nestedDict.gradeObject.finalGrade }} </td>
-                                <td> {{ nestedDict.gradeObject.finalGradePercentage }} </td>
-                                <td> {{ nestedDict.gradeObject.finalGrade22Scale }}</td>
-                                <td> {{ nestedDict.gradeObject.band }}</td>
-                              {% else %}
-                                <td><a  href="{% url 'chemapp:add_final_grade' student_id=student_id course_name_slug=course.slug assessment_name_slug=assessment.slug %}">Add</a></td>
-                                <td> /</td>
-                                <td> /</td>
-                              {% endif %}
-
+                                {% if nestedDict.gradeObject is None %}
+                                    <td> /</td>
+                                    <td> /</td>
+                                    <td> /</td>
+                                    <td> /</td>
+                                    <td> /</td>
+                                    <td> /</td>
+                                    <td> /</td>
+                                    <td> /</td>
+                                    <td> /</td>
+                                    <td> /</td>
+                                {% else %}
+                                    <td> {{ nestedDict.gradeObject.submissionDate }}</td>
+                                    <td> {{ nestedDict.gradeObject.noDetriment }}</td>
+                                    <td> {{ nestedDict.gradeObject.goodCause }}</td>
+                                    <td> {{ nestedDict.gradeObject.late }}</td>
+                                    <td> {{ nestedDict.gradeObject.componentNumberMatch }}</td>
+                                    <td> {{ nestedDict.gradeObject.markedGrade }}</td>
+                                    {% if nestedDict.gradeObject.finalGrade is not None %}
+                                        <td> {{ nestedDict.gradeObject.finalGrade }} </td>
+                                        <td> {{ nestedDict.gradeObject.finalGradePercentage }} </td>
+                                        <td> {{ nestedDict.gradeObject.finalGrade22Scale }}</td>
+                                        <td> {{ nestedDict.gradeObject.band }}</td>
+                                    {% else %}
+                                        <td><a  href="{% url 'chemapp:add_final_grade' student_id=student_id course_name_slug=course.slug assessment_name_slug=assessment.slug %}">Add</a></td>
+                                        <td> /</td>
+                                        <td> /</td>
+                                        <td> /</td>
+                                    {% endif %}
+                                {% endif %}
                             </tr>
                             {% if nestedDict.componentList %}
                             <tr>

@@ -38,6 +38,7 @@ urlpatterns = [
     path('courses/<slug:course_name_slug>/<slug:assessment_name_slug>/map/upload_map_csv/', views.upload_map_csv, name='upload_map_csv'),
     path('courses/<slug:course_name_slug>/<slug:assessment_name_slug>/edit_assessment/', views.edit_assessment, name='edit_assessment'),
     path('courses/<slug:course_name_slug>/<slug:assessment_name_slug>/delete_assessment/', views.delete_assessment, name='delete_assessment'),
+    path('courses/<slug:course_name_slug>/<slug:assessment_name_slug>/upload_student_assessment_info_csv/', views.upload_student_assessment_info_csv, name='upload_student_assessment_info_csv'),
 
     # Assessment Component URLs
     path('courses/<slug:course_name_slug>/<slug:assessment_name_slug>/add_assessmentComponents/', views.add_assessmentComponents, name='add_assessmentComponents'),

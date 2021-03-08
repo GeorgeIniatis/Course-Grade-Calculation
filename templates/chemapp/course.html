@@ -118,6 +118,7 @@
     <div class=" mb-3 d-grid gap-2 d-md-flex justify-content-md-start">
       <a class="btn btn-warning " href="{% url 'chemapp:edit_assessment' course_name_slug=course_name_slug assessment_name_slug=assessment.slug %}"><i class="bi bi-pencil-square"></i> Edit</a>
       <a type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#A{{assessment.slug}}"><i class="bi bi-trash"></i></a>
+      <a class="btn btn-primary btn-sm  " href="{% url 'chemapp:upload_student_assessment_info_csv' course_name_slug=course_name_slug assessment_name_slug=assessment.slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i> Upload CSV File to add Student Assessment Information</a>
     </div>
 
 

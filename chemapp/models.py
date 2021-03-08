@@ -296,7 +296,9 @@ class AssessmentGrade(models.Model):
 
     markedGrade = models.DecimalField(max_digits=5,
                                       decimal_places=2,
-                                      verbose_name="Marked Grade")
+                                      verbose_name="Marked Grade",
+                                      null=True,
+                                      blank=True)
 
     finalGrade = models.DecimalField(max_digits=5,
                                      decimal_places=2,

@@ -1,0 +1,29 @@
+{% extends 'chemapp/base.html' %}
+
+{% block title_block %}
+Student Assessment Information Upload
+{% endblock %}
+
+{% block body_block %}
+
+<div class="container">
+  <h2> Upload CSV file to Student Assessment Information</h2>
+    <p>Format for Map CSV - the heading of the columns are required</p>
+    <div class="alert alert-secondary" role="alert">
+      StudentID,Submitted,NDP,Good_Cause<br>
+      3159976,23/10/2021 06:54,False,False<br>
+      2790987,12/12/2020 15:32,False,True<br>
+
+      <br>
+      *Please use TRUE or FALSE in the NDP and Good Cause columns<br>
+      *We expect you to provide correctly formatted files
+    </div>
+
+    <form class="mt-5" action="{% url 'chemapp:upload_student_assessment_info_csv' course_name_slug=course_name_slug assessment_name_slug=assessment_name_slug %}" method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <input  type="file" id="file1" name="file"><br/>
+      <button class="btn btn-primary mt-4"type="submit"><i class="pe-1 bi bi-file-earmark-arrow-up"></i> Upload</button>
+    </form>
+</div>
+
+{% endblock %}

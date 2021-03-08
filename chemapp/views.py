@@ -595,7 +595,7 @@ def upload_assessment_csv(request, course_name_slug):
         # Cannot have duplicate Assessments
         if column[0] in assessmentNames:
             messages.error(request, 'Duplicate Assessment "' + column[0] + '" Detected')
-            return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
+            return redirect(reverse('chemapp:upload_assessment_csv', kwargs={'course_name_slug': course_name_slug}))
 
         assessmentNames.append(column[0])
         assessments.append(column)
@@ -603,7 +603,7 @@ def upload_assessment_csv(request, course_name_slug):
     # The sum of the weight of all Assessments must be equal to 1
     if weightsum != 1:
         messages.error(request, 'The sum of the Assessment Weights must be equal to 1')
-        return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
+        return redirect(reverse('chemapp:upload_assessment_csv', kwargs={'course_name_slug': course_name_slug}))
 
     for assessment in assessments:
         # Converts date string to datetime object
@@ -1671,18 +1671,77 @@ def delete_final_grade(request, student_id, course_name_slug, assessment_name_sl
     return render(request, 'chemapp/student.html', context={})
 
 
+# Upload Assessment Information Submission/NDP/Good Cause
+@login_required
+def upload_student_assessment_info_csv(request, course_name_slug, assessment_name_slug):
+    course = Course.objects.get(slug=course_name_slug)
+    assessment = Assessment.objects.get(slug=assessment_name_slug, course=course)
+
+    uploadAssessmentInfoDict = {}
+    uploadAssessmentInfoDict['course_name_slug'] = course_name_slug
+    uploadAssessmentInfoDict['assessment_name_slug'] = assessment_name_slug
+
+    if request.method == "GET":
+        return render(request, 'chemapp/upload_student_assessment_info_csv.html', context=uploadAssessmentInfoDict)
+
+    csv_file = request.FILES['file']
+    if not csv_file.name.endswith('.csv'):
+        messages.error(request, 'THIS IS NOT A CSV FILE')
+        return redirect(
+            reverse('chemapp:upload_student_assessment_info_csv', kwargs={'course_name_slug': course_name_slug,
+                                                                          'assessment_name_slug': assessment_name_slug}))
+
+    data_set = csv_file.read().decode('UTF-8')
+    io_string = io.StringIO(data_set)
+    next(io_string)
+    for column in csv.reader(io_string, delimiter=',', quotechar="|"):
+        ndp = column[2]
+        goodCause = column[3]
+
+        # Converts date string to datetime object
+        submissionDateString = column[1]
+        submissionDate = datetime.strptime(submissionDateString, '%d/%m/%Y %H:%M')  # Unaware datetime object
+        submissionDate = submissionDate.replace(tzinfo=pytz.UTC)  # Aware datetime object
+
+        if ndp == "TRUE":
+            ndp = True
+        else:
+            ndp = False
+
+        if goodCause == "TRUE":
+            goodCause = True
+        else:
+            goodCause = False
+
+        # Check if submission date and time is after due date
+        if submissionDate > assessment.dueDate:
+            late = True
+        else:
+            late = False
+
+        created = AssessmentGrade.objects.update_or_create(
+            student=Student.objects.get(studentID=column[0]),
+            assessment=assessment,
+            defaults={'submissionDate': submissionDate,
+                      'noDetriment': ndp,
+                      'goodCause': goodCause,
+                      'late': late,
+                      }
+        )
+
+    messages.success(request, "Student Assessment Information Added Successfully")
+    return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
+
+
 @login_required
 @permission_required_context('chemapp.add_assessmentComponents', 'No permission to add_grades', raise_exception=True)
 def upload_grades_csv(request, course_name_slug, assessment_name_slug, assessment_component_slug):
-    template = 'chemapp/upload_grades_csv.html'
-    data = AssessmentComponentGrade.objects.all()
-
     course = Course.objects.get(slug=course_name_slug)
     assessment = Assessment.objects.get(slug=assessment_name_slug, course=course)
     component = AssessmentComponent.objects.get(slug=assessment_component_slug, assessment=assessment)
 
     if request.method == "GET":
-        return render(request, template)
+        return render(request, 'chemapp/upload_grades_csv.html')
 
     csv_file = request.FILES['file']
     if not csv_file.name.endswith('.csv'):
