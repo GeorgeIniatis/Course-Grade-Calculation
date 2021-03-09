@@ -1440,9 +1440,12 @@ def delete_grades(request, student_id, course_name_slug, assessment_name_slug):
     if request.method == 'POST':
         # Delete Assessment Component Grades
         for component in components:
-            assessmentComponentGrade = AssessmentComponentGrade.objects.get(assessmentComponent=component,
-                                                                            student=student)
-            assessmentComponentGrade.delete()
+            try:
+                assessmentComponentGrade = AssessmentComponentGrade.objects.get(assessmentComponent=component,
+                                                                                student=student)
+                assessmentComponentGrade.delete()
+            except AssessmentComponentGrade.DoesNotExist:
+                pass
 
         # Delete Assessment Grade
         assessmentGrade = AssessmentGrade.objects.get(assessment=assessment, student=student)
@@ -1485,6 +1488,11 @@ def add_final_grade(request, student_id, course_name_slug, assessment_name_slug)
             # Convert final grade to Percentage
             finalGradePercentage = (finalGrade * 100) / assessment.totalMarks
             roundedFinalGradePercentage = round(finalGradePercentage)
+
+            # Check if Map has been uploaded
+            if assessment.map is None:
+                messages.error(request, 'Please upload a % to 22-Scale Map to the Assessment and Try Again!')
+                return redirect(reverse('chemapp:student', kwargs={'student_id': student_id, }))
 
             # Use the Percentage to 22-Scale Mapping
             jsonDec = json.decoder.JSONDecoder()
@@ -1731,6 +1739,15 @@ def upload_student_assessment_info_csv(request, course_name_slug, assessment_nam
                       }
         )
 
+        components = AssessmentComponent.objects.filter(assessment=assessment)
+        for component in components:
+            created = AssessmentComponentGrade.objects.update_or_create(
+                student=Student.objects.get(studentID=int(column[0])),
+                assessmentComponent=component,
+                defaults={'grade': None
+                          }
+            )
+
     messages.success(request, "Student Assessment Information Added Successfully")
     return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
 
@@ -1756,6 +1773,34 @@ def upload_grades_csv(request, course_name_slug, assessment_name_slug, assessmen
         return redirect(reverse('chemapp:upload_grades_csv', kwargs={'course_name_slug': course_name_slug,
                                                                      'assessment_name_slug': assessment_name_slug,
                                                                      'assessment_component_slug': assessment_component_slug}))
+
+    # Check that Students have been added to the Course
+    students = Student.objects.filter(courses__slug=course_name_slug)
+    if not students:
+        messages.error(request, 'Please Upload Students First and Try Again!')
+        return redirect(
+            reverse('chemapp:upload_grades_csv', kwargs={'course_name_slug': course_name_slug,
+                                                         'assessment_name_slug': assessment_name_slug,
+                                                         'assessment_component_slug': assessment_component_slug}))
+
+    # Check that Assessment Student Information has been uploaded
+    for student in students:
+        try:
+            assessmentGrade = AssessmentGrade.objects.get(assessment=assessment, student=student)
+        except AssessmentGrade.DoesNotExist:
+            messages.error(request, 'Please Upload the Student Assessment Information and Try Again!')
+            return redirect(
+                reverse('chemapp:upload_grades_csv', kwargs={'course_name_slug': course_name_slug,
+                                                             'assessment_name_slug': assessment_name_slug,
+                                                             'assessment_component_slug': assessment_component_slug}))
+
+    # Check if Map has been uploaded
+    if assessment.map is None:
+        messages.error(request, 'Please upload a % to 22-Scale Map to the Assessment and Try Again!')
+        return redirect(
+            reverse('chemapp:upload_grades_csv', kwargs={'course_name_slug': course_name_slug,
+                                                         'assessment_name_slug': assessment_name_slug,
+                                                         'assessment_component_slug': assessment_component_slug}))
 
     data_set = csv_file.read().decode('UTF-8')
     io_string = io.StringIO(data_set)
@@ -1790,18 +1835,8 @@ def upload_grades_csv(request, course_name_slug, assessment_name_slug, assessmen
             canCalculateAssessmentGrades = False
 
     if canCalculateAssessmentGrades is True:
-        students = Student.objects.filter(courses__slug=course_name_slug)
-
         for student in students:
-            try:
-                assessmentGrade = AssessmentGrade.objects.get(assessment=assessment, student=student)
-            except AssessmentGrade.DoesNotExist:
-                messages.error(request, 'Please Upload the Student Assessment Information and Try Again!')
-                return redirect(
-                    reverse('chemapp:upload_grades_csv', kwargs={'course_name_slug': course_name_slug,
-                                                                 'assessment_name_slug': assessment_name_slug,
-                                                                 'assessment_component_slug': assessment_component_slug}))
-
+            assessmentGrade = AssessmentGrade.objects.get(assessment=assessment, student=student)
             for component in components:
                 # Check that all required Components have been answered
                 if component.required is True:
