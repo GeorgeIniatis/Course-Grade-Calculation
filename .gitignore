@@ -4,13 +4,10 @@
 #Compiled Documents
 *.pdf
 *.ps
-db.sqlite3
 .DS_Store
 
 #Directories
 __pycache__/
-chemapp/migrations/
-Procfile.file
 CSV/
 venv/
 .idea/
