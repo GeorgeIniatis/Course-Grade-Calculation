@@ -817,8 +817,8 @@ def delete_assessmentComponent(request, course_name_slug, assessment_name_slug, 
 @permission_required_context('chemapp.add_assessmentComponents', 'No permission to add_assessmentComponents',
                              raise_exception=True)
 def upload_assessment_comp_csv(request, course_name_slug, assessment_name_slug):
-    # totalmarks = 0
     course = Course.objects.get(slug=course_name_slug)
+    assessment = Assessment.objects.get(slug=assessment_name_slug, course=course)
 
     uploadAssessmentComponents = {}
     uploadAssessmentComponents['course_name_slug'] = course_name_slug
@@ -830,36 +830,38 @@ def upload_assessment_comp_csv(request, course_name_slug, assessment_name_slug):
     csv_file = request.FILES['file']
     if not csv_file.name.endswith('.csv'):
         messages.error(request, 'THIS IS NOT A CSV FILE')
-        return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
+        return redirect(reverse('chemapp:upload_assessment_comp_csv', kwargs={'course_name_slug': course_name_slug,
+                                                                              'assessment_name_slug': assessment_name_slug}))
 
     data_set = csv_file.read().decode('UTF-8')
     io_string = io.StringIO(data_set)
     next(io_string)
 
     for column in csv.reader(io_string, delimiter=',', quotechar="|"):
-        # totalmarks = totalmarks + int(column[2])
         required_optional = column[1]
         if required_optional == "Required":
             required = True
         else:
             required = False
 
+        # Check if Lecturer Exists
+        try:
+            lecturer = Staff.objects.get(username=column[3].replace(" ", ""))
+        except Staff.DoesNotExist:
+            messages.error(request, 'Lecturer ' + str(column[3]) + ' does not exist')
+            return redirect(reverse('chemapp:upload_assessment_comp_csv', kwargs={'course_name_slug': course_name_slug,
+                                                                                  'assessment_name_slug': assessment_name_slug}))
+
         created = AssessmentComponent.objects.update_or_create(
             description=column[0],
-            assessment=Assessment.objects.get(slug=assessment_name_slug, course=course),
+            assessment=assessment,
             defaults={'required': required,
                       'marks': column[2],
-                      'lecturer': Staff.objects.get(username=column[3].replace(" ", "")),
+                      'lecturer': lecturer,
                       }
         )
 
     assessment = Assessment.objects.get(slug=assessment_name_slug, course=course)
-
-    # Is this check needed??
-    # if totalmarks != assessment.totalMarks:
-    #    AssessmentComponent.objects.filter(assessment=assessment).delete()
-    #    messages.error(request, 'The sum of the Assessment Components must be equal to %s' % assessment.totalMarks)
-    #    return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
 
     messages.success(request, "Assessment Components Added Successfully")
     return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
