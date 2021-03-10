@@ -1665,6 +1665,7 @@ def delete_final_grade(request, student_id, course_name_slug, assessment_name_sl
     if request.method == 'POST':
         # Delete Final Assessment Grade by updating Assessment Grade
         assessmentGrade.finalGrade = None
+        assessmentGrade.finalGradePercentage = None
         assessmentGrade.finalGrade22Scale = None
         assessmentGrade.band = None
 
