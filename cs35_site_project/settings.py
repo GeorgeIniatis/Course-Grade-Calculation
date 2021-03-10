@@ -11,7 +11,9 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
-import django_heroku
+
+#HEROKU
+#import django_heroku
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -29,7 +31,10 @@ SECRET_KEY = '=vt10-w_zl1%lg8nlt%bem#k)@@o_^6@ebf445nd=6tw_+5)ft'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+
+#HEROKU
+#[*]
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -137,5 +142,5 @@ MEDIA_ROOT = MEDIA_DIR
 MEDIA_URL = '/media/'
 
 
-
-django_heroku.settings(locals())
+#HEROKU
+#django_heroku.settings(locals())
