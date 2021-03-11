@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'chemapp',
-    'tempus_dominus',
     'whitenoise',
     'django_tables2',
     'colorfield',

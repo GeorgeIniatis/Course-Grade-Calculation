@@ -15,7 +15,11 @@
     <p> Level: {{ student.level }} </p>
     <p> Graduation Date: {{ student.graduationDate }} </p>
     <p> Status: {{ student.status }} </p>
-    <p> Comments: {{ student.comments }} </p>
+    {% if student.comments %}
+      <p> Comments: {{ student.comments }} </p>
+    {% else %}
+      <p> No Comments yet</p>
+    {% endif %}
 
 
 
