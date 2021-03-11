@@ -29,6 +29,7 @@ SEMESTER_CHOICES = [
 
 STAFF_TITTLES = [
     ('', 'Select a choice'),
+    ('Prof', 'Prof'),
     ('Dr', 'Dr'),
     ('Mr', 'Mr'),
     ('Miss', 'Miss'),

@@ -46,6 +46,7 @@ BAND_TO_GRADE = {'A1': 22, 'A2': 21, 'A3': 20, 'A4': 19, 'A5': 18,
                  }
 
 STAFF_TITTLES = [
+    ('Prof', 'Prof'),
     ('Dr', 'Dr'),
     ('Mr', 'Mr'),
     ('Miss', 'Miss'),
