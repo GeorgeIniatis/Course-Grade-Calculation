@@ -92,6 +92,14 @@ def add_degree(request):
                 name = form.cleaned_data.get('name')
                 slug = slugify(degreeCode)
 
+                # Check if Degree already exists
+                try:
+                    degree = Degree.objects.get(degreeCode=degreeCode)
+                    messages.error(request, "Degree with code: " + degreeCode + " already exists")
+                    return redirect(reverse('chemapp:add_degree'))
+                except Degree.DoesNotExist:
+                    pass
+
                 if degreeCode in codes:
                     messages.error(request, "Duplicate degree " + degreeCode + " was only added once")
                 else:
@@ -1732,8 +1740,17 @@ def upload_student_assessment_info_csv(request, course_name_slug, assessment_nam
         else:
             late = False
 
+        # Check if Student Exists
+        try:
+            student = Student.objects.get(studentID=column[0])
+        except Student.DoesNotExist:
+            messages.error(request, 'Student with ID number: ' + str(column[0]) + ' does not exist!')
+            return redirect(
+                reverse('chemapp:upload_student_assessment_info_csv', kwargs={'course_name_slug': course_name_slug,
+                                                                              'assessment_name_slug': assessment_name_slug}))
+
         created = AssessmentGrade.objects.update_or_create(
-            student=Student.objects.get(studentID=column[0]),
+            student=student,
             assessment=assessment,
             defaults={'submissionDate': submissionDate,
                       'noDetriment': ndp,
@@ -1791,7 +1808,7 @@ def upload_grades_csv(request, course_name_slug, assessment_name_slug, assessmen
         try:
             assessmentGrade = AssessmentGrade.objects.get(assessment=assessment, student=student)
         except AssessmentGrade.DoesNotExist:
-            messages.error(request, 'Please Upload the Student Assessment Information and Try Again!')
+            messages.error(request, 'Please Upload the Student Assessment Information(NDP/GC/Submission and Try Again!')
             return redirect(
                 reverse('chemapp:upload_grades_csv', kwargs={'course_name_slug': course_name_slug,
                                                              'assessment_name_slug': assessment_name_slug,

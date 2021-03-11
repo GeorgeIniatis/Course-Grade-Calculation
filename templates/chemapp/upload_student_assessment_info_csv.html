@@ -21,7 +21,7 @@ Student Assessment Information Upload
 
     <form class="mt-5" action="{% url 'chemapp:upload_student_assessment_info_csv' course_name_slug=course_name_slug assessment_name_slug=assessment_name_slug %}" method="POST" enctype="multipart/form-data">
       {% csrf_token %}
-      <input  type="file" id="file1" name="file"><br/>
+      <input  type="file" id="file1" name="file" required><br/>
       <button class="btn btn-primary mt-4"type="submit"><i class="pe-1 bi bi-file-earmark-arrow-up"></i> Upload</button>
     </form>
 </div>

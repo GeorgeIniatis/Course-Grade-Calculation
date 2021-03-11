@@ -21,7 +21,7 @@ Grades Upload
   </div>
     <form class="mt-5"action="" method="POST" enctype="multipart/form-data">
       {% csrf_token %}
-      <input  type="file" id="file1" name="file"><br/>
+      <input  type="file" id="file1" name="file" required><br/>
       <button class="btn btn-primary mt-4"type="submit"><i class="pe-1 bi bi-file-earmark-arrow-up"></i> Upload</button>
     </form>
 </div>
