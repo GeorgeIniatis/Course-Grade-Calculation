@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'whitenoise',
     'django_tables2',
     'colorfield',
+    'import_export',
 ]
 
 MIDDLEWARE = [

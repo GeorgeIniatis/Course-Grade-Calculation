@@ -18,6 +18,7 @@ from django.contrib.auth.decorators import permission_required
 from datetime import datetime
 import pytz
 from decimal import *
+from .admin import CourseGrade
 import json
 
 GRADE_TO_BAND = {22: 'A1', 21: 'A2', 20: 'A3', 19: 'A4', 18: 'A5',
@@ -2105,3 +2106,13 @@ def search_site(request):
 
     else:
         return render(request, 'chemapp/search_site.html')
+
+
+def export(request):
+    course_grade = CourseGrade()
+    dataset = course_grade.export()
+    response = HttpResponse(dataset.csv, content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="course_grade.csv"'
+    return response
+
+
