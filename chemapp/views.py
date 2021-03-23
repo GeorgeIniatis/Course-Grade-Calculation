@@ -95,13 +95,13 @@ def add_degree(request):
                 # Check if Degree already exists
                 try:
                     degree = Degree.objects.get(degreeCode=degreeCode)
-                    messages.error(request, "Degree with code: " + degreeCode + " already exists")
+                    messages.error(request, "Degree with code: " + degreeCode + " already exists!")
                     return redirect(reverse('chemapp:add_degree'))
                 except Degree.DoesNotExist:
                     pass
 
                 if degreeCode in codes:
-                    messages.error(request, "Duplicate degree " + degreeCode + " was only added once")
+                    messages.error(request, "Duplicate degree " + degreeCode + " was only added once!")
                 else:
                     codes.append(degreeCode)
                     degrees.append(Degree(degreeCode=degreeCode,
@@ -112,7 +112,7 @@ def add_degree(request):
 
             Degree.objects.bulk_create(degrees)
 
-            messages.success(request, "Degrees Added Successfully")
+            messages.success(request, "Degrees Added Successfully!")
             return redirect(reverse('chemapp:degrees'))
         else:
             print(degree_formset.errors)
@@ -196,7 +196,7 @@ def upload_degree_csv(request):
                       }
         )
 
-    messages.success(request, "Degrees Added Successfully")
+    messages.success(request, "Degrees Added Successfully!")
     return redirect(reverse('chemapp:degrees'))
 
 
@@ -408,7 +408,7 @@ def upload_course_csv(request):
     next(io_string)
     for column in csv.reader(io_string, delimiter=',', quotechar="|"):
         if not Degree.objects.filter(degreeCode=column[1]).exists():
-            messages.error(request, 'Degree "' + column[1] + '" does not exist, unable to upload courses csv file')
+            messages.error(request, 'Degree with code: ' + column[1] + ' does not exist, unable to upload courses csv file')
             return redirect(reverse('chemapp:courses'))
 
         if not Course.objects.filter(code=column[0]).exists():
@@ -437,7 +437,7 @@ def upload_course_csv(request):
                           }
             )
 
-    messages.success(request, "Courses Added Successfully")
+    messages.success(request, "Courses Added Successfully!")
     return redirect(reverse('chemapp:courses'))
 
 
@@ -478,7 +478,7 @@ def add_assessments(request, course_name_slug):
                 # Check if Assessment has already been added
                 try:
                     assessment = Assessment.objects.get(course=course, assessmentName=name)
-                    messages.error(request, 'Assessment ' + '"' + str(name) + '"' + ' has already been added!')
+                    messages.error(request, 'Assessment ' + str(name) +  ' has already been added!')
                     return redirect(reverse('chemapp:add_assessments', kwargs={'course_name_slug': course_name_slug}))
                 except Assessment.DoesNotExist:
                     pass
@@ -602,7 +602,7 @@ def upload_assessment_csv(request, course_name_slug):
         weightsum += Decimal(column[2])
         # Cannot have duplicate Assessments
         if column[0] in assessmentNames:
-            messages.error(request, 'Duplicate Assessment "' + column[0] + '" Detected')
+            messages.error(request, 'Duplicate Assessment ' + column[0])
             return redirect(reverse('chemapp:upload_assessment_csv', kwargs={'course_name_slug': course_name_slug}))
 
         assessmentNames.append(column[0])
@@ -629,7 +629,7 @@ def upload_assessment_csv(request, course_name_slug):
                       }
         )
     else:
-        messages.success(request, "Assessment Added Successfully")
+        messages.success(request, "Assessments Added Successfully")
         return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
 
 
@@ -680,14 +680,14 @@ def upload_map_csv(request, course_name_slug, assessment_name_slug):
         mapList.append(scale)
 
     if len(mapList) != 101:
-        messages.error(request, "Incorrect Map Size")
+        messages.error(request, "Incorrect Map Size!")
         return redirect(reverse('chemapp:upload_map_csv', kwargs={'course_name_slug': course_name_slug,
                                                                   'assessment_name_slug': assessment_name_slug}))
     else:
         assessment.map = json.dumps(mapList)
         assessment.save()
 
-    messages.success(request, "Map Added Successfully")
+    messages.success(request, "Map Added Successfully!")
     return redirect(reverse('chemapp:map', kwargs={'course_name_slug': course_name_slug,
                                                    'assessment_name_slug': assessment_name_slug}))
 
@@ -729,7 +729,7 @@ def add_assessmentComponents(request, course_name_slug, assessment_name_slug):
                 try:
                     component = AssessmentComponent.objects.get(assessment=assessment, description=description)
                     messages.error(request,
-                                   'Assessment Component ' + '"' + str(description) + '"' + ' has already been added!')
+                                   'Assessment Component ' +  str(description) + ' has already been added!')
                     return redirect(reverse('chemapp:add_assessmentComponents',
                                             kwargs={'course_name_slug': course_name_slug,
                                                     'assessment_name_slug': assessment_name_slug}))
@@ -856,7 +856,7 @@ def upload_assessment_comp_csv(request, course_name_slug, assessment_name_slug):
         try:
             lecturer = Staff.objects.get(username=column[3].replace(" ", ""))
         except Staff.DoesNotExist:
-            messages.error(request, 'Lecturer ' + str(column[3]) + ' does not exist')
+            messages.error(request, 'Lecturer ' + str(column[3]) + ' does not exist!')
             return redirect(reverse('chemapp:upload_assessment_comp_csv', kwargs={'course_name_slug': course_name_slug,
                                                                                   'assessment_name_slug': assessment_name_slug}))
 
@@ -1004,7 +1004,7 @@ def add_student(request):
                 course.save()
 
             # Success message
-            messages.success(request, "Student Added Successfully")
+            messages.success(request, "Student Added Successfully!")
             return redirect(reverse('chemapp:students'))
 
         else:
@@ -1143,7 +1143,7 @@ def upload_student_csv(request, course_name_slug):
                 degree.numberOfStudents += 1
                 degree.save()
             except Degree.DoesNotExist:
-                messages.error(request, 'Degree "' + column[3] + '" does not exist, unable to upload students csv file')
+                messages.error(request, 'Degree ' + column[3] + ' does not exist, unable to upload students csv file')
                 return redirect(reverse('chemapp:course_students', kwargs={'course_name_slug': course_name_slug}))
 
             course.numberOfStudents += 1
@@ -1166,7 +1166,7 @@ def upload_student_csv(request, course_name_slug):
         student.courses.add(course)
         student.save()
 
-    messages.success(request, "Student Added Successfully")
+    messages.success(request, "Student Added Successfully!")
     return redirect(reverse('chemapp:course_students', kwargs={'course_name_slug': course_name_slug}))
 
 
@@ -1283,7 +1283,7 @@ def add_grades(request, student_id, course_name_slug, assessment_name_slug):
                                            student=student)
 
             # Success message
-            messages.success(request, 'Grades Added Successfully')
+            messages.success(request, 'Grades Added Successfully!')
             return redirect(reverse('chemapp:student', kwargs={'student_id': student_id, }))
 
         else:
@@ -1416,7 +1416,7 @@ def edit_grades(request, student_id, course_name_slug, assessment_name_slug):
                 pass
 
             # Success message
-            messages.success(request, 'Grades Updated Successfully')
+            messages.success(request, 'Grades Updated Successfully!')
             return redirect(reverse('chemapp:student', kwargs={'student_id': student_id, }))
 
         else:
@@ -1538,7 +1538,7 @@ def add_final_grade(request, student_id, course_name_slug, assessment_name_slug)
             if canCourseGradeBeCalculated == False:
                 # Success message
                 # Final assessment grade added but course grade cannot be calculated
-                messages.success(request, 'Final Grade Added Successfully')
+                messages.success(request, 'Final Grade Added Successfully!')
                 return redirect(reverse('chemapp:student', kwargs={'student_id': student_id, }))
             else:
                 courseGrade = 0
@@ -1633,7 +1633,7 @@ def edit_final_grade(request, student_id, course_name_slug, assessment_name_slug
             if canCourseGradeBeCalculated == False:
                 # Success message
                 # Final assessment grade updated but course grade cannot be calculated
-                messages.success(request, 'Final Grade Updated Successfully')
+                messages.success(request, 'Final Grade Updated Successfully!')
                 return redirect(reverse('chemapp:student', kwargs={'student_id': student_id, }))
             else:
                 courseGrade = 0
@@ -1768,7 +1768,7 @@ def upload_student_assessment_info_csv(request, course_name_slug, assessment_nam
                           }
             )
 
-    messages.success(request, "Student Assessment Information Added Successfully")
+    messages.success(request, "Student Assessment Information Added Successfully!")
     return redirect(reverse('chemapp:course', kwargs={'course_name_slug': course_name_slug}))
 
 
@@ -2007,7 +2007,7 @@ def add_staff(request):
             # Check if Staff Member has already been added
             try:
                 staff = Staff.objects.get(staffID=staffID)
-                messages.error(request, 'Staff has already been added!')
+                messages.error(request, 'Staff Member has already been added!')
                 return redirect(reverse('chemapp:add_staff'))
             except Staff.DoesNotExist:
                 pass
