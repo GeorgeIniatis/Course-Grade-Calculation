@@ -4,6 +4,7 @@ from django.template.defaultfilters import slugify
 from django.core.validators import MaxValueValidator, MinValueValidator
 from datetime import datetime
 from colorfield.fields import ColorField
+import hashlib
 
 COURSE_LEVEL_CHOICES = [
     ('1', 'Level 1'),
@@ -183,7 +184,7 @@ class Student(models.Model):
                                             unique=True,
                                             verbose_name="Student ID")
 
-    anonID = models.BigIntegerField(validators=[MaxValueValidator(9999999)],
+    anonID = models.CharField(max_length=128,
                                     unique=True,
                                     verbose_name="Anonymous ID")
 
@@ -214,7 +215,7 @@ class Student(models.Model):
     courses = models.ManyToManyField(Course, blank=True)
 
     def save(self, *args, **kwargs):
-        self.anonID = int((abs(hash(str(self.studentID)))) / int(self.studentID))
+        self.anonID = hashlib.sha1(str(self.studentID).encode('ascii')).hexdigest()
         self.status = 'Enrolled' if self.gapYear is False else 'Gap Year'
         super(Student, self).save(*args, **kwargs)
 
