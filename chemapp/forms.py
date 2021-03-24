@@ -692,12 +692,14 @@ class EditStaffForm(StaffForm):
 
 class AssessmentGradeForm(forms.ModelForm):
     submissionDate = forms.DateTimeField(input_formats=['%Y-%m-%dT%H:%M', ],
-                                         label='',
+                                         label='Date and Time submitted',
+                                         help_text='12/01/2021 10:00',
                                          widget=forms.DateTimeInput(
                                              attrs={
                                                  'style': 'width:300px',
                                                  'placeholder': 'Date and Time submitted',
                                                  'type': 'datetime-local',
+                                                 'class': 'form-control',
                                                  'required': True,
                                              },
                                              format='%Y-%m-%dT%H:%M'))
@@ -707,6 +709,7 @@ class AssessmentGradeForm(forms.ModelForm):
                                      widget=forms.CheckboxInput(
                                          attrs={
                                              'placeholder': 'NDP',
+                                             'class': 'form-check-input',
                                          }
                                      ))
 
@@ -715,6 +718,7 @@ class AssessmentGradeForm(forms.ModelForm):
                                    widget=forms.CheckboxInput(
                                        attrs={
                                            'placeholder': 'Good Cause',
+                                           'class': 'form-check-input',
                                        }
                                    ))
 
@@ -726,13 +730,7 @@ class AssessmentGradeForm(forms.ModelForm):
 
 
 class AssessmentComponentGradeForm(forms.ModelForm):
-    description = forms.CharField(label='',
-                                  widget=forms.TextInput(
-                                      attrs={
-                                          'type': 'text',
-                                          'style': 'width:300px',
-                                      }
-                                  ))
+    description = None
 
     assessmentComponent = forms.ModelChoiceField(label='',
                                                  queryset=AssessmentComponent.objects.all(),
@@ -759,7 +757,8 @@ class AssessmentComponentGradeForm(forms.ModelForm):
 
     class Meta:
         model = AssessmentComponentGrade
-        fields = {'description', 'assessmentComponent', 'grade'}
+        fields = { 'assessmentComponent', 'grade'}
+        exclude = {'description'}
 
 
 class FinalAssessmentGradeForm(forms.ModelForm):
