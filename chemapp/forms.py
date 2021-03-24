@@ -631,7 +631,7 @@ class StaffForm(forms.ModelForm):
                               choices=STAFF_TITTLES,
                               widget=forms.Select(
                                   attrs={
-                                      'style': 'width:300px',
+                                      'style': 'width:100%',
                                       'required': True,
                                       'class': 'form-select',
                                   }
