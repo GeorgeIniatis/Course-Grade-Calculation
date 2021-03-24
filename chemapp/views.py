@@ -262,6 +262,7 @@ def course_students(request, course_name_slug):
     courseStudentsDict = {}
     courseStudentsDict['course_name_slug'] = course_name_slug
     courseStudentsDict['students'] = students
+    courseStudentsDict['course_code'] = course.code
 
     return render(request, 'chemapp/course_students.html', context=courseStudentsDict)
 
@@ -2114,5 +2115,3 @@ def export(request):
     response = HttpResponse(dataset.csv, content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="course_grade.csv"'
     return response
-
-
