@@ -730,7 +730,14 @@ class AssessmentGradeForm(forms.ModelForm):
 
 
 class AssessmentComponentGradeForm(forms.ModelForm):
-    description = None
+    description = forms.CharField(label='',
+                                  widget=forms.TextInput(
+                                      attrs={
+                                          'type': 'text',
+                                          'style': 'width:300px',
+                                          'disabled': True,
+                                      }
+                                  ))
 
     assessmentComponent = forms.ModelChoiceField(label='',
                                                  queryset=AssessmentComponent.objects.all(),
@@ -757,9 +764,7 @@ class AssessmentComponentGradeForm(forms.ModelForm):
 
     class Meta:
         model = AssessmentComponentGrade
-        fields = { 'assessmentComponent', 'grade'}
-        exclude = {'description'}
-
+        fields = {'description', 'assessmentComponent', 'grade'}
 
 class FinalAssessmentGradeForm(forms.ModelForm):
     finalGrade = forms.DecimalField(label='',
