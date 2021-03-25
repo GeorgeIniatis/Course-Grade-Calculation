@@ -41,6 +41,11 @@
             <h5 class="modal-title text-dark" id="A{{ student.studentID }}Label">Are you sure?</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
+          <div class="modal-body text-dark">
+            <h3 class="text-danger bold">WARNING:</h3>
+            <h5 class="text-danger">This will delete this student and everything associated, including all exam results. </h5>
+            <h5 class="text-danger">This is permanent and cannot be undone, proceed with caution!<h5>
+          </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-success" data-bs-dismiss="modal">Cancel</button>
             <form id="course_delete_form" method="post" action="{% url 'chemapp:delete_student' student_id=student_id %}">
@@ -152,18 +157,7 @@
                             <tr>
                               <td colspan="13" class="p-4">
                                 <table class="table  table-borderless">
-                                  <caption>
-                                    {% if not nestedDict.gradeObject is None %}
-                                        <div class=" mb-3 d-grid gap-2 d-md-flex justify-content-md-end">
-                                        <!-- Delete Grades Button -->
-                                        <form id="grades_delete_form" method="post" action="{% url 'chemapp:delete_grades' student_id=student_id course_name_slug=course.slug assessment_name_slug=assessment.slug %}">
-                                            {% csrf_token %}
-                                            <button type="submit" class="btn btn-primary">Delete Grades</button>
-                                        </form>
-                                        </div>
-                                    {% endif %}
 
-                                  </caption>
                                   <thead>
                                     <tr>
                                       <th scope="col">Component</th>
@@ -187,6 +181,62 @@
                                           </tr>
                                         {% endfor %}
                                     {% endfor %}
+                                    <tr>
+                                      <th></th>
+                                      <td></td>
+                                      <td></td>
+                                      <td>
+                                        {% if not nestedDict.gradeObject is None %}
+
+
+
+                                            <div class=" mb-3 d-grid gap-2 d-md-flex justify-content-md-center">
+                                              <a type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#A{{course.slug}}{{assessment.slug}}Marks"><i class="bi bi-trash"></i> Delete Grades</a>
+                                            </div>
+
+
+
+
+                                            <!-- Modal -->
+                                            <div class="modal fade" id="A{{course.slug}}{{assessment.slug}}Marks" tabindex="-1" aria-labelledby="A{{course.slug}}{{assessment.slug}}MarksLabel" aria-hidden="true">
+                                              <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                  <div class="modal-header">
+                                                    <h5 class="modal-title text-dark" id="A{{course.slug}}{{assessment.slug}}MarksLabel">Are you sure?</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                  </div>
+                                                  <div class="modal-body text-dark">
+                                                    <h3 class="text-danger bold">WARNING:</h3>
+                                                    <h5 class="text-danger">This will delete all of these grades for this student.</h5>
+                                                    <h5 class="text-danger">This is permanent and cannot be undone, proceed with caution!<h5>
+                                                  </div>
+                                                  <div class="modal-footer">
+                                                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">Cancel</button>
+                                                    <form id="grades_delete_form" method="post" action="{% url 'chemapp:delete_grades' student_id=student_id course_name_slug=course.slug assessment_name_slug=assessment.slug %}">
+                                                      {% csrf_token %}
+                                                      <button type="submit" class="btn btn-danger">Delete</button>
+                                                    </form>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                        {% endif %}
+                                      </td>
+
+                                    </tr>
                                   </tbody>
                                 </table>
                               </td>
