@@ -410,7 +410,8 @@ def upload_course_csv(request):
     next(io_string)
     for column in csv.reader(io_string, delimiter=',', quotechar="|"):
         if not Degree.objects.filter(degreeCode=column[1]).exists():
-            messages.error(request, 'Degree with code: ' + column[1] + ' does not exist, unable to upload courses csv file')
+            messages.error(request,
+                           'Degree with code: ' + column[1] + ' does not exist, unable to upload courses csv file')
             return redirect(reverse('chemapp:courses'))
 
         if not Course.objects.filter(code=column[0]).exists():
@@ -480,7 +481,7 @@ def add_assessments(request, course_name_slug):
                 # Check if Assessment has already been added
                 try:
                     assessment = Assessment.objects.get(course=course, assessmentName=name)
-                    messages.error(request, 'Assessment ' + str(name) +  ' has already been added!')
+                    messages.error(request, 'Assessment ' + str(name) + ' has already been added!')
                     return redirect(reverse('chemapp:add_assessments', kwargs={'course_name_slug': course_name_slug}))
                 except Assessment.DoesNotExist:
                     pass
@@ -731,7 +732,7 @@ def add_assessmentComponents(request, course_name_slug, assessment_name_slug):
                 try:
                     component = AssessmentComponent.objects.get(assessment=assessment, description=description)
                     messages.error(request,
-                                   'Assessment Component ' +  str(description) + ' has already been added!')
+                                   'Assessment Component ' + str(description) + ' has already been added!')
                     return redirect(reverse('chemapp:add_assessmentComponents',
                                             kwargs={'course_name_slug': course_name_slug,
                                                     'assessment_name_slug': assessment_name_slug}))
@@ -902,16 +903,6 @@ def user_logout(request):
     return redirect(reverse('chemapp:home'))
 
 
-@login_required
-def students(request):
-    studentsDict = {}
-    # checking order by
-    students = Student.objects.order_by('level')
-    studentsDict['students'] = students
-
-    return render(request, 'chemapp/students.html', context=studentsDict)
-
-
 # Dictionary structure
 # studentDict = {'student':studentObject,
 #                'courses':{courseObject1:{'gradeObject':courseGradeObject,
@@ -1006,8 +997,9 @@ def add_student(request):
                 course.save()
 
             # Success message
+            student_id = student.studentID
             messages.success(request, "Student Added Successfully!")
-            return redirect(reverse('chemapp:students'))
+            return redirect(reverse('chemapp:student',kwargs={'student_id': student_id}))
 
         else:
             print(student_form.errors)
@@ -1110,7 +1102,7 @@ def delete_student(request, student_id):
         student.delete()
 
         messages.success(request, 'Student deleted successfully!')
-        return redirect(reverse('chemapp:students'))
+        return redirect(reverse('chemapp:courses'))
 
     return render(request, 'chemapp/student.html', context={})
 
@@ -1342,8 +1334,8 @@ def edit_grades(request, student_id, course_name_slug, assessment_name_slug):
                 if assessmentComponent.required is True and grade is None:
                     messages.error(request, 'Grade for ' + str(assessmentComponent.description) + ' is required!')
                     return redirect(reverse('chemapp:edit_grades', kwargs={'student_id': student_id,
-                                                                          'course_name_slug': course_name_slug,
-                                                                          'assessment_name_slug': assessment_name_slug}))
+                                                                           'course_name_slug': course_name_slug,
+                                                                           'assessment_name_slug': assessment_name_slug}))
                 else:
                     pass
 
@@ -1352,8 +1344,8 @@ def edit_grades(request, student_id, course_name_slug, assessment_name_slug):
                     messages.error(request,
                                    'Grade for ' + str(assessmentComponent.description) + ' exceeds available marks!')
                     return redirect(reverse('chemapp:edit_grades', kwargs={'student_id': student_id,
-                                                                          'course_name_slug': course_name_slug,
-                                                                          'assessment_name_slug': assessment_name_slug}))
+                                                                           'course_name_slug': course_name_slug,
+                                                                           'assessment_name_slug': assessment_name_slug}))
                 else:
                     pass
 
