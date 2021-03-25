@@ -3,7 +3,13 @@
 
  Data Entry Flow:
 
-Degrees -> Courses ->
+1. Create Degree.
+2. Create Courses.
+3. Create Assessments (Exam/Labs) for those courses.
+4. Create Assessment Components (questions) for those Assessments.
+5. Upload a grade Map for that exam.
+6. Add Students to the course.
+7. Once you have added students, you can either bulk upload marks for questions on the Exam section on the course page, or individually add/edit/delete from the student page.
 
 ### Running project locally
 
