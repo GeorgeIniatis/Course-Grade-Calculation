@@ -1,17 +1,7 @@
-from base64 import decode
-
-import requests
 from django.contrib.messages.storage.fallback import FallbackStorage
-from django.contrib.sessions.backends import file
 from django.contrib.sessions.middleware import SessionMiddleware
-from django.test import RequestFactory, TestCase
-from django.test.client import Client
+from django.test import RequestFactory, TestCase, Client
 from chemapp.views import *
-import csv, io
-from chemapp.models import *
-import django
-import os
-from chemapp.forms import *
 from populate_user import *
 from django.contrib.auth.models import User
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cs35-main.settings")# cs35-main_project
@@ -20,6 +10,13 @@ django.setup()
 
 
 #For runing the test, if show error like cant find path to somee.ico, may need change some setting outside.
+#Setting.py :Changing STATICFILES_STORAGE from whitenoise.storage.CompressedManifestStaticFilesStorage to
+#django.contrib.staticfiles.storage.StaticFilesStorage
+#then run python manage.py collectstatic to fix the facicon.ico missing issus
+
+#The expect fiel location for csv files upload is in D://
+
+#If programming idels show erroes, pls just try pthon manage.py test
 
 
 
@@ -27,18 +24,7 @@ class Test_For_project(TestCase):
    @classmethod
    def setUpClass(cls):
        create_user('admin', 'admin', 'superuser')
-       # Degree.objects.create(degreeCode='F555-2222', name='basic-degree')
 
-
-       # test_staff_0 = {'staffID': 111111, 'title': 'Prof', 'firstName': 'test', 'lastName': 'staff'}
-       # request = RequestFactory.post('/chemapp/staff/add_staff/', data=test_staff_0)
-       # middleware = SessionMiddleware()
-       # middleware.process_request(request)
-       # request.session.save()
-       # request.user = self.tester
-       # messages = FallbackStorage(request)
-       # setattr(request, '_messages', messages)
-       # add_staff(request)
 
 
    @classmethod
@@ -104,24 +90,14 @@ class Test_For_project(TestCase):
        self.tester=User.objects.get(username='admin')
        self.client.force_login(user=self.tester)
        self.factory = RequestFactory()
-
+       self.client=Client()
        add_staff(self.add_on_something('/chemapp/staff/add_staff/', self.test_staff))
 
-       self.blankset = set([])
 
-       #self.request = self.factory.post('/chemapp/', data=self.login_data)
-       #self.middleware = SessionMiddleware()
-       #self.middleware.process_request(self.request)
-       #self.request.session.save()
-       #self.messages = FallbackStorage(self.request)
-       #setattr(self.request, '_messages', self.messages)
 
-       #self.user_login(self.request)
-
-       #print(requests.get('http://127.0.0.1:8000/chemapp/about').text)
 
    def test_user_login(self):
-       request = self.factory.post('/chemapp/', data=self.login_data)
+       request = self.factory.post('/chemapp/home',)
        middleware = SessionMiddleware()
        middleware.process_request(request)
        request.session.save()
@@ -130,16 +106,25 @@ class Test_For_project(TestCase):
        user_login(request)
        assert user_login(request).status_code==302,'login test failed'
 
-   #def test_about(self):
-       #assert requests.get('http://127.0.0.1:8000/chemapp/home/').status_code == 200, 'home page failed'
+   def test_about(self):
+       self.client.login(username='admin', password='admin')
+       assert self.client.get('http://127.0.0.1:8000/chemapp/about/').status_code==200,'move to about page failed'
 
-   #def test_home(self):
-       # assert requests.get('http://127.0.0.1:8000/chemapp/home').status_code == 200, 'move to degree failed'
+   def test_home(self):
+       self.client.login(username='admin', password='admin')
+       assert self.client.get('http://127.0.0.1:8000/chemapp/home/').status_code == 200, 'move to home page failed'
 
-   #def test_move_to_degrees(self):
-       # assert requests.get('http://127.0.0.1:8000/chemapp/degrees').status_code == 200, 'move to degree failed'
+   def staff(self):
+       self.client.login(username='admin', password='admin')
+       assert self.client.get('http://127.0.0.1:8000/chemapp/staff/').status_code == 200, 'move to staff page failed'
 
+   def degree(self):
+       self.client.login(username='admin', password='admin')
+       assert self.client.get('http://127.0.0.1:8000/chemapp/degree/').status_code == 200, 'move to degree page failed'
 
+   def admin(self):
+       self.client.login(username='admin', password='admin')
+       assert self.client.get('http://127.0.0.1:8000/chemapp/admin/').status_code == 200, 'move to admin page failed'
 
 
 
@@ -299,6 +284,8 @@ class Test_For_project(TestCase):
        delete_assessmentComponent(self.delete_something('/chemapp/courses/chem_1002-f100-2208/exam/q1/delete_component/'),
                          'chem_1002-f100-2208', 'exam','q1')
        assert AssessmentComponent.objects.filter(description='Q1').count() == 0, 'assesment comp delete failed'
+
+
 
 
    def test_on_staff_delete(self):
