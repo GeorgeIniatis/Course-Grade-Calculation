@@ -778,6 +778,7 @@ class FinalAssessmentGradeForm(forms.ModelForm):
                                             'style': 'width:300px',
                                             'autofocus': True,
                                             'required': True,
+                                            'class':'form-control',
                                         }
                                     ))
 
