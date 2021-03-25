@@ -215,7 +215,7 @@ class Student(models.Model):
     courses = models.ManyToManyField(Course, blank=True)
 
     def save(self, *args, **kwargs):
-        self.anonID = hashlib.sha1(str(self.studentID).encode('ascii')).hexdigest()
+        self.anonID = hashlib.sha1(str(self.studentID).encode('UTF-8')).hexdigest()[:10]
         self.status = 'Enrolled' if self.gapYear is False else 'Gap Year'
         super(Student, self).save(*args, **kwargs)
 
