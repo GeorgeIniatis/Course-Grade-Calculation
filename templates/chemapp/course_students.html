@@ -13,7 +13,7 @@ Students
 
 
 <div class="container ">
-
+  <h2>{{course_code}} | Students</h2>
   {% if students %}
   <table class="table table-hover">
     <thead>
@@ -43,7 +43,7 @@ Students
   <h4>There are no Students for this course</h4>
   {% endif %}
 
-  <div class=" mb-3 d-grid gap-2 d-md-flex justify-content-md-start">
+  <div class=" mb-3 mt-3 d-grid gap-2 d-md-flex justify-content-md-start">
     <a class="btn btn-primary " href="{% url 'chemapp:upload_student_csv' course_name_slug=course_name_slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i> Upload CSV File to add students to this course</a>
   </div>
 </div>

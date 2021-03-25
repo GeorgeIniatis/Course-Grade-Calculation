@@ -6,17 +6,54 @@
 
 {% block body_block %}
 <div class="container ">
-<div>
-    <!-- Staff Section -->
-    <h2> {{ staff.title }} {{ staff.firstName }} {{ staff.lastName }} </h2>
-    <p> Staff ID: {{ staff.staffID }} </p>
-    {% if staff.comments %}
-        <p> Comments: {{ staff.comments }} </p>
-    {% else %}
-      <p> No Comments yet</p>
-    {% endif %}
 
+<h2> {{staff.title}} {{ staff.lastName }} {{staff.lastName}}</h2>
+<p> Staff ID: {{ staff.staffID }} </p>
+
+{% if staff.comments %}
+  <p> Comments:<br> {{ staff.comments }} </p>
+{% else %}
+  <p> No Comments yet</p>
+{% endif %}
+
+
+
+
+
+
+<div class=" mb-3 d-grid gap-2 d-md-flex justify-content-md-start">
+  <a class="btn btn-warning " href="{% url 'chemapp:edit_staff' staffID=staffID %}"><i class="bi bi-pencil-square"></i> Edit</a>
+  <a type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#A{{ staff.staffID }}"><i class="bi bi-trash"></i></a>
 </div>
+
+
+
+<div class="modal fade" id="A{{ staff.staffID }}" tabindex="-1" aria-labelledby="A{{ staff.staffID }}Label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-dark" id="A{{ staff.staffID }}Label">Are you sure?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-dark">
+        <h3 class="text-danger bold">WARNING:</h3>
+        <h5 class="text-danger">This will delete this staff member and everything associated. </h5>
+        <h5 class="text-danger">This is permanent and cannot be undone, proceed with caution!<h5>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Cancel</button>
+        <form id="course_delete_form" method="post" action="{% url 'chemapp:delete_staff' staffID=staff.staffID %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<hr>
+
 <div>
     <!-- Course Section -->
     <h2> Associated Courses </h2>
@@ -28,9 +65,6 @@
     {% else %}
         <p> No associated courses yet</p>
     {% endif %}
-</div>
-<div class="d-grid gap-2 d-md-flex justify-content-md-start">
-    <a class="btn btn-danger mt-3" href="{% url 'chemapp:edit_staff' staffID=staffID %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Edit Staff Details</a>
 </div>
 </div>
 {% endblock %}

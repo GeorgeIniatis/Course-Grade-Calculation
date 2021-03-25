@@ -692,13 +692,14 @@ class EditStaffForm(StaffForm):
 
 class AssessmentGradeForm(forms.ModelForm):
     submissionDate = forms.DateTimeField(input_formats=['%Y-%m-%dT%H:%M', ],
-                                         label='',
+                                         label='Date and Time Submitted',
                                          widget=forms.DateTimeInput(
                                              attrs={
                                                  'style': 'width:300px',
                                                  'placeholder': 'Date and Time submitted',
                                                  'type': 'datetime-local',
                                                  'required': True,
+                                                 'class': 'form-control',
                                              },
                                              format='%Y-%m-%dT%H:%M'))
 
@@ -707,6 +708,7 @@ class AssessmentGradeForm(forms.ModelForm):
                                      widget=forms.CheckboxInput(
                                          attrs={
                                              'placeholder': 'NDP',
+                                             'class': 'form-check-input',
                                          }
                                      ))
 
@@ -715,6 +717,7 @@ class AssessmentGradeForm(forms.ModelForm):
                                    widget=forms.CheckboxInput(
                                        attrs={
                                            'placeholder': 'Good Cause',
+                                           'class': 'form-check-input',
                                        }
                                    ))
 
@@ -730,6 +733,7 @@ class AssessmentComponentGradeForm(forms.ModelForm):
                                   widget=forms.TextInput(
                                       attrs={
                                           'type': 'text',
+                                          'type': 'hidden',
                                           'style': 'width:300px',
                                       }
                                   ))
@@ -752,6 +756,7 @@ class AssessmentComponentGradeForm(forms.ModelForm):
                                        'type': 'number',
                                        'placeholder': 'Grade',
                                        'style': 'width:300px',
+                                       'class':'form-control'
                                    }
                                ))
 
@@ -773,6 +778,7 @@ class FinalAssessmentGradeForm(forms.ModelForm):
                                             'style': 'width:300px',
                                             'autofocus': True,
                                             'required': True,
+                                            'class':'form-control',
                                         }
                                     ))
 
