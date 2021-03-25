@@ -1341,7 +1341,7 @@ def edit_grades(request, student_id, course_name_slug, assessment_name_slug):
                 # Check if required grade is added
                 if assessmentComponent.required is True and grade is None:
                     messages.error(request, 'Grade for ' + str(assessmentComponent.description) + ' is required!')
-                    return redirect(reverse('chemapp:add_grades', kwargs={'student_id': student_id,
+                    return redirect(reverse('chemapp:edit_grades', kwargs={'student_id': student_id,
                                                                           'course_name_slug': course_name_slug,
                                                                           'assessment_name_slug': assessment_name_slug}))
                 else:
@@ -1351,7 +1351,7 @@ def edit_grades(request, student_id, course_name_slug, assessment_name_slug):
                 if grade is not None and grade > assessmentComponent.marks:
                     messages.error(request,
                                    'Grade for ' + str(assessmentComponent.description) + ' exceeds available marks!')
-                    return redirect(reverse('chemapp:add_grades', kwargs={'student_id': student_id,
+                    return redirect(reverse('chemapp:edit_grades', kwargs={'student_id': student_id,
                                                                           'course_name_slug': course_name_slug,
                                                                           'assessment_name_slug': assessment_name_slug}))
                 else:
