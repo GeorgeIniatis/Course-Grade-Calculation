@@ -692,7 +692,7 @@ class EditStaffForm(StaffForm):
 
 class AssessmentGradeForm(forms.ModelForm):
     submissionDate = forms.DateTimeField(input_formats=['%Y-%m-%dT%H:%M', ],
-                                         label='',
+                                         label='Date and Time Submitted',
                                          widget=forms.DateTimeInput(
                                              attrs={
                                                  'style': 'width:300px',

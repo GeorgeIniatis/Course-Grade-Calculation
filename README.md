@@ -3,13 +3,21 @@
 
  Data Entry Flow:
 
-1. Create Degree.
+
+1. Add Staff Members. This also creates accounts that enable access to the site.
+2. Create Degrees.
 2. Create Courses.
 3. Create Assessments (Exam/Labs) for those courses.
-4. Create Assessment Components (questions) for those Assessments.
-5. Upload a grade Map for that exam.
+4. Create Assessment Components (Questions) for those Assessments.
+5. Upload a Grade Map for that Assessment.
 6. Add Students to the course.
-7. Once you have added students, you can either bulk upload marks for questions on the Exam section on the course page, or individually add/edit/delete from the student page.
+7. Once you have added students you can then add the Grades for Assessment Components
+
+*Most of these tasks can be done manually or via CSV upload. There is a template for you to copy paste on the upload page.
+
+*All tasks can be Edited and Deleted if required by the user at any point.
+
+*Staff can access their accounts by using their first and last name, without any spaces, as their username and their staff id as password. The passwords can be changed through the admin page
 
 ### Running project locally
 
