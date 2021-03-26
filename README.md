@@ -1,5 +1,7 @@
 # Team Project H 2020 Group CS35
- Welcome to our Team Project. This projects aim is to provide a grading hub for the School of Chemistry at UofG.
+ Welcome to our Team Project. This project aims to develop a system for the School of Chemistry at the University of Glasgow that aids with the calculation of assessment and course grades.
+Currently, the school uses huge excel files, with each lecturer having a different one, to accomplish these calculations. These files are very complicated, time-consuming, and cause unnecessary stress to the staff. 
+The system will try to centralize and automate the process, where possible, requiring very little input from the system users.
 
  Data Entry Flow:
 
