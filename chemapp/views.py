@@ -21,8 +21,6 @@ from decimal import *
 from .admin import CourseGrade
 import json
 
-
-
 GRADE_TO_BAND = {22: 'A1', 21: 'A2', 20: 'A3', 19: 'A4', 18: 'A5',
                  17: 'B1', 16: 'B2', 15: 'B3',
                  14: 'C1', 13: 'C2', 12: 'C3',
@@ -257,32 +255,28 @@ def course(request, course_name_slug):
 
 
 def get_course_grade(request, course_name_slug):
-
     course = Course.objects.get(slug=course_name_slug)
     students = Student.objects.filter(courses=course)
 
     response = HttpResponse(content_type='text/csv')
-    filename2 = course.code+'_'+course.academicYearTaught
-    response['Content-Disposition'] = 'attachment; filename='+'"'+filename2+'.csv"'
+    # Bug will occur in 89 years :)
+    academicYear = '20' + course.academicYearTaught[:2]
+    filename = course.code + '_' + academicYear
+    response['Content-Disposition'] = 'attachment; filename=' + '"' + filename + '.csv"'
 
     writer = csv.writer(response)
-    writer.writerow(['ANONID','EMPLID', 'Name', 'Grade'])
+    writer.writerow(['ANONID', 'EMPLID', 'Name', 'Grade'])
     for student in students:
-        studentName = student.firstName +','+student.lastName
+        studentName = student.firstName + ',' + student.lastName
         try:
             courseGrade = CourseGrade.objects.get(course=course, student=student)
-            temp = courseGrade.band
+            band = courseGrade.band
         except CourseGrade.DoesNotExist:
-            temp = 'NA'
+            band = 'NA'
 
-        writer.writerow([student.anonID, student.studentID, studentName,temp])
-
+        writer.writerow([student.anonID, student.studentID, studentName, band])
 
     return response
-
-
-
-
 
 
 @login_required
@@ -296,10 +290,6 @@ def course_students(request, course_name_slug):
     courseStudentsDict['course_code'] = course.code
 
     return render(request, 'chemapp/course_students.html', context=courseStudentsDict)
-
-
-
-
 
 
 @login_required
