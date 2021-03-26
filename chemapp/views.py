@@ -1490,8 +1490,8 @@ def add_final_grade(request, student_id, course_name_slug, assessment_name_slug)
             finalGrade = final_grade_form.cleaned_data.get('finalGrade')
 
             # Check if Final Grade is more than the available Assessment Marks
-            assessmentGradeTest = assessment.totalMarks
-            if finalGrade > assessmentGradeTest:
+            assessmentMarks = assessment.totalMarks
+            if finalGrade > assessmentMarks:
                 messages.error(request, 'Final Grade exceeds Available Assessment Marks!')
                 return redirect(reverse('chemapp:add_final_grade',
                                         kwargs={'student_id': student_id, 'course_name_slug': course_name_slug,
@@ -1589,6 +1589,14 @@ def edit_final_grade(request, student_id, course_name_slug, assessment_name_slug
 
         if final_grade_form.is_valid():
             finalGrade = final_grade_form.cleaned_data.get('finalGrade')
+
+            # Check if Final Grade is more than the available Assessment Marks
+            assessmentMarks = assessment.totalMarks
+            if finalGrade > assessmentMarks:
+                messages.error(request, 'Final Grade exceeds Available Assessment Marks!')
+                return redirect(reverse('chemapp:edit_final_grade',
+                                        kwargs={'student_id': student_id, 'course_name_slug': course_name_slug,
+                                                'assessment_name_slug': assessment_name_slug}))
 
             # Convert final grade to Percentage
             finalGradePercentage = (finalGrade * 100) / assessment.totalMarks
