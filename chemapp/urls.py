@@ -48,7 +48,6 @@ urlpatterns = [
  	path('courses/<slug:course_name_slug>/<slug:assessment_name_slug>/<slug:assessment_component_slug>/upload_grades_csv/', views.upload_grades_csv, name='upload_grades_csv'),
     
     # Student URLs
-    path('students/', views.students, name='students'),
     path('students/add_student/', views.add_student, name='add_student'),
     path('students/<student_id>/', views.student, name='student'),
     path('students/<student_id>/edit_student/', views.edit_student, name='edit_student'),

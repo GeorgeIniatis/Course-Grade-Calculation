@@ -631,7 +631,7 @@ class StaffForm(forms.ModelForm):
                               choices=STAFF_TITTLES,
                               widget=forms.Select(
                                   attrs={
-                                      'style': 'width:100%',
+                                      'style': 'width:300px',
                                       'required': True,
                                       'class': 'form-select',
                                   }
@@ -692,15 +692,14 @@ class EditStaffForm(StaffForm):
 
 class AssessmentGradeForm(forms.ModelForm):
     submissionDate = forms.DateTimeField(input_formats=['%Y-%m-%dT%H:%M', ],
-                                         label='Date and Time submitted',
-                                         help_text='12/01/2021 10:00',
+                                         label='Date and Time Submitted',
                                          widget=forms.DateTimeInput(
                                              attrs={
                                                  'style': 'width:300px',
                                                  'placeholder': 'Date and Time submitted',
                                                  'type': 'datetime-local',
-                                                 'class': 'form-control',
                                                  'required': True,
+                                                 'class': 'form-control',
                                              },
                                              format='%Y-%m-%dT%H:%M'))
 
@@ -730,7 +729,14 @@ class AssessmentGradeForm(forms.ModelForm):
 
 
 class AssessmentComponentGradeForm(forms.ModelForm):
-    description = None
+    description = forms.CharField(label='',
+                                  widget=forms.TextInput(
+                                      attrs={
+                                          'type': 'text',
+                                          'type': 'hidden',
+                                          'style': 'width:300px',
+                                      }
+                                  ))
 
     assessmentComponent = forms.ModelChoiceField(label='',
                                                  queryset=AssessmentComponent.objects.all(),
@@ -750,6 +756,7 @@ class AssessmentComponentGradeForm(forms.ModelForm):
                                        'type': 'number',
                                        'placeholder': 'Grade',
                                        'style': 'width:300px',
+                                       'class':'form-control'
                                    }
                                ))
 
@@ -757,8 +764,7 @@ class AssessmentComponentGradeForm(forms.ModelForm):
 
     class Meta:
         model = AssessmentComponentGrade
-        fields = { 'assessmentComponent', 'grade'}
-        exclude = {'description'}
+        fields = {'description', 'assessmentComponent', 'grade'}
 
 
 class FinalAssessmentGradeForm(forms.ModelForm):
@@ -772,6 +778,7 @@ class FinalAssessmentGradeForm(forms.ModelForm):
                                             'style': 'width:300px',
                                             'autofocus': True,
                                             'required': True,
+                                            'class':'form-control',
                                         }
                                     ))
 

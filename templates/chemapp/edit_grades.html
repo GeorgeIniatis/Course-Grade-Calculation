@@ -7,66 +7,31 @@
 
 {% block body_block %}
 <div class="container mb-5 ">
-    <h2> Edit Grades | {{ assessment.assessmentName }}</h2>
+    <h2> Edit Grades</h2>
 
+    <h2> {{ assessment.assessmentName }} </h2>
 
     <form id="add_grade_form" method="post" action="{% url 'chemapp:edit_grades' student_id=student_id course_name_slug=course_name_slug assessment_name_slug=assessment_name_slug  %}" enctype="multipart/form-data">
         {% csrf_token %}
 
-        <div class="row mb-5">
-        {% for field in assessment_grade_form %}
 
-        {% if field.label == 'NDP' %}
-        <div class="col-12 my-3 ">
-          <div class="form-check ">
-            {{ field }}
-            <label class="form-check-label" for="flexCheckDefault">{{ field.label }}</label>
-          </div>
-          {% elif field.label == 'Good Cause' %}
-          <div class="col-12 my-3 ">
-            <div class="form-check ">
-              {{ field }}
-              <label class="form-check-label" for="flexCheckDefault">{{ field.label }}</label>
-            </div>
-          {% else %}
-          <div class="col-12 ">
-            <div class="form-floating">
-              {{ field }}
-              <label for="floating{{ field.label }}">{{ field.label }}</label>
-            </div>
-          {% endif %}
-
-          <div class=" text-start">
-            <div id="" class=" ps-2 form-text">{{ field.help_text }}</div>
-          </div>
-
-          {% for error in field.errors %}
-          <div class="text-danger">
-            <strong>*{{ error|escape }}</strong>
-          </div>
-          {% endfor %}
-          </div>
-
-        {% endfor %}
-
-
-</div>
-        <br>
-
+        {{ assessment_grade_form.as_p }}
         {{ component_grade_formset.management_form }}
+
         {% for component_grade_form in component_grade_formset %}
-            <div class="grade-formset">
+          <div class="grade-formset">
+            {% for field in component_grade_form %}
+              {% if forloop.first %}
+                {{field.value}}
+              {% endif %}
+            {% endfor %}
 
-              {{components.0}}
-                {% for field in component_grade_form %}
-                {{field}}
-                {% endfor %}
-
-            </div>
+            {{ component_grade_form.as_p }}
+          </div>
         {% endfor %}
         <br>
 
-        <button type="submit">Save</button>
+        <button class="btn btn-primary" type="submit">Save</button>
         </form>
 </div>
 {% endblock %}
