@@ -999,7 +999,7 @@ def add_student(request):
             # Success message
             student_id = student.studentID
             messages.success(request, "Student Added Successfully!")
-            return redirect(reverse('chemapp:student',kwargs={'student_id': student_id}))
+            return redirect(reverse('chemapp:student', kwargs={'student_id': student_id}))
 
         else:
             print(student_form.errors)
@@ -1488,6 +1488,14 @@ def add_final_grade(request, student_id, course_name_slug, assessment_name_slug)
 
         if final_grade_form.is_valid():
             finalGrade = final_grade_form.cleaned_data.get('finalGrade')
+
+            # Check if Final Grade is more than the available Assessment Marks
+            assessmentGrade = assessment.totalMarks
+            if finalGrade > assessmentGrade:
+                messages.error(request, 'Final Grade exceeds Available Assessment Marks!')
+                return redirect(reverse('chemapp:add_final_grade',
+                                        kwargs={'student_id': student_id, 'course_name_slug': course_name_slug,
+                                                'assessment_name_slug': assessment_name_slug}))
 
             # Convert final grade to Percentage
             finalGradePercentage = (finalGrade * 100) / assessment.totalMarks
