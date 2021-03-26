@@ -1,9 +1,7 @@
 {% extends 'chemapp/base.html' %}
 {% load static %}
 
-{% block links %}
-  <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.css">
-{% endblock %}
+
 
 {% block js_block %}
 <script src="{% static 'js/chemapp-filterCoursesAddStudentPage.js' %}"></script>
@@ -12,18 +10,17 @@
 {% endblock %}
 
 {% block title_block %}
-    Add student
+Add student
 {% endblock %}
 
 {% block body_block %}
-{{ student_form.media }}
 <div class="container ">
-	<div>
-        <h2 class="mb-4"> Add a Student </h2>
+  <div>
+    <h2 class="mb-4"> Add a Student </h2>
 
-        <form id="add_student_form" method="post" filter_courses_url = "{% url 'chemapp:ajax_filter_courses' %}" action="{% url 'chemapp:add_student' %}" enctype="multipart/form-data">
+    <form id="add_student_form" method="post" filter_courses_url = "{% url 'chemapp:ajax_filter_courses' %}" action="{% url 'chemapp:add_student' %}" enctype="multipart/form-data">
 
-        {% csrf_token %}
+      {% csrf_token %}
 
 
       <div class="row ">
@@ -33,12 +30,12 @@
         <div class="col-4 mb-4">
           {% elif field.label == 'Last Name' %}
           <div class="col-4">
-              {% elif field.label == 'Gap Year' %}
-                <div class="col-8 my-3 ">
-                  {% elif field.label == 'StudentID' %}
-                    <div class="col-4 mb-4">
-              {% elif field.label == 'Comments' %}
-              <div class="col-8">
+            {% elif field.label == 'Gap Year' %}
+            <div class="col-8 my-3 ">
+              {% elif field.label == 'StudentID' %}
+              <div class="col-4 mb-4">
+                {% elif field.label == 'Comments' %}
+                <div class="col-8">
 
                   {% else %}
                   <div class="col-12 mb-4">
@@ -63,10 +60,6 @@
                       <label for="floating{{ field.label }}">{{ field.label }}</label>
                     </div>
                     {% endif %}
-
-                    <!-- <p  class="form-label">{{ field.label }}</p>
-
-                    {{ field }} -->
 
                     <div class=" text-start">
                       <div id="" class="form-text ps-2">{{ field.help_text }}</div>
@@ -94,10 +87,10 @@
 
                 </div>
 
-   		<button class="btn btn-primary mt-5" type="submit">Save</button>
-		</form>
+                <button class="btn btn-primary mt-5" type="submit">Save</button>
+              </form>
 
-    </div>
-</div>
+            </div>
+          </div>
 
-{% endblock %}
+          {% endblock %}

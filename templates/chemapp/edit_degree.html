@@ -7,40 +7,40 @@ Edit Degree
 
 {% block body_block %}
 <div class="container mb-5 ">
-    <h2 class="mb-4"> Edit Degree</h2>
+  <h2 class="mb-4"> Edit Degree</h2>
 
-    <form id="edit_degree_form" method="post" action="{% url 'chemapp:edit_degree' degree_code_slug=degree_code_slug  %}"  enctype="multipart/form-data">
+  <form id="edit_degree_form" method="post" action="{% url 'chemapp:edit_degree' degree_code_slug=degree_code_slug  %}"  enctype="multipart/form-data">
 
-        {% csrf_token %}
-        <div class="degree-formset row ">
+    {% csrf_token %}
+    <div class="degree-formset row ">
+      
 
-
-          {% for field in  edit_degree_form %}
-          <div class="col-md-auto ">
-            <div class="form-floating">
-              {{ field }}
-              <label for="floating{{ field.label }}">{{ field.label }}</label>
-            </div>
-            <div class=" text-start">
-              <div id="" class=" ps-2 form-text">{{ field.help_text }}</div>
-            </div>
-            {% for error in field.errors %}
-            <div class="text-danger">
-              <strong>*{{ error|escape }}</strong>
-            </div>
-            {% endfor %}
-            <br>
-          </div>
-          {% endfor %}
-          {% for error in form.non_field_errors %}
-          <div class="">
-            <strong>*{{ error|escape }}</strong>
-          </div>
-          {% endfor %}
+      {% for field in  edit_degree_form %}
+      <div class="col-md-auto ">
+        <div class="form-floating">
+          {{ field }}
+          <label for="floating{{ field.label }}">{{ field.label }}</label>
         </div>
+        <div class=" text-start">
+          <div id="" class=" ps-2 form-text">{{ field.help_text }}</div>
+        </div>
+        {% for error in field.errors %}
+        <div class="text-danger">
+          <strong>*{{ error|escape }}</strong>
+        </div>
+        {% endfor %}
+        <br>
+      </div>
+      {% endfor %}
+      {% for error in form.non_field_errors %}
+      <div class="">
+        <strong>*{{ error|escape }}</strong>
+      </div>
+      {% endfor %}
+    </div>
 
-        <button type="submit" class="btn btn-primary mt-3">Save</button>
-    </form>
+    <button type="submit" class="btn btn-primary mt-3">Save</button>
+  </form>
 </div>
 
 {% endblock %}

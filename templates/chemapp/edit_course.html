@@ -22,64 +22,60 @@ Edit a Course
       {% for field in edit_course_form %}
 
       {% if field.label == 'Description'  %}
-          <div class="col-8 mb-2">
-            {% elif field.label == 'Comments' %}
-            <div class="col-8">
-              {% elif field.label == 'Color' %}
-              <div class="col-12">
-                {% else %}
-                <div class="col-12 mb-4">
-                  {% endif %}
+      <div class="col-8 mb-2">
+        {% elif field.label == 'Comments' %}
+        <div class="col-8">
+          {% elif field.label == 'Color' %}
+          <div class="col-12">
+            {% else %}
+            <div class="col-12 mb-4">
+              {% endif %}
 
-                  {% if field.label == 'Color' %}
-                  <label for="exampleColorInput" class="form-label mt-2">Color picker</label>
+              {% if field.label == 'Color' %}
+              <label for="exampleColorInput" class="form-label mt-2">Color picker</label>
 
-                  {{ field }}
+              {{ field }}
 
-                  {% else %}
-
-
-
-
-                  <div class="form-floating">
-                    {{ field }}
-                    <label for="floating{{ field.label }}">{{ field.label }}</label>
-                  </div>
-                  {% endif %}
-
-                  <!-- <p  class="form-label">{{ field.label }}</p>
-
-                  {{ field }} -->
-
-                  <div class=" text-start">
-                    <div id="" class=" ps-2 form-text">{{ field.help_text }}</div>
-                  </div>
+              {% else %}
 
 
 
-                  {% for error in field.errors %}
-                  <div class="text-danger">
-                    <strong>*{{ error|escape }}</strong>
-                  </div>
-                  {% endfor %}
-                </div>
 
+              <div class="form-floating">
+                {{ field }}
+                <label for="floating{{ field.label }}">{{ field.label }}</label>
+              </div>
+              {% endif %}
 
-                {% endfor %}
-
-
-                {% for error in form.non_field_errors %}
-                <div class="">
-                  <strong>*{{ error|escape }}</strong>
-                </div>
-                {% endfor %}
-
-
+              <div class=" text-start">
+                <div id="" class=" ps-2 form-text">{{ field.help_text }}</div>
               </div>
 
 
-              <button type="submit" class="btn btn-primary mt-5">Save</button>
-            </form>
+
+              {% for error in field.errors %}
+              <div class="text-danger">
+                <strong>*{{ error|escape }}</strong>
+              </div>
+              {% endfor %}
+            </div>
+
+
+            {% endfor %}
+
+
+            {% for error in form.non_field_errors %}
+            <div class="">
+              <strong>*{{ error|escape }}</strong>
+            </div>
+            {% endfor %}
+
+
           </div>
 
-          {% endblock %}
+
+          <button type="submit" class="btn btn-primary mt-5">Save</button>
+        </form>
+      </div>
+
+      {% endblock %}

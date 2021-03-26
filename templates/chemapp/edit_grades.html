@@ -2,36 +2,36 @@
 {% load static %}
 
 {% block title_block %}
-    Edit Grades
+Edit Grades
 {% endblock %}
 
 {% block body_block %}
 <div class="container mb-5 ">
-    <h2> Edit Grades</h2>
+  <h2> Edit Grades</h2>
 
-    <h2> {{ assessment.assessmentName }} </h2>
+  <h2> {{ assessment.assessmentName }} </h2>
 
-    <form id="add_grade_form" method="post" action="{% url 'chemapp:edit_grades' student_id=student_id course_name_slug=course_name_slug assessment_name_slug=assessment_name_slug  %}" enctype="multipart/form-data">
-        {% csrf_token %}
+  <form id="add_grade_form" method="post" action="{% url 'chemapp:edit_grades' student_id=student_id course_name_slug=course_name_slug assessment_name_slug=assessment_name_slug  %}" enctype="multipart/form-data">
+    {% csrf_token %}
 
 
-        {{ assessment_grade_form.as_p }}
-        {{ component_grade_formset.management_form }}
+    {{ assessment_grade_form.as_p }}
+    {{ component_grade_formset.management_form }}
 
-        {% for component_grade_form in component_grade_formset %}
-          <div class="grade-formset">
-            {% for field in component_grade_form %}
-              {% if forloop.first %}
-                {{field.value}}
-              {% endif %}
-            {% endfor %}
+    {% for component_grade_form in component_grade_formset %}
+    <div class="grade-formset">
+      {% for field in component_grade_form %}
+      {% if forloop.first %}
+      {{field.value}}
+      {% endif %}
+      {% endfor %}
+      
+      {{ component_grade_form.as_p }}
+    </div>
+    {% endfor %}
+    <br>
 
-            {{ component_grade_form.as_p }}
-          </div>
-        {% endfor %}
-        <br>
-
-        <button class="btn btn-primary" type="submit">Save</button>
-        </form>
+    <button class="btn btn-primary" type="submit">Save</button>
+  </form>
 </div>
 {% endblock %}

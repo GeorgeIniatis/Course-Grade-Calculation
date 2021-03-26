@@ -1490,8 +1490,8 @@ def add_final_grade(request, student_id, course_name_slug, assessment_name_slug)
             finalGrade = final_grade_form.cleaned_data.get('finalGrade')
 
             # Check if Final Grade is more than the available Assessment Marks
-            assessmentGrade = assessment.totalMarks
-            if finalGrade > assessmentGrade:
+            assessmentGradeTest = assessment.totalMarks
+            if finalGrade > assessmentGradeTest:
                 messages.error(request, 'Final Grade exceeds Available Assessment Marks!')
                 return redirect(reverse('chemapp:add_final_grade',
                                         kwargs={'student_id': student_id, 'course_name_slug': course_name_slug,

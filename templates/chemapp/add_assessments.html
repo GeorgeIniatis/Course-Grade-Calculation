@@ -14,10 +14,10 @@ Add Assessments
 <div class="container mb-5 ">
   <h2> Add Assessments </h2>
   {% if existingAssessments %}
-    <h4> Existing Assessments</h4>
-    {% for assessment in existingAssessments %}
-      <p> {{ assessment.assessmentName }} with {{ assessment.weight }} weight </p>
-    {% endfor %}
+  <h4> Existing Assessments</h4>
+  {% for assessment in existingAssessments %}
+  <p> {{ assessment.assessmentName }} with {{ assessment.weight }} weight </p>
+  {% endfor %}
   {% endif %}
   <form id="add_assessment_form" method="post" action="{% url 'chemapp:add_assessments' course_name_slug=course_name_slug %}" enctype="multipart/form-data">
     {% csrf_token %}

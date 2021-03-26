@@ -1,7 +1,7 @@
 {% extends 'chemapp/base.html' %}
 
 {% block title_block %}
-    Home
+Home
 {% endblock %}
 
 
@@ -11,25 +11,25 @@
 
 
 <div class="container">
-{% if boldmessage %}
-<h2> {{ boldmessage }} </h2>
-{% endif %}
+  {% if boldmessage %}
+  <h2> {{ boldmessage }} </h2>
+  {% endif %}
 
 
-<p>
-  Welcome to a small tutorial on how to utilize all the features our site has to offer. I will try and cover all aspects of the
-  site but if you have any questions feel free to @fraser on teams with any questions!
-</p>
-<p>
-  <b>Permissions:</b><br/>
-  Admin accounts are the only acocunts that can edit permissions, they can do this by logging in as admin and following the link on navbar "Admin Page" and entering the users view,
-  selecting a user and scrolling down to permissions and moving whichever permissions you would like them have over.<br/><br/>
-</p>
+  <p>
+    Welcome to a small tutorial on how to utilize all the features our site has to offer. I will try and cover all aspects of the
+    site but if you have any questions feel free to @fraser on teams with any questions!
+  </p>
+  <p>
+    <b>Permissions:</b><br/>
+    Admin accounts are the only acocunts that can edit permissions, they can do this by logging in as admin and following the link on navbar "Admin Page" and entering the users view,
+    selecting a user and scrolling down to permissions and moving whichever permissions you would like them have over.<br/><br/>
+  </p>
 
   <p><b>There are 4 main permissions for each Model:</b></p>
   <p class="ms-3 "><i>add , change , delete , view</i><br><br>
-  These permissions are site wide, for instance if a user has permission to delete degree, they can delete any degree, so these 4 base permissions should be kept to admin accounts only.
-</p>
+    These permissions are site wide, for instance if a user has permission to delete degree, they can delete any degree, so these 4 base permissions should be kept to admin accounts only.
+  </p>
 
 
   <p><b>Courses are the only model with unique permissions:</b></p>
@@ -40,16 +40,16 @@
 
   <p><b>Data Flow</b><br/></p>
   <p class="ms-5"><b>Step 1:</b> Add Staff Members. This also creates accounts that enable access to the site. </p>
-    <p class="ms-5"><b>Step 2:</b> Create Degrees.</p>
-    <p class="ms-5"><b>Step 3:</b> Create Courses.</p>
-    <p class="ms-5"><b>Step 4:</b> Create Assessments (Exam/Labs) for those courses.</p>
-    <p class="ms-5"><b>Step 5:</b> Create Assessment Components (Questions) for those Assessments.</p>
-    <p class="ms-5"><b>Step 6:</b> Upload a Grade Map for that Assessment.</p>
-    <p class="ms-5"><b>Step 7:</b> Add Students to the course.</p>
-    <p class="ms-5"><b>Step 8:</b> Once you have added students you can then add the Grades for Assessment Components.</p>
-    <p>*Most of these tasks can be done manually or via CSV upload. There is a template for you to copy paste on the upload page.</p>
-    <p>*All tasks can be Edited and Deleted if required by the user at any point.</p>
-    <p>*Staff can access their accounts by using their first and last name, without any spaces, as their username and their staff id as password. The passwords can be changed through the admin page</p>
+  <p class="ms-5"><b>Step 2:</b> Create Degrees.</p>
+  <p class="ms-5"><b>Step 3:</b> Create Courses.</p>
+  <p class="ms-5"><b>Step 4:</b> Create Assessments (Exam/Labs) for those courses.</p>
+  <p class="ms-5"><b>Step 5:</b> Create Assessment Components (Questions) for those Assessments.</p>
+  <p class="ms-5"><b>Step 6:</b> Upload a Grade Map for that Assessment.</p>
+  <p class="ms-5"><b>Step 7:</b> Add Students to the course.</p>
+  <p class="ms-5"><b>Step 8:</b> Once you have added students you can then add the Grades for Assessment Components.</p>
+  <p>*Most of these tasks can be done manually or via CSV upload. There is a template for you to copy paste on the upload page.</p>
+  <p>*All tasks can be Edited and Deleted if required by the user at any point.</p>
+  <p>*Staff can access their accounts by using their first and last name, without any spaces, as their username and their staff id as password. The passwords can be changed through the admin page</p>
 
 </div>
 

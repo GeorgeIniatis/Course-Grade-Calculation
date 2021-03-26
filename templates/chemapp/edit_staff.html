@@ -28,50 +28,46 @@ Edit a Staff Member
             {% elif field.label == 'Comments' %}
             <div class="col-8">
 
-                {% else %}
-                <div class="col-12 mb-4">
-                  {% endif %}
+              {% else %}
+              <div class="col-12 mb-4">
+                {% endif %}
 
 
 
-                  <div class="form-floating">
-                    {{ field }}
-                    <label for="floating{{ field.label }}">{{ field.label }}</label>
-                  </div>
+                <div class="form-floating">
+                  {{ field }}
+                  <label for="floating{{ field.label }}">{{ field.label }}</label>
+                </div>
 
-                  <!-- <p  class="form-label">{{ field.label }}</p>
-
-                  {{ field }} -->
-
-                  <div class=" text-start">
-                    <div id="" class="form-text ps-2">{{ field.help_text }}</div>
-                  </div>
-
-
-
-                  {% for error in field.errors %}
-                  <div class="text-danger">
-                    <strong>*{{ error|escape }}</strong>
-                  </div>
-                  {% endfor %}
+                <div class=" text-start">
+                  <div id="" class="form-text ps-2">{{ field.help_text }}</div>
                 </div>
 
 
-                {% endfor %}
 
-
-                {% for error in form.non_field_errors %}
-                <div class="">
+                {% for error in field.errors %}
+                <div class="text-danger">
                   <strong>*{{ error|escape }}</strong>
                 </div>
                 {% endfor %}
-
-
               </div>
 
-    <button class="btn btn-primary mt-5" type="submit">Save</button>
-  </form>
 
-  </div>
+              {% endfor %}
 
-          {% endblock %}
+
+              {% for error in form.non_field_errors %}
+              <div class="">
+                <strong>*{{ error|escape }}</strong>
+              </div>
+              {% endfor %}
+
+
+            </div>
+
+            <button class="btn btn-primary mt-5" type="submit">Save</button>
+          </form>
+
+        </div>
+
+        {% endblock %}

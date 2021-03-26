@@ -19,15 +19,15 @@ Add Grades
     {{ component_grade_formset.management_form }}
 
     {% for component_grade_form in component_grade_formset %}
-      <div class="grade-formset">
-        {% for field in component_grade_form %}
-          {% if forloop.first %}
-            {{field.value}}
-          {% endif %}
-        {% endfor %}
-
-        {{ component_grade_form.as_p }}
-      </div>
+    <div class="grade-formset">
+      {% for field in component_grade_form %}
+        {% if forloop.first %}
+          {{field.value}}
+        {% endif %}
+      {% endfor %}
+      
+      {{ component_grade_form.as_p }}
+    </div>
     {% endfor %}
     <button class="btn btn-primary" type="submit">Save</button>
   </form>

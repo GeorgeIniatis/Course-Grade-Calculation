@@ -18,11 +18,11 @@
     <p> Shorthand: {{ course.shortHand }} </p>
 
     {% if course.level == '3' %}
-      <p> Level: Honours </p>
+    <p> Level: Honours </p>
     {% elif course.level == '4' %}
-      <p> Level: Postgraduate </p>
+    <p> Level: Postgraduate </p>
     {% else %}
-      <p> Level: {{ course.level }} </p>
+    <p> Level: {{ course.level }} </p>
     {% endif %}
 
     <p> Academic Year Taught: {{ course.academicYearTaught }} </p>
@@ -33,19 +33,19 @@
     <p> Description: {{ course.description }} </p>
 
     {% if course.lecturers.all.exists %}
-      <p> Lecturers:
+    <p> Lecturers:
       {% for lecturer in course.lecturers.all %}
-        {{ lecturer }} ,
+      {{ lecturer }} ,
       {% endfor %}
-      </p>
+    </p>
     {% else %}
-     <p> No Lecturers have been added yet</p>
+    <p> No Lecturers have been added yet</p>
     {% endif %}
 
     {% if course.comments %}
-      <p> Comments: {{ course.comments }} </p>
+    <p> Comments: {{ course.comments }} </p>
     {% else %}
-      <p> No Comments yet</p>
+    <p> No Comments yet</p>
     {% endif %}
 
 
@@ -71,160 +71,160 @@
             <h3 class="text-danger bold">WARNING:</h3>
             <h5 class="text-danger">This will delete this course and everything associated, including all exams and their marks and grades</h5>
             <h5 class="text-danger">This is permanent and cannot be undone, proceed with caution!<h5>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-success" data-bs-dismiss="modal">Cancel</button>
-            <form id="course_delete_form" method="post" action="{% url 'chemapp:delete_course' course_name_slug=course_name_slug %}">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-danger">Delete</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <hr>
-  </section>
-
-
-
-
-
-
-
-
-
-
-
-
-<section>
-
-
-  <h2> Assessments</h2>
-
-  {% if assessments %}
-
-
-    {% for assessment,components in assessments.items %}
-    <div class="col-12 m-3 p-3 bg-secondary-light rounded">
-
-    <h4> {{ assessment.assessmentName }} </h4>
-    <p> Weight: {{ assessment.weight }} </p>
-    <p> Total Marks: {{ assessment.totalMarks }} </p>
-    <p> Number of Components Needed: {{ assessment.componentNumberNeeded }} </p>
-    <p> Due Date and Time: {{ assessment.dueDate }} </p>
-
-
-    <div class=" mb-3 d-grid gap-2 d-md-flex justify-content-md-start">
-      <a class="btn btn-warning " href="{% url 'chemapp:edit_assessment' course_name_slug=course_name_slug assessment_name_slug=assessment.slug %}"><i class="bi bi-pencil-square"></i> Edit</a>
-      <a type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#A{{assessment.slug}}"><i class="bi bi-trash"></i></a>
-      <a class="btn btn-primary  " href="{% url 'chemapp:upload_student_assessment_info_csv' course_name_slug=course_name_slug assessment_name_slug=assessment.slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i> Upload CSV File to add Student NDP/GC/SudmissionDate</a>
-    </div>
-
-
-    <!-- Modal -->
-    <div class="modal fade" id="A{{assessment.slug}}" tabindex="-1" aria-labelledby="A{{assessment.slug}}Label" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title text-dark" id="A{{assessment.slug}}Label">Are you sure?</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body text-dark">
-            <h3 class="text-danger bold">WARNING:</h3>
-            <h5 class="text-danger">This will delete this Assessment and everything associated, including components and grades</h5>
-            <h5 class="text-danger">This is permanent and cannot be undone, proceed with caution!<h5>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-success" data-bs-dismiss="modal">Cancel</button>
-            <form id="course_delete_form" method="post" action="{% url 'chemapp:delete_assessment' course_name_slug=course_name_slug assessment_name_slug=assessment.slug %}">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-danger">Delete</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-
-
-    <table class="table table-hover mt-5">
-      <thead>
-        <tr>
-          <th scope="col">Description</th>
-          <th scope="col">Status</th>
-          <th scope="col">Marks</th>
-          <th scope="col">Lecturer</th>
-          <th scope="col" class="text-end">Actions</th>
-
-        </tr>
-      </thead>
-      <tbody>
-        {% for component in components %}
-        <tr>
-          <th scope="row">{{ component.description }} </th>
-          <td>{{ component.status }}</td>
-          <td>{{ component.marks }}</td>
-          <td>{{ component.lecturer }}</td>
-          <td class="text-end">
-            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-              <a class="btn btn-warning btn-sm " href="{% url 'chemapp:edit_assessmentComponent' course_name_slug=course_name_slug assessment_name_slug=assessment.slug assessment_component_slug=component.slug %}"><i class="bi bi-pencil-square"></i> Edit</a>
-              <a type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#A{{assessment.slug}}{{component.slug}}"><i class="bi bi-trash"></i></a>
-              <a class="btn btn-primary btn-sm  " href="{% url 'chemapp:upload_grades_csv' course_name_slug=course_name_slug assessment_name_slug=assessment.slug assessment_component_slug=component.slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i> Upload CSV File to add grades</a>
             </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-success" data-bs-dismiss="modal">Cancel</button>
+              <form id="course_delete_form" method="post" action="{% url 'chemapp:delete_course' course_name_slug=course_name_slug %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Delete</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
 
-            <!-- Modal -->
-            <div class="modal fade" id="A{{assessment.slug}}{{component.slug}}" tabindex="-1" aria-labelledby="A{{assessment.slug}}{{component.slug}}Label" aria-hidden="true">
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title text-dark" id="A{{assessment.slug}}{{component.slug}}Label">Are you sure?</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body text-dark text-start">
-                    <h3 class="text-danger bold">WARNING:</h3>
-                    <h5 class="text-danger">This will delete this assessment component and everything associated, including all associated marks</h5>
-                    <h5 class="text-danger">This is permanent and cannot be undone, proceed with caution!<h5>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">Cancel</button>
-                    <form id="course_delete_form" method="post" action="{% url 'chemapp:delete_assessmentComponent' course_name_slug=course_name_slug assessment_name_slug=assessment.slug assessment_component_slug=component.slug %}">
-                      {% csrf_token %}
-                      <button type="submit" class="btn btn-danger">Delete</button>
-                    </form>
-                  </div>
+      <hr>
+    </section>
+
+
+
+
+
+
+
+
+
+
+
+
+    <section>
+
+
+      <h2> Assessments</h2>
+
+      {% if assessments %}
+
+
+      {% for assessment,components in assessments.items %}
+      <div class="col-12 m-3 p-3 bg-secondary-light rounded">
+
+        <h4> {{ assessment.assessmentName }} </h4>
+        <p> Weight: {{ assessment.weight }} </p>
+        <p> Total Marks: {{ assessment.totalMarks }} </p>
+        <p> Number of Components Needed: {{ assessment.componentNumberNeeded }} </p>
+        <p> Due Date and Time: {{ assessment.dueDate }} </p>
+
+
+        <div class=" mb-3 d-grid gap-2 d-md-flex justify-content-md-start">
+          <a class="btn btn-warning " href="{% url 'chemapp:edit_assessment' course_name_slug=course_name_slug assessment_name_slug=assessment.slug %}"><i class="bi bi-pencil-square"></i> Edit</a>
+          <a type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#A{{assessment.slug}}"><i class="bi bi-trash"></i></a>
+          <a class="btn btn-primary  " href="{% url 'chemapp:upload_student_assessment_info_csv' course_name_slug=course_name_slug assessment_name_slug=assessment.slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i> Upload CSV File to add Student NDP/GC/SudmissionDate</a>
+        </div>
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="A{{assessment.slug}}" tabindex="-1" aria-labelledby="A{{assessment.slug}}Label" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title text-dark" id="A{{assessment.slug}}Label">Are you sure?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body text-dark">
+                <h3 class="text-danger bold">WARNING:</h3>
+                <h5 class="text-danger">This will delete this Assessment and everything associated, including components and grades</h5>
+                <h5 class="text-danger">This is permanent and cannot be undone, proceed with caution!<h5>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-success" data-bs-dismiss="modal">Cancel</button>
+                  <form id="course_delete_form" method="post" action="{% url 'chemapp:delete_assessment' course_name_slug=course_name_slug assessment_name_slug=assessment.slug %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                  </form>
                 </div>
               </div>
             </div>
-
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+          </div>
 
 
+          <table class="table table-hover mt-5">
+            <thead>
+              <tr>
+                <th scope="col">Description</th>
+                <th scope="col">Status</th>
+                <th scope="col">Marks</th>
+                <th scope="col">Lecturer</th>
+                <th scope="col" class="text-end">Actions</th>
 
-    <div class="d-grid gap-2 d-md-flex justify-content-md-end pt-3 ">
-      <!-- Add Assessment Components Button -->
-      <a class="btn btn-success btn-sm " href="{% url 'chemapp:add_assessmentComponents' course_name_slug=course_name_slug assessment_name_slug=assessment.slug %}"><i class="bi bi-plus"></i></i>Add Components</a>
-      <!-- Upload Assessment Components Button -->
-      <a class="btn btn-primary btn-sm" href="{% url 'chemapp:upload_assessment_comp_csv' course_name_slug=course_name_slug assessment_name_slug=assessment.slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Upload CSV File to add {{assessment.assessmentName}} components</a>
-      <!-- Map Page Button -->
-      <a class="btn btn-primary btn-sm" href="{% url 'chemapp:map' course_name_slug=course_name_slug assessment_name_slug=assessment.slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Map</a>
-    </div>
-    </div>
-  {% endfor %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for component in components %}
+              <tr>
+                <th scope="row">{{ component.description }} </th>
+                <td>{{ component.status }}</td>
+                <td>{{ component.marks }}</td>
+                <td>{{ component.lecturer }}</td>
+                <td class="text-end">
+                  <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a class="btn btn-warning btn-sm " href="{% url 'chemapp:edit_assessmentComponent' course_name_slug=course_name_slug assessment_name_slug=assessment.slug assessment_component_slug=component.slug %}"><i class="bi bi-pencil-square"></i> Edit</a>
+                    <a type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#A{{assessment.slug}}{{component.slug}}"><i class="bi bi-trash"></i></a>
+                    <a class="btn btn-primary btn-sm  " href="{% url 'chemapp:upload_grades_csv' course_name_slug=course_name_slug assessment_name_slug=assessment.slug assessment_component_slug=component.slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i> Upload CSV File to add grades</a>
+                  </div>
+
+                  <!-- Modal -->
+                  <div class="modal fade" id="A{{assessment.slug}}{{component.slug}}" tabindex="-1" aria-labelledby="A{{assessment.slug}}{{component.slug}}Label" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title text-dark" id="A{{assessment.slug}}{{component.slug}}Label">Are you sure?</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body text-dark text-start">
+                          <h3 class="text-danger bold">WARNING:</h3>
+                          <h5 class="text-danger">This will delete this assessment component and everything associated, including all associated marks</h5>
+                          <h5 class="text-danger">This is permanent and cannot be undone, proceed with caution!<h5>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-success" data-bs-dismiss="modal">Cancel</button>
+                            <form id="course_delete_form" method="post" action="{% url 'chemapp:delete_assessmentComponent' course_name_slug=course_name_slug assessment_name_slug=assessment.slug assessment_component_slug=component.slug %}">
+                              {% csrf_token %}
+                              <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
 
 
-  {% else %}
-    <p> No assessments have been yet set for this course! </p>
-  {% endif %}
 
-  <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-    <!-- Add Assessment Button -->
-    <a class="btn btn-success mt-3" href="{% url 'chemapp:add_assessments' course_name_slug=course_name_slug %}"><i class="bi bi-plus"></i>Add Assessments</a>
-    <!-- Upload Assessments Button -->
-    <a class="btn btn-primary mt-3" href="{% url 'chemapp:upload_assessment_csv'  course_name_slug=course_name_slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Upload CSV File to add Assessments</a>
-  </div>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end pt-3 ">
+              <!-- Add Assessment Components Button -->
+              <a class="btn btn-success btn-sm " href="{% url 'chemapp:add_assessmentComponents' course_name_slug=course_name_slug assessment_name_slug=assessment.slug %}"><i class="bi bi-plus"></i></i>Add Components</a>
+              <!-- Upload Assessment Components Button -->
+              <a class="btn btn-primary btn-sm" href="{% url 'chemapp:upload_assessment_comp_csv' course_name_slug=course_name_slug assessment_name_slug=assessment.slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Upload CSV File to add {{assessment.assessmentName}} components</a>
+              <!-- Map Page Button -->
+              <a class="btn btn-primary btn-sm" href="{% url 'chemapp:map' course_name_slug=course_name_slug assessment_name_slug=assessment.slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Map</a>
+            </div>
+          </div>
+          {% endfor %}
 
-{% endblock %}
+
+          {% else %}
+          <p> No assessments have been yet set for this course! </p>
+          {% endif %}
+
+          <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+            <!-- Add Assessment Button -->
+            <a class="btn btn-success mt-3" href="{% url 'chemapp:add_assessments' course_name_slug=course_name_slug %}"><i class="bi bi-plus"></i>Add Assessments</a>
+            <!-- Upload Assessments Button -->
+            <a class="btn btn-primary mt-3" href="{% url 'chemapp:upload_assessment_csv'  course_name_slug=course_name_slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i>Upload CSV File to add Assessments</a>
+          </div>
+
+          {% endblock %}

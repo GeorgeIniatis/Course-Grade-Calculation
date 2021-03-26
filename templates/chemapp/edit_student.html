@@ -12,16 +12,16 @@ Edit Student
 
 {% block body_block %}
 <div class="container mb-5 ">
-    <h2> Edit Student "{{ student.firstName }} {{ student.lastName }}" </h2>
+  <h2> Edit Student "{{ student.firstName }} {{ student.lastName }}" </h2>
 
-    <form id="edit_student_form" method="post" filter_courses_url = "{% url 'chemapp:ajax_filter_courses' %}" action="{% url 'chemapp:edit_student' student_id=student_id %}"  enctype="multipart/form-data">
+  <form id="edit_student_form" method="post" filter_courses_url = "{% url 'chemapp:ajax_filter_courses' %}" action="{% url 'chemapp:edit_student' student_id=student_id %}"  enctype="multipart/form-data">
 
-        {% csrf_token %}
+    {% csrf_token %}
 
-        {{ edit_student_form.as_p }}
+    {{ edit_student_form.as_p }}
 
-        <button type="submit" class="btn btn-primary mt-5">Save</button>
-    </form>
+    <button type="submit" class="btn btn-primary mt-5">Save</button>
+  </form>
 </div>
 
 {% endblock %}
