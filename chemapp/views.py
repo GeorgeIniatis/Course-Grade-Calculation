@@ -2150,11 +2150,3 @@ def search_site(request):
 
     else:
         return render(request, 'chemapp/search_site.html')
-
-
-def export(request):
-    course_grade = CourseGrade()
-    dataset = course_grade.export()
-    response = HttpResponse(dataset.csv, content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="course_grade.csv"'
-    return response
