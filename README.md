@@ -8,12 +8,13 @@ The system will try to centralize and automate the process, where possible, requ
 
 1. Add Staff Members. This also creates accounts that enable access to the site.
 2. Create Degrees.
-2. Create Courses.
-3. Create Assessments (Exam/Labs) for those courses.
-4. Create Assessment Components (Questions) for those Assessments.
-5. Upload a Grade Map for that Assessment.
-6. Add Students to the course.
-7. Once you have added students you can then add the Grades for Assessment Components
+3. Create Courses.
+4. Create Assessments (Exam/Labs) for those courses.
+5. Create Assessment Components (Questions) for those Assessments.
+6. Upload a Grade Map for that Assessment.
+7. Add Students to the course.
+8. Add the Grades for Assessment Components.
+9. Export the Course Grades when available
 
 *Most of these tasks can be done manually or via CSV upload. There is a template for you to copy paste on the upload page.
 
