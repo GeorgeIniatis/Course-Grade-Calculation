@@ -56,6 +56,7 @@
       <a type= "button" class="btn btn-info "  href="{% url 'chemapp:course_students' course_name_slug=course_name_slug %}"> View enrolled Students</a>
       <a class="btn btn-warning " href="{% url 'chemapp:edit_course' course_name_slug=course_name_slug %}"><i class="bi bi-pencil-square"></i> Edit</a>
       <a type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#{{course_name_slug}}"><i class="bi bi-trash"></i></a>
+      <a class="btn btn-warning " href="{% url 'chemapp:get_course_grade' course_name_slug=course_name_slug %}"> Export Course Grades</a>
     </div>
 
 
