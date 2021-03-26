@@ -45,3 +45,8 @@ Run CMD below to start the WebApp.
  `$ python manage.py runserver`
 
  This will start our project. The site will be bare as this will be a fresh database file.
+
+
+
+ ## License
+[GNU v3.0](https://choosealicense.com/licenses/gpl-3.0/#)
