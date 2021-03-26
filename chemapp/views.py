@@ -259,7 +259,7 @@ def get_course_grade(request, course_name_slug):
     students = Student.objects.filter(courses=course)
 
     response = HttpResponse(content_type='text/csv')
-    # Bug will occur in 89 years :)
+    # Bug will occur in 79 years :)
     academicYear = '20' + course.academicYearTaught[:2]
     filename = course.code + '_' + academicYear
     response['Content-Disposition'] = 'attachment; filename=' + '"' + filename + '.csv"'
