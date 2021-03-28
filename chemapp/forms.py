@@ -262,7 +262,7 @@ class CourseForm(forms.ModelForm):
 
     lecturers = forms.ModelMultipleChoiceField(label='Lecturers',
                                                required=False,
-                                               help_text='Dr. Linnea Soler',
+                                               help_text='You can select/unselect lecturers by just clicking on their names',
                                                queryset=Staff.objects.all(),
                                                widget=forms.SelectMultiple(
                                                    attrs={
@@ -556,6 +556,7 @@ class StudentForm(forms.ModelForm):
                                ))
 
     courses = forms.ModelMultipleChoiceField(label='Courses',
+                                             help_text='You can select/unselect course by just clicking on their names',
                                              required=False,
                                              queryset=Course.objects.none(),
                                              widget=forms.SelectMultiple(
@@ -756,7 +757,7 @@ class AssessmentComponentGradeForm(forms.ModelForm):
                                        'type': 'number',
                                        'placeholder': 'Grade',
                                        'style': 'width:300px',
-                                       'class':'form-control'
+                                       'class': 'form-control'
                                    }
                                ))
 
@@ -778,7 +779,7 @@ class FinalAssessmentGradeForm(forms.ModelForm):
                                             'style': 'width:300px',
                                             'autofocus': True,
                                             'required': True,
-                                            'class':'form-control',
+                                            'class': 'form-control',
                                         }
                                     ))
 
