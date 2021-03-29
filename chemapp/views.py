@@ -254,7 +254,8 @@ def course(request, course_name_slug):
     return render(request, 'chemapp/course.html', context=courseDict)
 
 
-def get_course_grade(request, course_name_slug):
+@login_required
+def export_course_grades(request, course_name_slug):
     course = Course.objects.get(slug=course_name_slug)
     students = Student.objects.filter(courses=course)
 
@@ -265,7 +266,7 @@ def get_course_grade(request, course_name_slug):
     response['Content-Disposition'] = 'attachment; filename=' + '"' + filename + '.csv"'
 
     writer = csv.writer(response)
-    writer.writerow(['ANONID', 'EMPLID', 'Name', 'Grade'])
+    writer.writerow(['Course', 'Degree', 'AcademicYear', 'ANONID', 'EMPLID', 'Name', 'Grade'])
     for student in students:
         studentName = student.firstName + ',' + student.lastName
         try:
@@ -274,7 +275,58 @@ def get_course_grade(request, course_name_slug):
         except CourseGrade.DoesNotExist:
             band = 'NA'
 
-        writer.writerow([student.anonID, student.studentID, studentName, band])
+        writer.writerow([course.code, course.degree, course.academicYearTaught, student.anonID,
+                         student.studentID, studentName, band])
+
+    return response
+
+
+@login_required
+def export_assessment_grades(request, course_name_slug, assessment_name_slug):
+    course = Course.objects.get(slug=course_name_slug)
+    assessment = Assessment.objects.get(course=course, slug=assessment_name_slug)
+    components = AssessmentComponent.objects.filter(assessment=assessment)
+    students = Student.objects.filter(courses=course)
+
+    response = HttpResponse(content_type='text/csv')
+    # Bug will occur in 79 years :)
+    academicYear = '20' + course.academicYearTaught[:2]
+    filename = course.code + '_' + academicYear + '_' + assessment.assessmentName
+    response['Content-Disposition'] = 'attachment; filename=' + '"' + filename + '.csv"'
+
+    writer = csv.writer(response)
+
+    columns = ['Course', 'Degree', 'AcademicYear', 'ANONID', 'EMPLID', 'Name']
+    for component in components:
+        columns.append(component.description)
+
+    columns.append('Overall Assessment Grade')
+
+    writer.writerow(columns)
+    for student in students:
+        studentName = student.firstName + ',' + student.lastName
+        data = [course.code, course.degree, course.academicYearTaught, student.anonID, student.studentID, studentName]
+
+        # Get Component Grades
+        for component in components:
+            try:
+                componentGrade = AssessmentComponentGrade.objects.get(assessmentComponent=component, student=student)
+                grade = componentGrade.grade
+                if grade is None:
+                    grade = 'NA'
+            except AssessmentComponentGrade.DoesNotExist:
+                grade = 'NA'
+            data.append(grade)
+
+        # Get Assessment Grade
+        try:
+            assessmentGrade = AssessmentGrade.objects.get(assessment=assessment, student=student)
+            assessmentBand = assessmentGrade.band
+        except AssessmentGrade.DoesNotExist:
+            assessmentBand = 'NA'
+        data.append(assessmentBand)
+
+        writer.writerow(data)
 
     return response
 

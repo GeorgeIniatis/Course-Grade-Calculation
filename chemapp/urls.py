@@ -31,7 +31,9 @@ urlpatterns = [
     path('courses/<slug:course_name_slug>/upload_student_csv/', views.upload_student_csv, name='upload_student_csv'),
 	path('courses/<slug:course_name_slug>/students/', views.course_students, name='course_students'),
 
-    path('courses/<slug:course_name_slug>/get_course_grade/',views.get_course_grade, name='get_course_grade'),
+    # Export URLs
+    path('courses/<slug:course_name_slug>/export_course_grades/',views.export_course_grades, name='export_course_grades'),
+    path('courses/<slug:course_name_slug>/<slug:assessment_name_slug>/export_assessment_grades',views.export_assessment_grades, name='export_assessment_grades'),
 
     # Assessment URLs
     path('courses/<slug:course_name_slug>/add_assessments/', views.add_assessments, name='add_assessments'),

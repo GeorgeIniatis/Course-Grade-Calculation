@@ -60,7 +60,7 @@
         <a type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#{{course_name_slug}}"><i class="bi bi-trash"></i></a>
       </div>
       <div class="ms-auto p-2 ">
-        <a class="btn btn-warning ml-auto" href="{% url 'chemapp:get_course_grade' course_name_slug=course_name_slug %}"><i class="bi bi-file-earmark-arrow-down"></i> Export Course Grades</a>
+        <a class="btn btn-warning ml-auto" href="{% url 'chemapp:export_course_grades' course_name_slug=course_name_slug %}"><i class="bi bi-file-earmark-arrow-down"></i> Export Course Grades</a>
       </div>
     </div>
 
@@ -128,6 +128,7 @@
           <a class="btn btn-warning " href="{% url 'chemapp:edit_assessment' course_name_slug=course_name_slug assessment_name_slug=assessment.slug %}"><i class="bi bi-pencil-square"></i> Edit</a>
           <a type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#A{{assessment.slug}}"><i class="bi bi-trash"></i></a>
           <a class="btn btn-primary  " href="{% url 'chemapp:upload_student_assessment_info_csv' course_name_slug=course_name_slug assessment_name_slug=assessment.slug %}"><i class="pe-1 bi bi-file-earmark-arrow-up"></i> Upload CSV File to add Student NDP/GC/SudmissionDate</a>
+          <a class="btn btn-warning ml-auto" href="{% url 'chemapp:export_assessment_grades' course_name_slug=course_name_slug assessment_name_slug=assessment.slug %}"><i class="bi bi-file-earmark-arrow-down"></i> Export Assessment Grades</a>
         </div>
 
 
