@@ -26,7 +26,7 @@ The system will try to centralize and automate the process, where possible, requ
 
 First clone the repository
 
- `$ git clone https://stgit.dcs.gla.ac.uk/tp3-2020-CS35/cs35-main.git`
+ `$ git clone https://github.com/GeorgeIniatis/Course-Grade-Calculation.git`
 
 Install Dependencies e.g. on Virtual Machine/server
 
